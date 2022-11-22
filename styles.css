@@ -1,0 +1,52 @@
+*{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body{
+    background-color: #D9D9D9;
+}
+section{
+width: 20%;
+min-width: 250px;
+height: 500px;
+background-color: #33365E;
+position: absolute;  
+top: 20%;
+left: 40%;
+text-align: center;
+border-radius: 22px;
+color: white;
+}
+section p {
+    color:#F1511B;
+    margin-right: -70px;
+    margin-top:8px;
+}
+section img{
+    height: 200px;
+    width: 200px;
+    
+}
+#pass{
+    margin-left: -10px;
+}
+i{
+    margin-left: -30px; 
+    cursor: pointer;
+    color: #1E1E1E;
+}
+
+input{
+    border-radius: 100px;
+    height: 40px;
+    width: 200px;
+    color: #1E1E1E;
+    background-color: white;
+    text-indent: 15px;
+    border:0;
+}
+#submit{
+    background-color: #F1511B;
+    text-indent: 0;
+}

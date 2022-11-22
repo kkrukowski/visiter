@@ -32,3 +32,19 @@ app.get("/", function (req, res) {
 app.listen(port, () => {
   console.log(`Server started on port ${port}!`);
 });
+
+
+
+
+
+function pokazhaslo() {
+  const eye = document.querySelector('#eye');
+  const pass = document.querySelector('#pass');
+  if(pass.getAttribute("type")==='password'){
+    pass.setAttribute("type","text");
+  } else{
+    pass.setAttribute("type","password")
+  }      
+  eye.classList.toggle('fa-eye-slash');
+    
+};
