@@ -1,25 +1,13 @@
-
-const express = require('express');
+const express = require("express");
+const {
+  loginView,
+  registerView,
+  forgetPasswordView,
+} = require("../controller/loginController");
 const router = express.Router();
-const session = require('express-session');
-const app = express();
-const User = require('../models/User')
 
-
-app.use(session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: trueS
-}));
-app.use(express.json());
-
-router.post('/', (req, res) => {
-    userInfo = req.body;
-
-    
-
-});
-
-
+router.get("/login", loginView);
+router.get("/register", registerView);
+router.get("/forget", forgetPasswordView);
 
 module.exports = router;
