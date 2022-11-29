@@ -11,6 +11,10 @@ const mongoose = require("mongoose");
 // Other
 const path = require("path");
 
+//routes
+const loginRoute = require("./routes/login.js");
+app.use("/login", loginRoute);
+
 // MongoDB connection
 const mongoString = process.env.DATABASE_URL;
 
