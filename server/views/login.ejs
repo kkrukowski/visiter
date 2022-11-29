@@ -11,7 +11,7 @@
     <title>Visiter</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <link rel="shortcut icon" href="pic/favicon.ico">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/styles.css">
     <script src="index.js"></script>
     
 </head>
@@ -21,22 +21,14 @@
         <img src="pic/logo.PNG">
         <h3>LOGOWANIE</h3>
         <form action="/homepage.html" method="post">
-            <!-- W label wpisujemy for, a w input name -->
             <label value="email"></label>
             <input for="email" type="email" value="E-mail">
-            <!-- Nie używamy <br>, lepiej marginem robić przerwy -->
             <br><br>
-            <label for="pass" value="pass"></label>
-            <!-- W inputcie nie ma atrybutu 'for' -->
-            <!-- Autocomplete jest do automatycznego wypełniania pola, chodził o name? -->
+            <label for="pass"value="pass"></label>
             <input id="pass" for="pass" type="text" autocomplete="current-password" value="Hasło">
-            <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i><br> 
-            <!-- Do zrobienia link -->
+            <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i><br>      
             <p>Przypomnij hasło</p><br>
-            <!-- Do wysyłania formularza lepiej użyć <button> -->
             <input id="submit" type="submit" value="Zaloguj się"><br>
-            <!-- Do obsługi linków jest element <a href> -->
-            <!-- Po prostu odeślij do "/register" zamiast w js'ie tworzyć -->
             Nie masz konta? <p onclick="rejestracja()">Załóż konto</p>
         </form>
     </section>
