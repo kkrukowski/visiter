@@ -18,7 +18,6 @@ app.use(
 
 
 // AUTHENTICATION
-//AUTHENTICATION
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -53,6 +52,7 @@ passport.use(new LocalStrategy(function (emailUser, password, done){
   });
 }));
 //  ----
+
 
 
 const loginView = (req, res) => {
