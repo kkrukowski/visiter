@@ -20,16 +20,16 @@
         <br>
         <img src="pic/logo.PNG">
         <h3>LOGOWANIE</h3>
-        <form action="/homepage.html" method="post">
+        <form action="/login" method="post">
             <!-- W label wpisujemy for, a w input name -->
             <label value="email"></label>
-            <input for="email" type="email" value="E-mail">
+            <input for="email" type="email" name="email" value="E-mail">
             <!-- Nie używamy <br>, lepiej marginem robić przerwy -->
             <br><br>
             <label for="pass" value="pass"></label>
             <!-- W inputcie nie ma atrybutu 'for' -->
             <!-- Autocomplete jest do automatycznego wypełniania pola, chodził o name? -->
-            <input id="pass" for="pass" type="text" autocomplete="current-password" value="Hasło">
+            <input id="pass" for="pass" type="text" name="password" autocomplete="current-password" value="Hasło">
             <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i><br> 
             <!-- Do zrobienia link -->
             <p>Przypomnij hasło</p><br>

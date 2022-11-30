@@ -20,12 +20,12 @@
         <br>
         <img src="pic/logo.PNG">
         <h3>LOGOWANIE</h3>
-        <form action="/homepage.html" method="post">
+        <form action="/login" method="post">
             <label value="email"></label>
-            <input for="email" type="email" value="E-mail">
+            <input for="email" name="email" type="email" value="E-mail">
             <br><br>
             <label for="pass"value="pass"></label>
-            <input id="pass" for="pass" type="text" autocomplete="current-password" value="Hasło">
+            <input id="pass" for="pass" name="password" type="text" autocomplete="current-password" value="Hasło">
             <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i><br>      
             <p>Przypomnij hasło</p><br>
             <input id="submit" type="submit" value="Zaloguj się"><br>

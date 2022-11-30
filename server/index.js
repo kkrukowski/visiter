@@ -15,6 +15,7 @@ const path = require("path");
 const loginRoute = require("./routes/login.js");
 app.use("/login", loginRoute);
 
+
 // MongoDB connection
 const mongoString = process.env.DATABASE_URL;
 
@@ -31,6 +32,8 @@ database.once("connected", () => {
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: false }));
+
 
 // Routes
 app.use("/", require("./routes/login"));
