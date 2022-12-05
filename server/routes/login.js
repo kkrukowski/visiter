@@ -1,5 +1,6 @@
 const express = require("express");
 const {
+  homeView,
   loginView,
   registerView,
   forgetPasswordView,
@@ -18,12 +19,13 @@ function isLoggedOut(req, res, next){
   res.redirect('/');
 }
 */
-router.get("/", loginView);
+router.get("/home", homeView);
+
+router.get("/login", loginView);
 router.get("/register", registerView);
 router.get("/forget", forgetPasswordView);
 
-
 router.post("/register", registerUser);
-router.post("/", loginUser);
+router.post("/login/password", loginUser);
 
 module.exports = router;

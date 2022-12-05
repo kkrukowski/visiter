@@ -1,36 +1,23 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Visiter-narzędzie stosowane w firmach, gdzie wymaga się od użytkownika wcześniejszego umówienia wizyty w celu wykonania przez pracownika firmy danej usługi." />
-    <meta name="keywords" content="Visiter,Calendar,kalendarz,umówienia,wizyty" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-
-    <title>Visiter</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
-    <link rel="shortcut icon" href="pic/favicon.ico">
-    <link rel="stylesheet" href="styles/styles.css">
-    <script src="index.js"></script>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
 <body>
-    <section id="sekcja">
-        <br>
-        <img src="pic/logo.PNG">
-        <h3>LOGOWANIE</h3>
-        <form action="/login" method="post">
-            <label value="email"></label>
-            <input for="email" name="email" type="email" value="E-mail">
-            <br><br>
-            <label for="pass"value="pass"></label>
-            <input id="pass" for="pass" name="password" type="text" autocomplete="current-password" value="Hasło">
-            <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i><br>      
-            <p>Przypomnij hasło</p><br>
-            <input id="submit" type="submit" value="Zaloguj się"><br>
-            Nie masz konta? <p onclick="rejestracja()">Załóż konto</p>
-        </form>
+    <h1>Sign in</h1>
+<form action="/api/auth/login" method="post">
+    <section>
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="username" required autofocus>
     </section>
+    <section>
+        <label for="current-password">Password</label>
+        <input id="current-password" name="password" type="password" autocomplete="current-password" required>
+    </section>
+    <button type="submit">Sign in</button>
+</form>
 </body>
 </html>

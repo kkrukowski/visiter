@@ -12,10 +12,12 @@ const { Server } = require("socket.io");
 const io = new Server(server);
 // Other
 const path = require("path");
+const session = require("express-session");
 // Routes
+const passport = require("./passport/setup");
+const auth = require("./routes/auth");
 const loginRoute = require("./routes/login.js");
 app.use("/login", loginRoute);
-
 
 // MongoDB connection
 const mongoString = process.env.DATABASE_URL;
@@ -31,14 +33,27 @@ database.once("connected", () => {
   console.log("Database Connected");
 });
 
+app.use(express.json());
+app.use(
+  session({
+    secret: "secret",
+    resave: true,
+    saveUninitialized: true,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 
-
 // Routes
 app.use("/", require("./routes/login"));
 app.use("/", require("./routes/chat"));
+
+app.use("/api/auth", auth);
 
 // Socket
 io.use((socket, next) => {
