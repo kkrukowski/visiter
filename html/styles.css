@@ -3,37 +3,45 @@
     margin: 0;
     padding: 0;
     font-family: Georgia, serif;
+    color:#D9D9D9;
 }
 body{
     background-color: #D9D9D9;
 }
-section{
+#sekcja_logowanie{
 width: 20%;
 min-width: 250px;
-height: 500px;
+max-width: 300px;
+height: 450px;
 background-color: #33365E;
 position: absolute;  
 top: 20%;
-left: 40%;
+left: 43%;
 text-align: center;
 border-radius: 22px;
 color: white;
 }
-section p {
+#sekcja_logowanie a:visited{
+color:#1E1E1E;
+}
+#sekcja_logowanie p {
     color:#F1511B;
     margin-right: -70px;
-    margin-top:8px;
+    font-size: smaller;
 }
-section p:hover{
+#sekcja_logowanie p:hover{
     text-decoration: underline;
 }
-section img{
+#sekcja_logowanie img{
     height: 200px;
     width: 200px;
     
 }
+#sekcja_logowanie input{
+    margin:5px;
+}
 #pass{
-    margin-left: -10px;
+    margin-left:-10px
 }
 i{
     margin-left: -30px; 
@@ -53,15 +61,36 @@ input{
 #submit{
     background-color: #F1511B;
     text-indent: 0;
+    border-radius: 100px;
+    height: 40px;
+    width: 200px;
+    color: #1E1E1E;
+    text-indent: 15px;
+    border:0;
+
+}
+#submit:hover{
+    cursor:pointer;
+}
+
+button{
+        background-color: #F1511B;
+        text-indent: 0;
+}
+button:hover{
+    cursor:pointer;
 }
 #plec{
     display:flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-left: 30px;
+    
+}
+#plec p{
+    margin-left:60px;
 }
 #plec input[type=radio]{
-
+    margin-left: 30px;
     height: unset;
     width: unset;
 
@@ -72,4 +101,40 @@ input{
     text-decoration: none;
     color: white;
     font-size: 20px;
+}
+#strona_glowna{
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+}
+#strona_glowna aside{
+    width:20%;
+    background-color:#33365E;
+    justify-items: center;
+}
+#strona_glowna aside img{
+    width:80%;
+    margin-top: -25%;
+    
+}
+#strona_glowna aside a{
+    text-decoration: none;
+
+}
+#strona_glowna aside p{
+    margin:5%;
+    font-size:200%;
+
+}
+#strona_glowna aside i{
+    margin:10px;
+    margin-left:0;
+
+}
+
+#strona_glowna div{
+    text-align: left;
+    margin-left: 20%;
+    margin-top: 220px;
+
 }

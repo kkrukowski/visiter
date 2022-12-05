@@ -16,23 +16,13 @@
     
 </head>
 <body>
-    <section id="sekcja_logowanie">
+    <section id="sekcja_logowanie" style="height:350px;">
 
         <img src="pic/logo.PNG">
-        <h3>LOGOWANIE</h3>
-        <form action="strona_glowna.html" method="post">
+        <h3>Przypomnij hasło</h3>
             <label for="email"></label>
             <input type="email" name="email" autocomplete placeholder="E-mail">
-            <label for="pass"></label>
-            <div id="pass">
-            <input id="pass" type="password" name="pass" autocomplete placeholder="Hasło">
-            <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i>
-            </div>
-            <a href="przyp_haslo.html"><p>Przypomnij hasło</p></a>
-            <input id="submit" type="submit" value="Zaloguj się">
-            <br>
-            Nie masz konta? <p><a href="rejestracja.html">Załóż konto</p>
-        </form>
+            <button id="submit" onclick="przyp_haslo()" value="Wyślij"> Wyślij </button>
     </section>
 </body>
 </html>

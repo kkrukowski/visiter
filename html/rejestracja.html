@@ -16,22 +16,21 @@
     
 </head>
 <body>
-    <section id="sekcja_logowanie">
-
+    <section id="sekcja_logowanie" style="height: 530px;">
+        
         <img src="pic/logo.PNG">
-        <h3>LOGOWANIE</h3>
-        <form action="strona_glowna.html" method="post">
-            <label for="email"></label>
-            <input type="email" name="email" autocomplete placeholder="E-mail">
-            <label for="pass"></label>
-            <div id="pass">
-            <input id="pass" type="password" name="pass" autocomplete placeholder="Hasło">
-            <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i>
+        <h3>REJESTRACJA</h3>
+        <form action="/rejestracja.html" method="get">
+            <input type="email" placeholder="E-mail">
+            <input type="text" placeholder="Imie">
+            <input type="text" placeholder="Nazwisko">
+            <div id="plec">
+                <label><input type="radio" name="plec">Mężczyzna</label>
+                <label><input type="radio" name="plec">Kobieta</label>
             </div>
-            <a href="przyp_haslo.html"><p>Przypomnij hasło</p></a>
-            <input id="submit" type="submit" value="Zaloguj się">
-            <br>
-            Nie masz konta? <p><a href="rejestracja.html">Załóż konto</p>
+            <input id="pass" for="pass" type="text" autocomplete placeholder="Hasło">
+            <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i>
+            <input id="submit" type="submit" value="Zarejestruj się">
         </form>
     </section>
 </body>
