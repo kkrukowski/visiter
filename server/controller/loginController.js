@@ -68,7 +68,7 @@ const forgetPasswordView = (req, res) => {
 };
 
 const loginUser = (req, res) =>{
-  passport.authenticate('local',{
+  passport.authenticate('local',{ 
     successRedirect: '/register',
     failureRedirect: '/register'
   })
