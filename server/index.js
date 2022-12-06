@@ -55,36 +55,8 @@ app.use("/", require("./routes/chat"));
 
 app.use("/api/auth", auth);
 
-// Socket
-io.use((socket, next) => {
-  const sessionID = socket.handshake.auth.sessionID;
-  if (sessionID) {
-    // find existing session
-    const session = sessionStore.findSession(sessionID);
-    if (session) {
-      socket.sessionID = sessionID;
-      socket.userID = session.userID;
-      socket.username = session.username;
-      return next();
-    }
-  }
-  // const username = socket.handshake.auth.username;
-  // if (!username) {
-  //   return next(new Error("invalid username"));
-  // }
-  // create new session
-  socket.sessionID = randomId();
-  socket.userID = randomId();
-  socket.username = randomId();
-  next();
-});
-
 io.on("connection", (socket) => {
   console.log("user connected");
-  socket.emit("session", {
-    sessionID: socket.sessionID,
-    userID: socket.userID,
-  });
   socket.on("chat message", (msg) => {
     console.log("message: " + msg);
   });
