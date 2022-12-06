@@ -24,6 +24,10 @@ color: white;
 #sekcja_logowanie a:visited{
 color:#1E1E1E;
 }
+#sekcja_logowanie a{
+     text-decoration:none;
+    }
+
 #sekcja_logowanie p {
     color:#F1511B;
     margin-right: -70px;
@@ -40,7 +44,7 @@ color:#1E1E1E;
 #sekcja_logowanie input{
     margin:5px;
 }
-#pass{
+#password{
     margin-left:-10px
 }
 i{
@@ -86,11 +90,8 @@ button:hover{
     align-items: flex-start;
     
 }
-#plec p{
-    margin-left:60px;
-}
 #plec input[type=radio]{
-    margin-left: 30px;
+    margin-left: 60px;
     height: unset;
     width: unset;
 
@@ -108,9 +109,8 @@ button:hover{
     flex-direction: row;
 }
 #strona_glowna aside{
-    width:20%;
+    width:21%;
     background-color:#33365E;
-    justify-items: center;
 }
 #strona_glowna aside img{
     width:80%;
@@ -123,18 +123,84 @@ button:hover{
 }
 #strona_glowna aside p{
     margin:5%;
-    font-size:200%;
+    font-size:2vw;
 
 }
 #strona_glowna aside i{
-    margin:10px;
-    margin-left:0;
+
+    margin: 10px 5px 10px -5px;
 
 }
-
-#strona_glowna div{
+#strona_glowna #ikony{
     text-align: left;
-    margin-left: 20%;
-    margin-top: 220px;
+    margin-left: 15%;
+    margin-top: 50%;
 
+}
+#strona_glowna #kafelki{
+    width: 79%;
+    display:flex;
+    flex-direction: column;
+}
+
+#kafelki div article{
+    background-color:#33365E;
+    margin: 10px 0 10px 0;
+    border-radius: 20px;
+    padding:10px;
+}
+#kafelki div{
+    margin:0%;
+    margin-top: 5px;
+}
+#kafelki #gora{
+    height: 66%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-around;
+} 
+#kafelki #gora article{
+    width: 47%;
+}
+#kafelki #dol{
+    height: 33%;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-around;
+    
+}
+#kafelki #dol article{
+    width: 47%;
+}
+#kafelki #gora #wizyta_reklama{
+    display:flex;
+    flex-direction: column;
+    width: 47%;
+}
+#kafelki #gora #wizyta_reklama article{
+    height: 50%;
+    width: 100%;
+
+}
+@media all and (max-width: 500px) {
+    *{
+        font-size:3vw;
+    }
+    #strona_glowna aside{
+        width:21%;    
+        background-color:#33365E;
+        justify-items: center;
+        display: flex;
+        flex-direction:column;
+    }
+    #strona_glowna div{
+        text-align: left;
+        margin-left: 10%;
+        margin-top: 20%;
+        margin-right: 100%;
+        display: flex;
+        flex-wrap:wrap;
+
+    
+    }
 }
