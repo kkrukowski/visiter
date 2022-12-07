@@ -7,15 +7,14 @@ const LocalStrategy = require("passport-local").Strategy;
 // AUTHENTICATION
 passport.serializeUser((user, done) => done(null, user.id));
 
-passport.deserializeUser(function (id, done) {
-  User.findById(id, function (err, user) {
+passport.deserializeUser(function (pushedId, done) {
+  User.findOne( {id: pushedId } , function (err, user) {
     done(err, user);
   });
 });
 
 passport.use(
   new LocalStrategy(function (username, password, done) {
-    console.log("dziala");
     User.findOne({ email: username }, function (err, user) {
       if (err) {
         return done(err);
