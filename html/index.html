@@ -11,7 +11,7 @@
     <title>Visiter</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <link rel="shortcut icon" href="pic/favicon.ico">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/styles.css">
     <script src="js/index.js"></script>
     
 </head>
@@ -20,13 +20,12 @@
 
         <img src="pic/logo.PNG">
         <h3>LOGOWANIE</h3>
-        <form action="strona_glowna.html" method="post">
-            <label for="email"></label>
-            <input type="email" name="email" autocomplete placeholder="E-mail">
-            <label for="pass"></label>
-            <div id="password">
-            <input id="pass" for="pass" type="password" autocomplete placeholder="Hasło">
-            <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i>
+        <form action="/login" method="post">
+            <label for="username"></label>
+            <input type="username" name="username" autocomplete placeholder="E-mail">
+            <label for="password"></label>
+            <input id="password" for="password" type="password" name="password" autocomplete placeholder="Hasło">
+            <i class="far fa-eye" id="eye" onclick="pokazhaslo()"></i>
             </div>
             <a href="przyp_haslo.html"><p>Przypomnij hasło</p></a>
             <input id="submit" type="submit" value="Zaloguj się">
@@ -34,5 +33,10 @@
             Nie masz konta? <p><a href="rejestracja.html">Załóż konto</p>
         </form>
     </section>
+    <% if(message!=""){%>
+        <div class="error">
+            <p><%= message %></p>
+        </div>
+    <% }%>
 </body>
 </html>

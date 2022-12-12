@@ -11,7 +11,6 @@ const router = express.Router();
 
 
 function isLoggedIn(req, res, next){
-  console.log("check");
   if(req.isAuthenticated()) return next();
   res.redirect('/login');
 }

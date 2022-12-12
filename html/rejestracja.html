@@ -11,27 +11,33 @@
     <title>Visiter</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <link rel="shortcut icon" href="pic/favicon.ico">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles/styles.css"> <!-- JESLI CHCECIE ZMIENIAC STYLE USUNCIE styles/ -->
     <script src="js/index.js"></script>
     
 </head>
 <body>
+    
     <section id="sekcja_logowanie" style="height: 530px;">
-        
         <img src="pic/logo.PNG">
         <h3>REJESTRACJA</h3>
-        <form action="/rejestracja.html" method="get">
-            <input type="email" placeholder="E-mail">
-            <input type="text" placeholder="Imie">
-            <input type="text" placeholder="Nazwisko">
+        <form action="/register" method = "POST">
+            <input type="email" placeholder="E-mail" name="email" required>
+            <input type="text" placeholder="Imie" name="username" required>
+            <input type="text" placeholder="Nazwisko" name="secondname" required>
             <div id="plec">
-                <label><input type="radio" name="plec">Mężczyzna</label>
-                <label><input type="radio" name="plec">Kobieta</label>
+                <label><input type="radio" name="plec" value="Mężczyzna">Mężczyzna</label>
+                <label><input type="radio" name="plec" value="Kobieta">Kobieta</label>
             </div>
-            <input id="pass" for="pass" type="password" autocomplete placeholder="Hasło">
+            <input id="pass" for="pass" type="password" name="password" required autocomplete placeholder="Hasło">
             <i  class="far fa-eye" id="eye" onclick="pokazhaslo()"></i>
             <input id="submit" type="submit" value="Zarejestruj się">
         </form>
     </section>
+    
+    <% if(message!=""){%>
+    <div class="error">
+        <p><%= message %></p>
+    </div>
+    <% }%>
 </body>
 </html>

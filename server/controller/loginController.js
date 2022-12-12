@@ -3,16 +3,21 @@ const bcrypt = require("bcrypt");
 const passport = require("passport");
 
 
+
 const homeView = (req, res) => {
   res.render("home");
 };
 
-const loginView = (req, res) => {
-  res.render("login");
+const loginView = (req, res, err = "", message="") => {
+  res.render("login", {
+    message: message
+  });
 };
 
-const registerView = (req, res) => {
-  res.render("register");
+const registerView = (req, res, err = "", message="") => {
+  res.render("register", {
+    message: message
+  });
 };
 
 const forgetPasswordView = (req, res) => {
@@ -22,16 +27,19 @@ const forgetPasswordView = (req, res) => {
 const loginUser = (req, res, next) => {
   passport.authenticate("local", function (err, user, info) {
     if (err) {
-      return res.status(400).json({ errors: err });
+      message = "Błędne hasło.";
+      return loginView(req, res, err, message);
     }
     if (!user) {
-      return res.status(400).json({ errors: "User not found!" });
+      message = "Błędny email lub hasło.";
+      return loginView(req, res, err, message);
     }
     req.logIn(user, (err) => {
       if (err) {
-        return res.status(400).json({ errors: err });
+        message = "Błąd z logowaniem.";
+        return loginView(req, res, err, message);
       }
-        res.render("home");
+        return homeView(req, res);
     });
   })(req, res, next);
 };
@@ -40,7 +48,9 @@ const registerUser = async (req, res) => {
 
   const userExists = await User.findOne({ email: req.body.email.toLowerCase() });
   if (userExists) {
-    return res.status(400).json({ message: "User already exists." });
+    message = "Użytkownik już istnieje."
+    console.log(message)
+    return registerView(req, res, "", message);
   };
 
   try {
@@ -49,6 +59,9 @@ const registerUser = async (req, res) => {
     const newUser = new User({
       id: Date.now().toString(),
       email: req.body.email.toLowerCase(),
+      username: req.body.username,
+      secondname: req.body.secondname,
+      sex: req.body.plec,
       password: hashedPasword,
       role: "User"
     });
