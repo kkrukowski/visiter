@@ -22,9 +22,13 @@
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     if (input.value) {
-      socket.emit('chat message', input.value);
+      socket.emit('message', input.value);
       input.value = '';
     }
   });
+
+  socket.on("message", () => {
+    conosle.log("message from client")
+  }) 
 </script>
 </html>
