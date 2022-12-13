@@ -2,21 +2,19 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 
-
-
 const homeView = (req, res) => {
   res.render("home");
 };
 
-const loginView = (req, res, err = "", message="") => {
+const loginView = (req, res, err = "", message = "") => {
   res.render("login", {
-    message: message
+    message: message,
   });
 };
 
-const registerView = (req, res, err = "", message="") => {
+const registerView = (req, res, err = "", message = "") => {
   res.render("register", {
-    message: message
+    message: message,
   });
 };
 
@@ -26,12 +24,14 @@ const forgetPasswordView = (req, res) => {
 
 const loginUser = (req, res, next) => {
   passport.authenticate("local", function (err, user, info) {
+    // Password error
     if (err) {
-      message = "Błędne hasło.";
+      message = info.message;
       return loginView(req, res, err, message);
     }
+    // Mail error
     if (!user) {
-      message = "Błędny email lub hasło.";
+      message = info.message;
       return loginView(req, res, err, message);
     }
     req.logIn(user, (err) => {
@@ -39,19 +39,20 @@ const loginUser = (req, res, next) => {
         message = "Błąd z logowaniem.";
         return loginView(req, res, err, message);
       }
-        return homeView(req, res);
+      return res.redirect("/home");
     });
   })(req, res, next);
 };
 
 const registerUser = async (req, res) => {
-
-  const userExists = await User.findOne({ email: req.body.email.toLowerCase() });
+  const userExists = await User.findOne({
+    email: req.body.email.toLowerCase(),
+  });
   if (userExists) {
-    message = "Użytkownik już istnieje."
-    console.log(message)
+    message = "Użytkownik już istnieje.";
+    console.log(message);
     return registerView(req, res, "", message);
-  };
+  }
 
   try {
     console.log(req.body.password);
@@ -63,7 +64,7 @@ const registerUser = async (req, res) => {
       secondname: req.body.secondname,
       sex: req.body.plec,
       password: hashedPasword,
-      role: "User"
+      role: "User",
     });
     console.log(newUser);
     newUser.save();
