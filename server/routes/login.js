@@ -4,28 +4,27 @@ const {
   loginView,
   registerView,
   forgetPasswordView,
-  registerUser,
   loginUser,
+  registerUser
 } = require("../controller/loginController");
 const router = express.Router();
 
-/*
+
 function isLoggedIn(req, res, next){
   if(req.isAuthenticated()) return next();
   res.redirect('/login');
 }
 function isLoggedOut(req, res, next){
   if(!req.isAuthenticated()) return next();
-  res.redirect('/');
+  res.redirect('/home');
 }
-*/
-router.get("/home", homeView);
 
-router.get("/login", loginView);
-router.get("/register", registerView);
-router.get("/forget", forgetPasswordView);
+router.get("/home", isLoggedIn, homeView);
+router.get("/login", isLoggedOut, loginView)
+router.get("/register", isLoggedOut, registerView);
+router.get("/forget", isLoggedOut, forgetPasswordView);
 
-router.post("/register", registerUser);
-router.post("/login/password", loginUser);
+router.post("/login", loginUser)
+router.post("/register", registerUser)
 
 module.exports = router;

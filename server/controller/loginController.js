@@ -1,45 +1,69 @@
-const express = require("express");
-const app = express();
 const User = require("../models/User");
-const session = require("express-session");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
+
 
 
 const homeView = (req, res) => {
   res.render("home");
 };
 
-const loginView = (req, res) => {
-  res.render("login");
+const loginView = (req, res, err = "", message="") => {
+  res.render("login", {
+    message: message
+  });
 };
 
-const registerView = (req, res) => {
-  res.render("register");
+const registerView = (req, res, err = "", message="") => {
+  res.render("register", {
+    message: message
+  });
 };
 
 const forgetPasswordView = (req, res) => {
   res.render("forgetPassword");
 };
 
-const loginUser = (req, res) => {
-  passport.authenticate("local", {
-    successRedirect: "/home",
-    failureRedirect: "/register",
-  });
-  console.log("logged");
+const loginUser = (req, res, next) => {
+  passport.authenticate("local", function (err, user, info) {
+    if (err) {
+      message = "Błędne hasło.";
+      return loginView(req, res, err, message);
+    }
+    if (!user) {
+      message = "Błędny email lub hasło.";
+      return loginView(req, res, err, message);
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        message = "Błąd z logowaniem.";
+        return loginView(req, res, err, message);
+      }
+        return homeView(req, res);
+    });
+  })(req, res, next);
 };
 
 const registerUser = async (req, res) => {
+
+  const userExists = await User.findOne({ email: req.body.email.toLowerCase() });
+  if (userExists) {
+    message = "Użytkownik już istnieje."
+    console.log(message)
+    return registerView(req, res, "", message);
+  };
+
   try {
     console.log(req.body.password);
     const hashedPasword = await bcrypt.hash(req.body.password, 10);
     const newUser = new User({
       id: Date.now().toString(),
-      email: req.body.email,
+      email: req.body.email.toLowerCase(),
+      username: req.body.username,
+      secondname: req.body.secondname,
+      sex: req.body.plec,
       password: hashedPasword,
-      role: "User",
+      role: "User"
     });
     console.log(newUser);
     newUser.save();
@@ -48,6 +72,7 @@ const registerUser = async (req, res) => {
     res.redirect("/register");
   }
 };
+
 module.exports = {
   homeView,
   loginView,

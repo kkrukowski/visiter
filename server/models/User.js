@@ -5,6 +5,8 @@ userSchema = new Schema({
     id: String,
     email: String,
     username: String,
+    secondname: String,
+    sex: String,
     password: String,
     role: String
 });
