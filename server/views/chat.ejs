@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="/styles/chat.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="/styles/chat.css">
 </head>
+
 <body>
-    <ul id="messages"></ul>
-    <form id="form" action=""><input id="input" autocomplete="off"/><button>Send</button></form>
+  <ul id="messages"></ul>
+  <form id="form" action=""><input id="input" autocomplete="off" /><button>Send</button></form>
 </body>
 
 <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
@@ -19,7 +21,7 @@
   var form = document.getElementById('form');
   var input = document.getElementById('input');
 
-  form.addEventListener('submit', function(e) {
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (input.value) {
       socket.emit('message', input.value);
@@ -31,4 +33,5 @@
     conosle.log("message from client")
   }) 
 </script>
+
 </html>

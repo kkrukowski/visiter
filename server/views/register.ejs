@@ -1,25 +1,49 @@
-<%- include("../../html/rejestracja.html")%>
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description"
+        content="Visiter-narzędzie stosowane w firmach, gdzie wymaga się od użytkownika wcześniejszego umówienia wizyty w celu wykonania przez pracownika firmy danej usługi." />
+    <meta name="keywords" content="Visiter,Calendar,kalendarz,umówienia,wizyty" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 
+    <title>Visiter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="shortcut icon" href="pic/favicon.ico">
+    <link rel="stylesheet" href="styles/styles.css"> <!-- JESLI CHCECIE ZMIENIAC STYLE USUNCIE styles/ -->
+    <script src="js/index.js"></script>
 
-<!--
-<h1>Register</h1>
-<form action="/register" method = "POST">
-    <label for="username">Name</label>
-    <input type="text" id="username" name="username" required> 
-    
-    <label for="email">Email</label>
-    <input type="text" id="email" name="email" required> 
+</head>
 
-    <label for="password">Password</label>
-    <input type="text" id="password" name="password" required> 
+<body>
 
-    <button type="submit">Register Now</button>
+    <section id="sekcja_logowanie" style="height: 530px;">
+        <img src="pic/logo.PNG">
+        <h3>REJESTRACJA</h3>
+        <form action="/register" method="POST">
+            <input type="text" placeholder="E-mail" name="email" required>
+            <input type="text" placeholder="Imie" name="username" required>
+            <input type="text" placeholder="Nazwisko" name="secondname" required>
+            <div id="plec">
+                <label><input type="radio" name="plec" value="Mężczyzna">Mężczyzna</label>
+                <label><input type="radio" name="plec" value="Kobieta">Kobieta</label>
+            </div>
+            <input id="pass" for="pass" type="password" name="password" required autocomplete placeholder="Hasło">
+            <i class="far fa-eye" id="eye" onclick="pokazhaslo()"></i>
+            <input id="submit" type="submit" value="Zarejestruj się">
+        </form>
+    </section>
 
-<p>
-    <% if(locals.message){%>
-    <%= message %>
-    <% }%>
-</p>
-</form>
--->
+    <% if(message!="" ){%>
+        <div class="error">
+            <p>
+                <%= message %>
+            </p>
+        </div>
+        <% }%>
+</body>
+
+</html>
