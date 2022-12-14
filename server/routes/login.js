@@ -1,4 +1,8 @@
 const express = require("express");
+const { 
+  registerValidation, 
+  loginValidation } = require("../middlewares/loginHandler");
+const router = express.Router();
 const {
   homeView,
   loginView,
@@ -7,24 +11,19 @@ const {
   loginUser,
   registerUser
 } = require("../controller/loginController");
-const router = express.Router();
+const {
+  isLoggedIn,
+  isLoggedOut
+} = require("../middlewares/authHandler");
 
 
-function isLoggedIn(req, res, next){
-  if(req.isAuthenticated()) return next();
-  res.redirect('/login');
-}
-function isLoggedOut(req, res, next){
-  if(!req.isAuthenticated()) return next();
-  res.redirect('/home');
-}
 
 router.get("/home", isLoggedIn, homeView);
 router.get("/login", isLoggedOut, loginView)
 router.get("/register", isLoggedOut, registerView);
 router.get("/forget", isLoggedOut, forgetPasswordView);
 
-router.post("/login", loginUser)
-router.post("/register", registerUser)
+router.post("/login", loginValidation, loginUser)
+router.post("/register", registerValidation, registerUser)
 
 module.exports = router;

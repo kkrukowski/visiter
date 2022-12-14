@@ -45,6 +45,7 @@ const loginUser = (req, res, next) => {
 };
 
 const registerUser = async (req, res) => {
+  console.log("przeszlo");
   const userExists = await User.findOne({
     email: req.body.email.toLowerCase(),
   });
@@ -55,13 +56,15 @@ const registerUser = async (req, res) => {
   }
 
   try {
-    console.log(req.body.password);
     const hashedPasword = await bcrypt.hash(req.body.password, 10);
+    correctUsername = req.body.username.charAt(0).toUpperCase() + req.body.username.slice(1).toLowerCase()
+    correctSecondname = req.body.secondname.charAt(0).toUpperCase() + req.body.secondname.slice(1).toLowerCase()
+
     const newUser = new User({
       id: Date.now().toString(),
       email: req.body.email.toLowerCase(),
-      username: req.body.username,
-      secondname: req.body.secondname,
+      username: correctUsername,
+      secondname: correctSecondname,
       sex: req.body.plec,
       password: hashedPasword,
       role: "User",
