@@ -9,7 +9,8 @@ const {
   registerView,
   forgetPasswordView,
   loginUser,
-  registerUser
+  registerUser,
+  logOutUser
 } = require("../controller/loginController");
 const {
   isLoggedIn,
@@ -25,5 +26,7 @@ router.get("/forget", isLoggedOut, forgetPasswordView);
 
 router.post("/login", loginValidation, loginUser)
 router.post("/register", registerValidation, registerUser)
+
+router.post("/logout", isLoggedIn, logOutUser);
 
 module.exports = router;

@@ -44,6 +44,15 @@ const loginUser = (req, res, next) => {
   })(req, res, next);
 };
 
+const logOutUser = (req, res) => {
+  console.log("WYLOGOWANO")
+  req.logOut(function(err) {
+    if (err) { return next(err); }
+    message = "Wylogowano."
+    return loginView(req, res, "", message)
+  });
+};
+
 const registerUser = async (req, res) => {
   console.log("przeszlo");
   const userExists = await User.findOne({
@@ -84,4 +93,5 @@ module.exports = {
   forgetPasswordView,
   registerUser,
   loginUser,
+  logOutUser
 };
