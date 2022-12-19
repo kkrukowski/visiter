@@ -39,17 +39,19 @@ const loginUser = (req, res, next) => {
         message = "Błąd z logowaniem.";
         return loginView(req, res, err, message);
       }
-      return res.redirect("/home");
+      return res.redirect("/");
     });
   })(req, res, next);
 };
 
 const logOutUser = (req, res) => {
-  console.log("WYLOGOWANO")
-  req.logOut(function(err) {
-    if (err) { return next(err); }
-    message = "Wylogowano."
-    return loginView(req, res, "", message)
+  console.log("WYLOGOWANO");
+  req.logOut(function (err) {
+    if (err) {
+      return next(err);
+    }
+    message = "Wylogowano.";
+    return loginView(req, res, "", message);
   });
 };
 
@@ -66,8 +68,12 @@ const registerUser = async (req, res) => {
 
   try {
     const hashedPasword = await bcrypt.hash(req.body.password, 10);
-    correctUsername = req.body.username.charAt(0).toUpperCase() + req.body.username.slice(1).toLowerCase()
-    correctSecondname = req.body.secondname.charAt(0).toUpperCase() + req.body.secondname.slice(1).toLowerCase()
+    correctUsername =
+      req.body.username.charAt(0).toUpperCase() +
+      req.body.username.slice(1).toLowerCase();
+    correctSecondname =
+      req.body.secondname.charAt(0).toUpperCase() +
+      req.body.secondname.slice(1).toLowerCase();
 
     const newUser = new User({
       id: Date.now().toString(),
@@ -93,5 +99,5 @@ module.exports = {
   forgetPasswordView,
   registerUser,
   loginUser,
-  logOutUser
+  logOutUser,
 };

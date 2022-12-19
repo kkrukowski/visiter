@@ -22,14 +22,9 @@ app.use(
     saveUninitialized: true,
   })
 );
-const passport = require("./passport/setup"); 
-
-
-
-
+const passport = require("./passport/setup");
 
 // LOCAL ROUTING TO FILES
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -38,10 +33,14 @@ app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 
 // Routes
-const loginApi = require("./routes/login") 
+const loginApi = require("./routes/login");
+const chat = require("./routes/chat");
+const routes = require("./routes/routes");
 
-// API
-app.use("/", loginApi); 
+// APIs
+app.use("/", loginApi);
+app.use("/", chat);
+app.use("/", routes);
 
 // MongoDB connection
 const mongoString = process.env.DATABASE_URL;
@@ -57,9 +56,12 @@ database.once("connected", () => {
   console.log("Database Connected");
 });
 
+// Socket IO
+// Ustawić dopiero po logowaniu
 io.on("connection", (socket) => {
-  console.log("user connected");
-  socket.on("chat message", (msg) => {
+  socket.username = "username";
+  console.log(`User id: ${socket.id} connected`);
+  socket.on("message", (msg) => {
     console.log("message: " + msg);
   });
   socket.on("disconnect", () => {
