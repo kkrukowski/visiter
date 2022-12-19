@@ -3,12 +3,11 @@ const bcrypt = require("bcrypt");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 
-
 // AUTHENTICATION
 passport.serializeUser((user, done) => done(null, user.id));
 
 passport.deserializeUser(function (pushedId, done) {
-  User.findOne( {id: pushedId } , function (err, user) {
+  User.findOne({ id: pushedId }, function (err, user) {
     done(err, user);
   });
 });
@@ -20,14 +19,14 @@ passport.use(
         return done(err);
       }
       if (!user) {
-        return done(null, false, { message: "Nieprawdiłowy mail." });
+        return done(null, false, { message: "Nieprawidłowy email!" });
       }
       bcrypt.compare(password, user.password, function (err, res) {
         if (err) {
           return done(err);
         }
         if (res == false) {
-          return done(null, false, { message: "Nieprawidłowe hasło." });
+          return done(null, false, { message: "Nieprawidłowe hasło!" });
         }
         return done(null, user);
       });
@@ -35,5 +34,4 @@ passport.use(
   })
 );
 
-module.exports = passport
-
+module.exports = passport;

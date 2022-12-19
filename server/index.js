@@ -59,10 +59,11 @@ database.once("connected", () => {
 // Socket IO
 // Ustawić dopiero po logowaniu
 io.on("connection", (socket) => {
-  socket.username = "username";
-  console.log(`User id: ${socket.id} connected`);
+  const usersCount = io.engine.clientsCount;
+  socket.username = "user" + usersCount;
+  console.log(`User ${socket.username} id: ${socket.id} connected`);
   socket.on("message", (msg) => {
-    console.log("message: " + msg);
+    io.emit("message", msg);
   });
   socket.on("disconnect", () => {
     console.log("user disconnected");
