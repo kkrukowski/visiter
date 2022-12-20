@@ -34,12 +34,14 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes
 const loginApi = require("./routes/login");
+const businessApi = require("./routes/business");
 const chat = require("./routes/chat");
 const routes = require("./routes/routes");
 
 // APIs
 app.use("/", loginApi);
 app.use("/", chat);
+app.use("/business", businessApi);
 app.use("/", routes);
 
 // MongoDB connection

@@ -3,7 +3,7 @@ const router = express.Router();
 
 const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
 
-router.get("/chat", isLoggedOut, (req, res) => {
+router.get("/chat", isLoggedIn, (req, res) => {
   res.render("chat");
 });
 

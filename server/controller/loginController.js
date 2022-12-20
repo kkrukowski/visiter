@@ -99,5 +99,5 @@ module.exports = {
   forgetPasswordView,
   registerUser,
   loginUser,
-  logOutUser,
+  logOutUser
 };
