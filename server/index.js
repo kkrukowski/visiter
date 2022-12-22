@@ -59,14 +59,45 @@ database.once("connected", () => {
 });
 
 // Socket IO
+io.use((socket, next) => {
+  const username = socket.handshake.auth.username;
+  const userDdId = socket.handshake.auth.userDbId;
+  socket.username = username;
+  socket.userDbId = userDdId;
+  console.log(
+    `User ${socket.username} socket_id: ${socket.id} db_id: ${socket.userDbId} connected`
+  );
+  next();
+});
 // Ustawić dopiero po logowaniu
 io.on("connection", (socket) => {
-  const usersCount = io.engine.clientsCount;
-  socket.username = "user" + usersCount;
-  console.log(`User ${socket.username} id: ${socket.id} connected`);
-  socket.on("message", (msg) => {
-    io.emit("message", msg);
+  // List all users
+  const users = [];
+  for (let [id, socket] of io.of("/").sockets) {
+    users.push({
+      userSocketId: id,
+      userDbId: socket.userDbId,
+      username: socket.username,
+    });
+  }
+  console.log(users);
+  socket.emit("users", users);
+
+  // Message event listener
+  socket.on("private_message", ({ content, to }) => {
+    console.log("priv");
+    console.log(content);
+    console.log(to);
+    const receiverData = users.find((user) => user.userDbId == to);
+    const userInfo = { username: socket.username, userDbId: socket.userDbId };
+    const msgInfo = { content, userInfo };
+    io.to(receiverData.userSocketId).emit("private_message", {
+      msgInfo,
+      from: socket.userDbId,
+    });
   });
+
+  // Disconnect event listener
   socket.on("disconnect", () => {
     console.log("user disconnected");
   });

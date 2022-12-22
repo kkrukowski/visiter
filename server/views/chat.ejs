@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Visiter | Wiadomości</title>
     <link rel="stylesheet" href="/styles/chat.css" />
   </head>
 
@@ -17,27 +17,51 @@
 
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   <script>
+    const username = "<%= username %>";
+    const userDbId = "<%= userDbId %>";
+
     var socket = io({ autoConnect: false });
 
-    socket.onAny((event, ...args) => {
-      console.log(event, args);
+    socket.auth = { username, userDbId };
+    socket.connect();
+
+    // socket.onAny((event, ...args) => {
+    //   console.log(event, args);
+    // });
+
+    socket.on("users", (users) => {
+      console.log(users);
     });
 
     var messages = document.getElementById("messages");
     var form = document.getElementById("form");
     var input = document.getElementById("input");
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
-      if (input.value) {
-        socket.emit("message", input.value);
+      let content = input.value;
+      if (content) {
+        socket.emit("private_message", {
+          content: content,
+          to: "63a0683c10b33de32d9510d3",
+        });
+        var item = document.createElement("li");
+        item.textContent = "Ja: " + content;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
         input.value = "";
       }
     });
 
-    socket.on("message", function (msg) {
+    socket.on("private_message", (msgInfo) => {
+      console.log("msg: ", msgInfo);
       var item = document.createElement("li");
-      item.textContent = msg;
+      console.log(msgInfo.userInfo.userDbId, userDbId);
+      if (msgInfo.userInfo.userDbId === userDbId) {
+        item.textContent = "Ja: " + msgInfo.content;
+      } else {
+        item.textContent = msgInfo.userInfo.username + ": " + msgInfo.content;
+      }
       messages.appendChild(item);
       window.scrollTo(0, document.body.scrollHeight);
     });
