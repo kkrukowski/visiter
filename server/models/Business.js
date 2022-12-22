@@ -4,7 +4,7 @@ const User = require("./User");
 const Opinion = require("./Opinion");
 const Service = require("./Service");
 
-businessSchema = new Schema({
+const businessSchema = new Schema({
     id: String,
     name: String,
     description: String,
@@ -12,16 +12,16 @@ businessSchema = new Schema({
         type: String,
         required: false
     },
-    ownerId: String,
+    owner: {type: User.schema, require: true},
     adress: String,
     phone: String,
 
 
-    workers: [User],
-    opinions: [Opinion],
-    services: [Service]
+    workers: {type: [User.schema], require: false},
+    opinions: {type: [Opinion.schema], require: false},
+    services: {type: [Service.schema], require: false},
 });
 
-Business = mongoose.model('Business', businessSchema);
+const Business = mongoose.model('Business', businessSchema);
 
 module.exports = Business;

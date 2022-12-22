@@ -1,13 +1,13 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-serviceSchema = new Schema({
+const serviceSchema = new Schema({
     id: String,
     name: String,
-    price: Float
+    price: Number
 
 })
 
-Service = mongoose.model('Service', userSchema);
+const Service = mongoose.model('Service', serviceSchema);
 
 module.exports = Service;

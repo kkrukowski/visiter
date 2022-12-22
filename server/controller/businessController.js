@@ -1,3 +1,7 @@
+const Business = require("../models/Business");
+const User = require("../models/User");
+
+
 const registerView = (req, res) => {
     if(req.user.role == "Owner"){
         console.log("Jestes ownerem, nie mozesz rejestrowac firmy")
@@ -5,9 +9,8 @@ const registerView = (req, res) => {
     }
     res.render("businessRegister", message = "");
 }
-const registerBusiness = (req, res) =>{
-    console.log(req.body);
-    console.log(req.user);
+
+const registerBusiness = async (req, res) =>{
     User.findOneAndUpdate({ id: req.user.id }, {role: "Owner"}, function(error, result){
         if(error){
             console.log("False")
@@ -15,9 +18,28 @@ const registerBusiness = (req, res) =>{
         else{
             console.log("True")
         }
-    })
-    console.log(req.user);
-    res.redirect("/")
+    });
+
+    try{
+        const createBusiness = new Business({
+            id: Date.now().toString(),
+            name: req.body.name,
+            description: req.body.name,
+            owner: req.user,
+            adress: req.body.adress,
+            phone: req.body.phone,
+        
+            workers: null,
+            opinions: null,
+            services: null
+        });
+
+        console.log(createBusiness)
+        createBusiness.save();
+        res.redirect("/")
+    } catch {
+        res.redirect("/business/register")
+    }
 }
 
 const refreshRole = (req, res) =>{
@@ -30,7 +52,8 @@ const refreshRole = (req, res) =>{
             console.log("True")
         }
     }, {new: true})
-    console.log(req.user);
+
+    Business.findOneAndDelete({'owner.id': req.user.id});
     res.redirect("/");
 }
 

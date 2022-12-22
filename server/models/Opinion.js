@@ -1,13 +1,13 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-opinionSchema = new Schema({
+const opinionSchema = new Schema({
     id: String,
     rating: Number,
     comment: String,
     ownerId: String
 })
 
-Opinion = mongoose.model('Opinion', opinionSchema);
+const Opinion = mongoose.model('Opinion', opinionSchema);
 
 module.exports = Opinion;
