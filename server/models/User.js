@@ -1,18 +1,17 @@
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
-var Opinion = require('./Opinion');
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    id: String,
-    email: String,
-    username: String,
-    secondname: String,
-    sex: String,
-    password: String,
-    opinions: {type: [Opinion.schema], required: false},
-    role: String
+  id: String,
+  email: String,
+  username: String,
+  secondname: String,
+  sex: String,
+  password: String,
+  role: String,
+  opinions: [{ type: Schema.Types.ObjectId, ref: "Opinion" }],
 });
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
