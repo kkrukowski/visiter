@@ -2,15 +2,28 @@ const Business = require("../models/Business");
 const User = require("../models/User");
 
 
-const registerView = (req, res) => {
+const registerView = (req, res, err, message = "") => {
     if(req.user.role == "Owner"){
         console.log("Jestes ownerem, nie mozesz rejestrowac firmy")
         res.redirect("/business")
     }
-    res.render("businessRegister", message = "");
+    res.render("businessRegister", {message: message});
 }
 
 const registerBusiness = async (req, res) =>{
+    correctName = 
+        req.body.name.charAt(0).toUpperCase() +
+        req.body.name.slice(1).toLowerCase();
+    correctDesc = 
+        req.body.description.charAt(0).toUpperCase() +
+        req.body.description.slice(1);
+
+    var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{3})$/; //validation of phone
+    if(!re.test(req.body.phone)){
+        const message = "Podaj prawidłowy numer telefonu."
+        return registerView(req, res, "", message)
+    }
+
     User.findOneAndUpdate({ _id: req.user._id }, {role: "Owner"}, function(error, result){
         if(error){
             console.log("False")
@@ -22,9 +35,8 @@ const registerBusiness = async (req, res) =>{
 
     try{
         const createBusiness = new Business({
-            id: Date.now().toString(),
-            name: req.body.name,
-            description: req.body.name,
+            name: correctName,
+            description: correctDesc,
             owner: req.user,
             adress: req.body.adress,
             phone: req.body.phone,
