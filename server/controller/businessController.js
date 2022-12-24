@@ -11,7 +11,7 @@ const registerView = (req, res) => {
 }
 
 const registerBusiness = async (req, res) =>{
-    User.findOneAndUpdate({ id: req.user.id }, {role: "Owner"}, function(error, result){
+    User.findOneAndUpdate({ _id: req.user._id }, {role: "Owner"}, function(error, result){
         if(error){
             console.log("False")
         }
@@ -44,7 +44,7 @@ const registerBusiness = async (req, res) =>{
 
 const refreshRole = (req, res) =>{
     console.log(req.user)
-    User.findOneAndUpdate({ id: req.user.id }, {role: "User"}, function(error, result){
+    User.findOneAndUpdate({ _id: req.user._id }, {role: "User"}, function(error, result){
         if(error){
             console.log("False")
         }
@@ -53,7 +53,7 @@ const refreshRole = (req, res) =>{
         }
     }, {new: true})
 
-    Business.findOneAndDelete({'owner.id': req.user.id});
+    Business.findOneAndDelete({'owner.id': req.user._id});
     res.redirect("/");
 }
 

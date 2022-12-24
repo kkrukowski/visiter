@@ -4,10 +4,10 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 
 // AUTHENTICATION
-passport.serializeUser((user, done) => done(null, user.id));
+passport.serializeUser((user, done) => done(null, user._id));
 
 passport.deserializeUser(function (pushedId, done) {
-  User.findOne({ id: pushedId }, function (err, user) {
+  User.findOne({ _id: pushedId }, function (err, user) {
     done(err, user);
   });
 });

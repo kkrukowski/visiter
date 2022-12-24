@@ -76,7 +76,6 @@ const registerUser = async (req, res) => {
       req.body.secondname.slice(1).toLowerCase();
 
     const newUser = new User({
-      id: Date.now().toString(),
       email: req.body.email.toLowerCase(),
       username: correctUsername,
       secondname: correctSecondname,
