@@ -13,6 +13,7 @@ const io = new Server(server);
 // Other
 const path = require("path");
 const session = require("express-session");
+const { v4: uuidv4 } = require("uuid");
 
 app.use(express.json());
 app.use(
@@ -61,21 +62,52 @@ database.once("connected", () => {
 // Socket IO
 io.use((socket, next) => {
   const username = socket.handshake.auth.username;
+  const sessionId = socket.handshake.auth.sessionId;
   const userDdId = socket.handshake.auth.userDbId;
+
+  console.log(socket.handshake.auth);
+  console.log("try to connect ", username, " sessionId: ", sessionId);
+
+  if (sessionId) {
+    console.log(sessionId);
+    // find existing session
+    console.log("session: ", session);
+    if (session) {
+      socket.sessionId = sessionId;
+      socket.userDbId = userDdId;
+      socket.username = username;
+      console.log(
+        `User ${socket.username} socket_id: ${socket.sessionId} db_id: ${socket.userDbId} is trying to connect`
+      );
+      return next();
+    }
+  }
+
+  socket.sessionId = uuidv4();
   socket.username = username;
   socket.userDbId = userDdId;
   console.log(
-    `User ${socket.username} socket_id: ${socket.id} db_id: ${socket.userDbId} connected`
+    `User ${socket.username} socket_id: ${socket.sessionId} db_id: ${socket.userDbId} is trying to connect`
   );
   next();
 });
 // Ustawić dopiero po logowaniu
 io.on("connection", (socket) => {
+  console.log("user connected");
+  socket.join(socket.userDbId);
+
+  // Session
+  socket.emit("session", {
+    userSessionId: socket.sessionId,
+    userDbId: socket.userDbId,
+    username: socket.username,
+  });
+
   // List all users
   const users = [];
   for (let [id, socket] of io.of("/").sockets) {
     users.push({
-      userSocketId: id,
+      userSocketId: socket.sessionId,
       userDbId: socket.userDbId,
       username: socket.username,
     });
@@ -85,15 +117,15 @@ io.on("connection", (socket) => {
 
   // Message event listener
   socket.on("private_message", ({ content, to }) => {
-    console.log("priv");
-    console.log(content);
-    console.log(to);
+    console.log("priv", to);
     const receiverData = users.find((user) => user.userDbId == to);
     const userInfo = { username: socket.username, userDbId: socket.userDbId };
     const msgInfo = { content, userInfo };
-    io.to(receiverData.userSocketId).emit("private_message", {
+    console.log(receiverData);
+    io.to(to).to(receiverData.userSocketId).emit("private_message", {
       msgInfo,
       from: socket.userDbId,
+      to,
     });
   });
 
