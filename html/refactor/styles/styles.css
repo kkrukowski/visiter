@@ -1,0 +1,84 @@
+*{
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Nunito', sans-serif;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #EFEDFF;
+}
+
+/* Nav */
+.nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 300px;
+    height: 100%;
+    background-color: #33365E;
+    padding: 40px;
+}
+
+.nav__wrapper{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    height: 100%;
+    width: 100%;
+}
+
+.nav__img--link{
+    position: absolute;
+    top: 0;
+}
+
+.nav--img{
+    width: 100%;
+}
+
+/* Menu */
+.menu__list{
+    margin: 0 auto;
+    width: fit-content;
+    padding: 0;
+}
+
+.menu__list--item{
+    list-style-type: none;
+    width: fit-content
+}
+
+.item--link{
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1.25rem;
+    transition: color .1s ease-in-out;
+    color: #EFEDFF;
+    margin-top: 20px;
+}
+
+.item--link:visited{
+    color: #EFEDFF
+}
+
+.item--link:hover{
+    color: #bebbd3
+}
+
+.item--link:active{
+    color: #F1511B
+}
+
+.item--icon{
+    height: 28px
+}
+
+.list__item--name{
+    margin: 0 0 0 10px;
+}
