@@ -79,9 +79,20 @@ const homeView = (req, res) => {
     }
 }
 
+const getAllBusiness = (req, res) => {
+    Business.find({}, function (err, business){
+        if(err){
+            return res.render("searchBusiness");
+        }
+        console.log(business);
+        return res.render("searchBusiness", {businesses: business})
+    })
+}
+
 module.exports = {
     registerView,
     registerBusiness,
     homeView,
-    refreshRole
+    refreshRole,
+    getAllBusiness
 }
