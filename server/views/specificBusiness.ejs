@@ -2,14 +2,25 @@
 <h2><%= business.description %></h2>
 <h3>Opinions: </h3>
 <ul>
+
     <% opinions=business.opinions %>
     <% opinions.forEach(function(opinion){ %>
-    <li>
-        <%= opinion.rating %>
-        <br>
-        <%= opinion.comment %>
-    </li>
+            <!--
+        <%Users.findById(opinion.owner, function(err, owner){ %>
+            <% console.log(owner.username, owner.secondname); %>
+            
+            <% name = owner.username %>
+        <%}); %>
+            -->
+        <li>
+            <%= opinion.owner %>
+            <br>
+            <%= opinion.rating %>
+            <br>
+            <%= opinion.comment %>
+        </li>
     <% }); %>
+
 </ul>
 <form action="/business/<%= business._id %>/opinion" method="POST">
     <label for="comment">

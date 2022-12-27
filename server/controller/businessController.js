@@ -91,7 +91,7 @@ const getAllBusiness = (req, res) => {
 
 const getBusiness = (req, res) => {
     Business.findById(req.params.id, (err, business) =>{
-        return res.render("specificBusiness", {business: business})
+        return res.render("specificBusiness", {business: business, Users: User})
     })
 }
 
