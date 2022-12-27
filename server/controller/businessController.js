@@ -1,5 +1,6 @@
 const Business = require("../models/Business");
 const User = require("../models/User");
+const Opinion = require("../models/Opinion");
 
 
 const registerView = (req, res, err, message = "") => {
@@ -84,8 +85,24 @@ const getAllBusiness = (req, res) => {
         if(err){
             return res.render("searchBusiness");
         }
-        console.log(business);
         return res.render("searchBusiness", {businesses: business})
+    })
+}
+
+const getBusiness = (req, res) => {
+    Business.findById(req.params.id, (err, business) =>{
+        return res.render("specificBusiness", {business: business})
+    })
+}
+
+const addOpinion = (req, res) => {
+    const newOpinion = new Opinion({
+        rating: req.body.rating,
+        comment: req.body.comment,
+        owner: req.user._id
+    })
+    Business.findByIdAndUpdate(req.params.id, {$addToSet: {opinions: newOpinion}}, (err, business) =>{
+        return res.redirect("/")
     })
 }
 
@@ -94,5 +111,7 @@ module.exports = {
     registerBusiness,
     homeView,
     refreshRole,
-    getAllBusiness
+    getAllBusiness,
+    getBusiness,
+    addOpinion
 }

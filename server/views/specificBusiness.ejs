@@ -1,0 +1,22 @@
+<h1><%= business.name %></h1>
+<h2><%= business.description %></h2>
+<h3>Opinions: </h3>
+<ul>
+    <% opinions=business.opinions %>
+    <% opinions.forEach(function(opinion){ %>
+    <li>
+        <%= opinion.rating %>
+        <br>
+        <%= opinion.comment %>
+    </li>
+    <% }); %>
+</ul>
+<form action="/business/<%= business._id %>/opinion" method="POST">
+    <label for="comment">
+        <input type="text" name="comment">
+    </label>
+    <label for="rating">
+        <input type="number" name="rating">
+    </label>
+    <input id="submit" type="submit" value="Dodaj opinie">
+</form>
