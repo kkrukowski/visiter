@@ -6,6 +6,7 @@ body{
     font-family: 'Nunito', sans-serif;
     width: 100vw;
     height: 100vh;
+    display: flex;
     overflow: hidden;
     background-color: #EFEDFF;
 }
@@ -81,4 +82,10 @@ body{
 
 .list__item--name{
     margin: 0 0 0 10px;
+}
+
+/* Main */
+.main {
+    height: 100vh;
+    width: calc(100% - 300px);
 }
