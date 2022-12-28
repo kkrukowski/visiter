@@ -1,6 +1,6 @@
 const Business = require("../models/Business");
 const User = require("../models/User");
-const Opinion = require("../models/Opinion");
+const Opinion = require("../models/OpinionForBusiness");
 
 
 const registerView = (req, res, err, message = "") => {
@@ -96,14 +96,30 @@ const getBusiness = (req, res) => {
 }
 
 const addOpinion = (req, res) => {
+    correctName = req.user.username + " " + req.user.secondname;
     const newOpinion = new Opinion({
         rating: req.body.rating,
         comment: req.body.comment,
-        owner: req.user._id
+        ownerId: req.user._id,
+        ownerName: correctName
     })
-    Business.findByIdAndUpdate(req.params.id, {$addToSet: {opinions: newOpinion}}, (err, business) =>{
-        return res.redirect("/")
-    })
+    console.log(newOpinion)
+    Business.findById(req.params.id, (err, business) =>{
+        if(business.opinions!=null){
+            Business.findByIdAndUpdate(req.params.id, {$addToSet: {opinions: newOpinion}}, (err, business) =>{
+                console.log(err)
+                console.log(business)
+                return res.redirect("/")
+            });
+        }
+        else{
+            Business.findByIdAndUpdate(req.params.id, {$set: {opinions: newOpinion}}, (err, business) =>{
+                console.log(err)
+                console.log(business)
+                return res.redirect("/")
+            });
+        }
+    });
 }
 
 module.exports = {

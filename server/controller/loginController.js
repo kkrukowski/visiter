@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
+const Opinion = require("../models/OpinionForUser");
+const Business = require("../models/Business");
 
 const homeView = (req, res) => {
   res.render("home");
@@ -89,14 +91,66 @@ const registerUser = async (req, res) => {
   } catch {
     res.redirect("/register");
   }
-};
+}
+  const getUser = (req, res) => {
+    User.findById(req.params.id, (err, user) => {
+      return res.render("specificUser", { user: user })
+    })
+  }
 
-module.exports = {
-  homeView,
-  loginView,
-  registerView,
-  forgetPasswordView,
-  registerUser,
-  loginUser,
-  logOutUser
-};
+
+
+  const addOpinion = async (req, res) => {
+    /*
+    correctName = req.user.username + " " + req.user.secondname;
+    if (req.user.role == "Worker") {
+      const foundBusiness = await Business.findOne({ workers: { $elemMatch: { _id: req.user._id } } });
+    }
+    else if (req.user.role == "Owner") {
+      console.log("owner halo")
+      const foundBusiness = await Business.findOne({ 'owner._id': req.user._id });
+    } // bugged here 
+    console.log(foundBusiness + " " + foundBusiness.name);
+    console.log("ELO" + foundBusiness._id);
+    if (foundBusiness == undefined) {
+      return res.redirect("/") // wyswietl error
+    }
+    const newOpinion = new Opinion({
+      rating: req.body.rating,
+      comment: req.body.comment,
+      ownerId: req.user._id,
+      ownerName: correctName,
+      businessName: foundBusiness.name,
+      businessId: foundBusiness._id
+    })
+    console.log(newOpinion)
+    User.findById(req.params.id, (err, user) => {
+      if (user.opinions != null) {
+        User.findByIdAndUpdate(req.params.id, { $addToSet: { opinions: newOpinion } }, (err, user) => {
+          console.log(err)
+          console.log(user)
+          return res.redirect("/")
+        });
+      }
+      else {
+        user.findByIdAndUpdate(req.params.id, { $set: { opinions: newOpinion } }, (err, user) => {
+          console.log(err)
+          console.log(user)
+          return res.redirect("/")
+        });
+      }
+    });
+    */
+  }
+
+  module.exports = {
+    homeView,
+    loginView,
+    registerView,
+    forgetPasswordView,
+    registerUser,
+    loginUser,
+    logOutUser,
+    addOpinion,
+    getUser
+  };

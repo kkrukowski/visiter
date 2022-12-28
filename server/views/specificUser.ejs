@@ -1,23 +1,21 @@
-<h1><%= business.name %></h1>
-<h2><%= business.description %></h2>
+<h1><%= user.username %> <%= user.secondname %></h1>
 <h3>Opinions: </h3>
 <ul>
-
-    <% opinions=business.opinions %>
+    <% opinions=user.opinions %>
     <% if(opinions != null){ %>
     <% opinions.forEach(function(opinion){ %>
         <li>
-            <%= opinion.ownerName %>
+            <%= opinion.ownerName %>, <%= opinion.businessName %>
             <br>
             <%= opinion.rating %>
             <br>
             <%= opinion.comment %>
         </li>
     <% }); %>
-    <%} %>
+    <% } %>
 
 </ul>
-<form action="/business/<%= business._id %>/opinion" method="POST">
+<form action="/<%= user._id %>/opinion" method="POST">
     <label for="comment">
         <input type="text" name="comment">
     </label>

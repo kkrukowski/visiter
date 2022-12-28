@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 const User = require("./User");
-const Opinion = require("./Opinion");
+const Opinion = require("./OpinionForBusiness");
 const Service = require("./Service");
 
 const businessSchema = new Schema({

@@ -4,9 +4,10 @@ const Schema = mongoose.Schema;
 const opinionSchema = new Schema({
     rating: Number,
     comment: String,
-    owner: { type: Schema.Types.ObjectId, ref: "User" },
+    ownerId: { type: Schema.Types.ObjectId, ref: "User" },
+    ownerName: String
 });
 
-const Opinion = mongoose.model("Opinion", opinionSchema);
+const Opinion = mongoose.model("OpinionForBusiness", opinionSchema);
 
 module.exports = Opinion;
