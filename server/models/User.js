@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Opinion = require("./OpinionForUser");
 
 const userSchema = new Schema({
   email: String,
@@ -8,7 +9,7 @@ const userSchema = new Schema({
   sex: String,
   password: String,
   role: String,
-  opinions: [{ type: Schema.Types.ObjectId, ref: "Opinion" }],
+  opinions: { type: [Opinion.schema], require: false },
 });
 
 const User = mongoose.model("User", userSchema);
