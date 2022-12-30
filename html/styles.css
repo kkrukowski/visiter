@@ -195,11 +195,36 @@ button:hover{
 
 
 }
+
+#opinie{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+
+}
+#opinie .opinia{
+height: 40%;
+width: 90%;
+border:#1E1E1E 1px solid;
+}
+
 #kafelki_szukaj{
     width: 100%;
     margin-left: 0;
     margin-right: auto;
    
+}
+#kafelki_szukaj article h3{
+    margin: 10px;
+}
+#kafelki_szukaj article .opinia{
+    background-color: #33365E;
+    padding: 10px;
+    border-radius: 25px;
+    width: 80%;
+    height:auto;
+    margin:10px;
 }
 
 section nav{
@@ -249,7 +274,7 @@ button i{
 }
 #kafelki_szukaj article{
     width:75%;
-    height: 800px;
+    height: 95vh;
     color:#1E1E1E;
     margin:0 auto;
     margin-top: 10px;
