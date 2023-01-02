@@ -72,8 +72,11 @@ const refreshRole = (req, res) => {
 
 const homeView = (req, res) => {
     if (req.user.role == "Owner") {
-        console.log("Jestes ownerem, dostep mozliwy");
-        res.render("business");
+        Business.findOne({ 'owner._id': req.user._id }, (err, business) => {
+            console.log("Jestes ownerem, dostep mozliwy");
+            console.log(business);
+            return res.render("business", { business });
+        });
     }
     else {
         res.redirect("/business/register");
@@ -125,23 +128,49 @@ const addWorker = (req, res) => {
     User.findOne({ _id: req.body.id }, (err, user) => {
         if (user.role != "Owner" && user.role != "Worker") {
             User.findByIdAndUpdate(user._id, { $set: { role: "Worker" } }, (err, updateUser) => {
-                console.log("130")
                 console.log(updateUser);
             });
-            Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $addToSet: { workers: user } }, (err, business) => {
-                console.log("134")
-                console.log(business);
-            }); // add $set
-            const message = "Pracownik dodany do firmy."
-            console.log(message)
-            return res.render("business")
+            Business.findOne({ 'owner._id': req.user._id }, (err, business) => {
+                if (business.workers != null) {
+                    Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $addToSet: { workers: user } }, (err, business) => {
+                        const message = "Pracownik dodany do firmy."
+                        console.log(message)
+                        return res.render("business", { business })
+                    });
+                }
+                else {
+                    Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $set: { workers: user } }, (err, business) => {
+                        const message = "Pracownik dodany do firmy."
+                        console.log(message)
+                        return res.render("business", { business })
+                    });
+                }
+                return res.render("business", { business })
+            })
         } else {
             const message = "Podany użytkownik jest już pracownikiem lub właścielem.";
             console.log(message)
-            return res.render("business")
+            return res.render("business", { business })
         }
     });
 
+}
+const removeWorker = (req, res) => {
+    console.log(req.params.id);
+    User.findOneAndUpdate({ _id: req.params.id }, { role: "User" }, (err, user) => {
+        if (err) {
+            return res.render("business", { business }) //dodac message o bledzie
+        }
+        console.log(user);
+        console.log(user._id);
+        Business.findOneAndUpdate({ _id: req.params.idBusiness }, { $pull: { workers: { _id: user._id } } }, (err, business) => {
+            if (err) {
+                return res.render("business", { business }) //dodac message o bledzie
+            }
+            console.log("uzytkownik usuniety")
+            return res.render("business", { business })
+        });
+    });
 }
 
 module.exports = {
@@ -152,5 +181,6 @@ module.exports = {
     getAllBusiness,
     getBusiness,
     addOpinion,
-    addWorker
+    addWorker,
+    removeWorker
 }

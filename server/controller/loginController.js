@@ -5,7 +5,14 @@ const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
 
 const homeView = (req, res) => {
-  res.render("home");
+  Business.findOne({ 'owner._id': req.user._id }, (err, business) => {
+    if (err) {
+      return res.render("home");;
+    }
+    console.log("Jestes ownerem, dostep mozliwy");
+    console.log(business);
+    return res.render("home", { business });;
+  });
 };
 
 const loginView = (req, res, err = "", message = "") => {
@@ -92,70 +99,70 @@ const registerUser = async (req, res) => {
     res.redirect("/register");
   }
 }
-  const getUser = (req, res) => {
-    User.findById(req.params.id, (err, user) => {
-      return res.render("specificUser", { user: user })
-    })
+const getUser = (req, res) => {
+  User.findById(req.params.id, (err, user) => {
+    return res.render("specificUser", { user: user })
+  })
+}
+
+
+
+const addOpinion = async (req, res) => {
+
+  correctName = req.user.username + " " + req.user.secondname;
+  var foundBusiness = undefined;
+  if (req.user.role == "Worker") {
+    console.log("worker halo")
+    foundBusiness = await Business.findOne({ workers: { $elemMatch: { _id: req.user._id } } });
   }
-
-
-
-  const addOpinion = async (req, res) => {
-
-    correctName = req.user.username + " " + req.user.secondname;
-    var foundBusiness = undefined;
-    if (req.user.role == "Worker") {
-      console.log("worker halo")
-      foundBusiness = await Business.findOne({ workers: { $elemMatch: { _id: req.user._id } } });
-    }
-    else if (req.user.role == "Owner") {
-      console.log("owner halo")
-      foundBusiness = await Business.findOne({ 'owner._id': req.user._id });
-    } // bugged here 
-    console.log(foundBusiness.name);
-    console.log("ELO" + foundBusiness._id);
-    if (foundBusiness == undefined) {
-      return res.redirect("/") // wyswietl error
-    }
-    const newOpinion = new Opinion({
-      rating: req.body.rating,
-      comment: req.body.comment,
-      ownerId: req.user._id,
-      ownerName: correctName,
-      businessName: foundBusiness.name,
-      businessId: foundBusiness._id
-    })
-    
-
-
-    User.findById(req.params.id, (err, user) => {
-      if (user.opinions.length != 0) {
-        User.findByIdAndUpdate(req.params.id, { $addToSet: { opinions: newOpinion } }, (err, user) => {
-          console.log("OPINIA")
-          console.log(newOpinion)
-          console.log(err)
-          console.log(user)
-          return res.redirect("/")
-        });
-      }
-      else {
-        User.findByIdAndUpdate(req.params.id, { $set: { opinions: newOpinion } }, (err, user) => {
-          console.log(err)
-          console.log(user)
-          return res.redirect("/")
-        });
-      }
-    });
+  else if (req.user.role == "Owner") {
+    console.log("owner halo")
+    foundBusiness = await Business.findOne({ 'owner._id': req.user._id });
+  } // bugged here 
+  console.log(foundBusiness.name);
+  console.log("ELO" + foundBusiness._id);
+  if (foundBusiness == undefined) {
+    return res.redirect("/") // wyswietl error
   }
+  const newOpinion = new Opinion({
+    rating: req.body.rating,
+    comment: req.body.comment,
+    ownerId: req.user._id,
+    ownerName: correctName,
+    businessName: foundBusiness.name,
+    businessId: foundBusiness._id
+  })
 
-  module.exports = {
-    homeView,
-    loginView,
-    registerView,
-    forgetPasswordView,
-    registerUser,
-    loginUser,
-    logOutUser,
-    addOpinion,
-    getUser
-  };
+
+
+  User.findById(req.params.id, (err, user) => {
+    if (user.opinions.length != 0) {
+      User.findByIdAndUpdate(req.params.id, { $addToSet: { opinions: newOpinion } }, (err, user) => {
+        console.log("OPINIA")
+        console.log(newOpinion)
+        console.log(err)
+        console.log(user)
+        return res.redirect("/")
+      });
+    }
+    else {
+      User.findByIdAndUpdate(req.params.id, { $set: { opinions: newOpinion } }, (err, user) => {
+        console.log(err)
+        console.log(user)
+        return res.redirect("/")
+      });
+    }
+  });
+}
+
+module.exports = {
+  homeView,
+  loginView,
+  registerView,
+  forgetPasswordView,
+  registerUser,
+  loginUser,
+  logOutUser,
+  addOpinion,
+  getUser
+};

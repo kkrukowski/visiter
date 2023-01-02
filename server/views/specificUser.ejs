@@ -1,3 +1,4 @@
+<% if(user){%>
 <h1><%= user.username %> <%= user.secondname %></h1>
 <h3>Opinions: </h3>
 <ul>
@@ -14,6 +15,7 @@
     <% }); %>
     <% } %>
 
+
 </ul>
 <form action="/<%= user._id %>/opinion" method="POST">
     <label for="comment">
@@ -24,3 +26,4 @@
     </label>
     <input id="submit" type="submit" value="Dodaj opinie">
 </form>
+<% } %>

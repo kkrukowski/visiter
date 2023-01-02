@@ -1,8 +1,24 @@
 <h1>TWOJA FIRMA</h1>
 
-<p>Dodaj uzytkownika</p>
-<form action="/business/myBusiness/addWorker" method="POST">
-    <label for="id"></label>
-    <input type="text" name="id">
-    <input id="submit" type="submit" value="Dodaj">
-</form>
+
+<h2>Twoi pracownicy:</h2>
+<% if(business){ %>
+    <ul>
+        <% business.workers.forEach(function(worker) { %>
+            <li><a href="/<%= worker._id %>">
+                    <%= worker.username %>
+                        <%= worker.secondname%>
+                </a>
+                <form action="/business/myBusiness/<%= business._id%>/<%= worker._id %>/removeWorker" method="POST">
+                    <input type="submit" value="X">
+                </form>
+            </li>
+            <% }); %>
+    </ul>
+    <% } %>
+        <p>Dodaj uzytkownika</p>
+        <form action="/business/myBusiness/<%=business._id%>/addWorker" method="POST">
+            <label for="id"></label>
+            <input type="text" name="id">
+            <input id="submit" type="submit" value="Dodaj">
+        </form>
