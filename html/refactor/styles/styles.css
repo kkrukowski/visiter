@@ -11,6 +11,82 @@ body{
     background-color: #EFEDFF;
 }
 
+/* Form */
+input{
+    width: 300px;
+    padding: 10px 15px;
+    border-radius: 20px;
+    background-color: #EFEDFF;
+    border: 2px solid transparent;
+    outline: none;
+    box-sizing: border-box;
+}
+
+input:focus{
+    outline: none;
+    border: 2px solid #F1511B;
+}
+
+.input--invalid{
+    outline: none;
+    border: 2px solid #f11b1b;
+}
+
+button{
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #F1511B;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    font-weight: 700;
+    transition: all .1s ease-in-out;
+    cursor: pointer;
+}
+
+button:hover{
+    background-color: #BF370A;
+}
+
+button:active{
+    background-color: #FF7E54;
+}
+
+.link{
+    text-align: right;
+    color: #F1511B;
+    margin: 10px 0;
+    font-weight: 600;
+    transition: all .1s ease-in-out;
+}
+
+.link:hover{
+    color: #BF370A;
+}
+
+.link:active{
+    color: #FF7E54;
+}
+
+/* Toggle password */
+.input--password{
+    position: relative;
+}
+
+.password__toggle--icon{
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    cursor: pointer
+}
+
+.fa-solid{
+    color: #33365E
+}
+
 /* Nav */
 .nav {
     display: flex;
