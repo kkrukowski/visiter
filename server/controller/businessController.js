@@ -4,44 +4,44 @@ const Opinion = require("../models/OpinionForBusiness");
 
 
 const registerView = (req, res, err, message = "") => {
-    if(req.user.role == "Owner"){
+    if (req.user.role == "Owner") {
         console.log("Jestes ownerem, nie mozesz rejestrowac firmy")
         res.redirect("/business")
     }
-    res.render("businessRegister", {message: message});
+    res.render("businessRegister", { message: message });
 }
 
-const registerBusiness = async (req, res) =>{
-    correctName = 
+const registerBusiness = async (req, res) => {
+    correctName =
         req.body.name.charAt(0).toUpperCase() +
         req.body.name.slice(1).toLowerCase();
-    correctDesc = 
+    correctDesc =
         req.body.description.charAt(0).toUpperCase() +
         req.body.description.slice(1);
 
     var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{3})$/; //validation of phone
-    if(!re.test(req.body.phone)){
+    if (!re.test(req.body.phone)) {
         const message = "Podaj prawidłowy numer telefonu."
         return registerView(req, res, "", message)
     }
 
-    User.findOneAndUpdate({ _id: req.user._id }, {role: "Owner"}, function(error, result){
-        if(error){
+    User.findOneAndUpdate({ _id: req.user._id }, { role: "Owner" }, function (error, result) {
+        if (error) {
             console.log("False")
         }
-        else{
+        else {
             console.log("True")
         }
     });
 
-    try{
+    try {
         const createBusiness = new Business({
             name: correctName,
             description: correctDesc,
             owner: req.user,
             adress: req.body.adress,
             phone: req.body.phone,
-        
+
             workers: null,
             opinions: null,
             services: null
@@ -55,43 +55,43 @@ const registerBusiness = async (req, res) =>{
     }
 }
 
-const refreshRole = (req, res) =>{
+const refreshRole = (req, res) => {
     console.log(req.user)
-    User.findOneAndUpdate({ _id: req.user._id }, {role: "User"}, function(error, result){
-        if(error){
+    User.findOneAndUpdate({ _id: req.user._id }, { role: "User" }, function (error, result) {
+        if (error) {
             console.log("False")
         }
-        else{
+        else {
             console.log("True")
         }
-    }, {new: true})
+    }, { new: true })
 
-    Business.findOneAndDelete({'owner.id': req.user._id});
+    Business.findOneAndDelete({ 'owner.id': req.user._id });
     res.redirect("/");
 }
 
 const homeView = (req, res) => {
-    if(req.user.role == "Owner"){
+    if (req.user.role == "Owner") {
         console.log("Jestes ownerem, dostep mozliwy");
         res.render("business");
     }
-    else{
+    else {
         res.redirect("/business/register");
     }
 }
 
 const getAllBusiness = (req, res) => {
-    Business.find({}, function (err, business){
-        if(err){
+    Business.find({}, function (err, business) {
+        if (err) {
             return res.render("searchBusiness");
         }
-        return res.render("searchBusiness", {businesses: business})
+        return res.render("searchBusiness", { businesses: business })
     })
 }
 
 const getBusiness = (req, res) => {
-    Business.findById(req.params.id, (err, business) =>{
-        return res.render("specificBusiness", {business: business, Users: User})
+    Business.findById(req.params.id, (err, business) => {
+        return res.render("specificBusiness", { business: business, Users: User })
     })
 }
 
@@ -104,22 +104,44 @@ const addOpinion = (req, res) => {
         ownerName: correctName
     })
     console.log(newOpinion)
-    Business.findById(req.params.id, (err, business) =>{
-        if(business.opinions!=null){
-            Business.findByIdAndUpdate(req.params.id, {$addToSet: {opinions: newOpinion}}, (err, business) =>{
+    Business.findById(req.params.id, (err, business) => {
+        if (business.opinions != null) {
+            Business.findByIdAndUpdate(req.params.id, { $addToSet: { opinions: newOpinion } }, (err, business) => {
                 console.log(err)
                 console.log(business)
                 return res.redirect("/")
             });
         }
-        else{
-            Business.findByIdAndUpdate(req.params.id, {$set: {opinions: newOpinion}}, (err, business) =>{
+        else {
+            Business.findByIdAndUpdate(req.params.id, { $set: { opinions: newOpinion } }, (err, business) => {
                 console.log(err)
                 console.log(business)
                 return res.redirect("/")
             });
         }
     });
+}
+const addWorker = (req, res) => {
+    User.findOne({ _id: req.body.id }, (err, user) => {
+        if (user.role != "Owner" && user.role != "Worker") {
+            User.findByIdAndUpdate(user._id, { $set: { role: "Worker" } }, (err, updateUser) => {
+                console.log("130")
+                console.log(updateUser);
+            });
+            Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $addToSet: { workers: user } }, (err, business) => {
+                console.log("134")
+                console.log(business);
+            }); // add $set
+            const message = "Pracownik dodany do firmy."
+            console.log(message)
+            return res.render("business")
+        } else {
+            const message = "Podany użytkownik jest już pracownikiem lub właścielem.";
+            console.log(message)
+            return res.render("business")
+        }
+    });
+
 }
 
 module.exports = {
@@ -129,5 +151,6 @@ module.exports = {
     refreshRole,
     getAllBusiness,
     getBusiness,
-    addOpinion
+    addOpinion,
+    addWorker
 }
