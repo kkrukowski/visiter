@@ -1,30 +1,40 @@
 const express = require("express");
 const router = express.Router();
 const {
-    registerView, 
-    registerBusiness, 
-    homeView, 
+    registerView,
+    registerBusiness,
+    homeView,
     refreshRole,
     getAllBusiness,
     getBusiness,
     addOpinion,
     addWorker,
-    removeWorker
+    removeWorker,
+    addService,
+    removeService
 } = require("../controller/businessController")
 
 const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
 
-router.get("/myBusiness/:id", isLoggedIn, homeView);
+//register
 router.get("/register", isLoggedIn, registerView);
-
-router.post("/myBusiness/:idBusiness/:id/removeWorker", isLoggedIn, removeWorker);
-
 router.post("/register", isLoggedIn, registerBusiness);
 router.get("/refreshRole", isLoggedIn, refreshRole);
+
+//views
 router.get("/search", isLoggedIn, getAllBusiness);
 router.get("/:id", isLoggedIn, getBusiness);
+router.get("/myBusiness/:id", isLoggedIn, homeView);
 
+//opinions
 router.post("/:id/opinion", isLoggedIn, addOpinion);
-router.post("/myBusiness/:id/addWorker", isLoggedIn, addWorker)
+
+//workers
+router.post("/myBusiness/:id/addWorker", isLoggedIn, addWorker);
+router.post("/myBusiness/:idBusiness/:id/removeWorker", isLoggedIn, removeWorker);
+
+//services
+router.post("/myBusiness/:id/addService", isLoggedIn, removeService)
+router.post("/myBusiness/:id/addService", isLoggedIn, addService)
 
 module.exports = router;

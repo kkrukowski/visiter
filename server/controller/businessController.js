@@ -1,6 +1,7 @@
 const Business = require("../models/Business");
 const User = require("../models/User");
 const Opinion = require("../models/OpinionForBusiness");
+const Service = require("../models/Service");
 
 
 const registerView = (req, res, err, message = "") => {
@@ -173,6 +174,17 @@ const removeWorker = (req, res) => {
     });
 }
 
+const addService= (req, res) => {
+    const newService = {
+        
+    }
+    Business.findOneAndUpdate({_id: req.params.id}, { $addToSet: { services: newService } })
+}
+
+const removeService = (req, res) => {
+
+}
+
 module.exports = {
     registerView,
     registerBusiness,
@@ -182,5 +194,7 @@ module.exports = {
     getBusiness,
     addOpinion,
     addWorker,
-    removeWorker
+    removeWorker,
+    addService,
+    removeService
 }

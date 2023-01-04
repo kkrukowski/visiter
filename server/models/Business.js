@@ -16,9 +16,9 @@ const businessSchema = new Schema({
     phone: String,
 
 
-    workers: { type: [User.schema], require: false },
-    opinions: { type: [Opinion.schema], require: false },
-    services: { type: [Service.schema], require: false },
+    workers: { type: [User.schema], require: false, default: [] },
+    opinions: { type: [Opinion.schema], require: false, default: [] },
+    services: { type: [Service.schema], require: false, default: [] },
 });
 
 const Business = mongoose.model('Business', businessSchema);
