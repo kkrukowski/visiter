@@ -2,7 +2,7 @@
 
 
 <h2>Twoi pracownicy:</h2>
-<% if(business){ %>
+<% if(business.workers != null){ %>
     <ul>
         <% business.workers.forEach(function(worker) { %>
             <li><a href="/<%= worker._id %>">
@@ -22,3 +22,33 @@
             <input type="text" name="id">
             <input id="submit" type="submit" value="Dodaj">
         </form>
+        <h2>Twoi pracownicy:</h2>
+        <% if(business.services != null){ %>
+            <ul>
+                <% business.services.forEach(function(service) { %>
+                    <li>
+                            <%= service.name %>
+                            <br>
+                            <%= service.description %>
+                            <br>
+                            <%= service.price %>zł, <%= service.duration %>h
+                        <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService"
+                            method="POST">
+                            <input type="submit" value="X">
+                        </form>
+                    </li>
+                    <% }); %>
+            </ul>
+            <% } %>
+                <p>Dodaj serwis</p>
+                <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
+                    <label for="name">Nazwa</label>
+                    <input type="text" name="name"><br>
+                    <label for="description">Opis</label>
+                    <input type="text" name="description"><br>
+                    <label for="price">Cena</label>
+                    <input type="number" step="0.01" name="price"><br>
+                    <label for="duration">Czas</label>
+                    <input type="number" step="0.01" name="duration"><br>
+                    <input id="submit" type="submit" value="Dodaj">
+                </form>

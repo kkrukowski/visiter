@@ -34,7 +34,7 @@ router.post("/myBusiness/:id/addWorker", isLoggedIn, addWorker);
 router.post("/myBusiness/:idBusiness/:id/removeWorker", isLoggedIn, removeWorker);
 
 //services
-router.post("/myBusiness/:id/addService", isLoggedIn, removeService)
+router.post("/myBusiness/:idBusiness/:id/removeService", isLoggedIn, removeService)
 router.post("/myBusiness/:id/addService", isLoggedIn, addService)
 
 module.exports = router;

@@ -42,10 +42,6 @@ const registerBusiness = async (req, res) => {
             owner: req.user,
             adress: req.body.adress,
             phone: req.body.phone,
-
-            workers: null,
-            opinions: null,
-            services: null
         });
 
         console.log(createBusiness)
@@ -75,7 +71,7 @@ const homeView = (req, res) => {
     if (req.user.role == "Owner") {
         Business.findOne({ 'owner._id': req.user._id }, (err, business) => {
             console.log("Jestes ownerem, dostep mozliwy");
-            console.log(business);
+            //console.log(business);
             return res.render("business", { business });
         });
     }
@@ -110,14 +106,14 @@ const addOpinion = (req, res) => {
     console.log(newOpinion)
     Business.findById(req.params.id, (err, business) => {
         if (business.opinions != null) {
-            Business.findByIdAndUpdate(req.params.id, { $addToSet: { opinions: newOpinion } }, (err, business) => {
+            Business.findByIdAndUpdate(req.params.id, { $addToSet: { opinions: newOpinion } }, { new: true }, (err, business) => {
                 console.log(err)
                 console.log(business)
                 return res.redirect("/")
             });
         }
         else {
-            Business.findByIdAndUpdate(req.params.id, { $set: { opinions: newOpinion } }, (err, business) => {
+            Business.findByIdAndUpdate(req.params.id, { $set: { opinions: newOpinion } }, { new: true }, (err, business) => {
                 console.log(err)
                 console.log(business)
                 return res.redirect("/")
@@ -128,19 +124,19 @@ const addOpinion = (req, res) => {
 const addWorker = (req, res) => {
     User.findOne({ _id: req.body.id }, (err, user) => {
         if (user.role != "Owner" && user.role != "Worker") {
-            User.findByIdAndUpdate(user._id, { $set: { role: "Worker" } }, (err, updateUser) => {
+            User.findByIdAndUpdate(user._id, { $set: { role: "Worker" } }, { new: true }, (err, updateUser) => {
                 console.log(updateUser);
             });
             Business.findOne({ 'owner._id': req.user._id }, (err, business) => {
                 if (business.workers != null) {
-                    Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $addToSet: { workers: user } }, (err, business) => {
+                    Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $addToSet: { workers: user } }, { new: true }, (err, business) => {
                         const message = "Pracownik dodany do firmy."
                         console.log(message)
                         return res.render("business", { business })
                     });
                 }
                 else {
-                    Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $set: { workers: user } }, (err, business) => {
+                    Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $set: { workers: user } }, { new: true }, (err, business) => {
                         const message = "Pracownik dodany do firmy."
                         console.log(message)
                         return res.render("business", { business })
@@ -157,14 +153,13 @@ const addWorker = (req, res) => {
 
 }
 const removeWorker = (req, res) => {
-    console.log(req.params.id);
-    User.findOneAndUpdate({ _id: req.params.id }, { role: "User" }, (err, user) => {
+    User.findOneAndUpdate({ _id: req.params.id }, { role: "User" }, { new: true }, (err, user) => {
         if (err) {
             return res.render("business", { business }) //dodac message o bledzie
         }
         console.log(user);
         console.log(user._id);
-        Business.findOneAndUpdate({ _id: req.params.idBusiness }, { $pull: { workers: { _id: user._id } } }, (err, business) => {
+        Business.findByIdAndUpdate(req.params.idBusiness, { $pull: { workers: { _id: user._id } } }, { new: true }, (err, business) => {
             if (err) {
                 return res.render("business", { business }) //dodac message o bledzie
             }
@@ -174,15 +169,28 @@ const removeWorker = (req, res) => {
     });
 }
 
-const addService= (req, res) => {
-    const newService = {
-        
-    }
-    Business.findOneAndUpdate({_id: req.params.id}, { $addToSet: { services: newService } })
+const addService = (req, res) => {
+    console.log("HALO")
+    const newService = new Service({
+        name: req.body.name,
+        price: req.body.price,
+        description: req.body.description,
+        duration: req.body.duration
+    });
+    Business.findByIdAndUpdate(req.params.id, { $addToSet: { services: newService } }, { new: true }, (err, business) => { //new zwraca odrazu zupdatowany obiekt
+        console.log(business);
+        return res.render("business", { business });
+    });
 }
 
 const removeService = (req, res) => {
-
+    Business.findOneAndUpdate({ _id: req.params.idBusiness }, { $pull: { services: { _id: req.params.id } } }, { new: true }, (err, business) => {
+        if (err) {
+            return res.render("business", { business }) //dodac message o bledzie
+        }
+        console.log("serwis usuniety")
+        return res.render("business", { business })
+    });
 }
 
 module.exports = {
