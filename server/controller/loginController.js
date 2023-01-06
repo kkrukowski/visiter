@@ -5,13 +5,13 @@ const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
 
 const homeView = (req, res) => {
-  Business.findOne({ 'owner._id': req.user._id }, (err, business) => {
+  Business.findOne({ "owner._id": req.user._id }, (err, business) => {
     if (err) {
-      return res.render("home");;
+      return res.render("home");
     }
     console.log("Jestes ownerem, dostep mozliwy");
     console.log(business);
-    return res.render("home", { business });;
+    return res.render("home", { business });
   });
 };
 
@@ -32,6 +32,7 @@ const forgetPasswordView = (req, res) => {
 };
 
 const loginUser = (req, res, next) => {
+  console.log(req.body.email, req.body.password);
   passport.authenticate("local", function (err, user, info) {
     // Password error
     if (err) {
@@ -40,6 +41,7 @@ const loginUser = (req, res, next) => {
     }
     // Mail error
     if (!user) {
+      console.log(user);
       message = info.message;
       return loginView(req, res, err, message);
     }
@@ -77,17 +79,17 @@ const registerUser = async (req, res) => {
 
   try {
     const hashedPasword = await bcrypt.hash(req.body.password, 10);
-    correctUsername =
-      req.body.username.charAt(0).toUpperCase() +
-      req.body.username.slice(1).toLowerCase();
-    correctSecondname =
-      req.body.secondname.charAt(0).toUpperCase() +
-      req.body.secondname.slice(1).toLowerCase();
+    correctName =
+      req.body.name.charAt(0).toUpperCase() +
+      req.body.name.slice(1).toLowerCase();
+    correctSurname =
+      req.body.surname.charAt(0).toUpperCase() +
+      req.body.surname.slice(1).toLowerCase();
 
     const newUser = new User({
       email: req.body.email.toLowerCase(),
-      username: correctUsername,
-      secondname: correctSecondname,
+      name: correctName,
+      surname: correctSurname,
       sex: req.body.plec,
       password: hashedPasword,
       role: "User",
@@ -98,31 +100,29 @@ const registerUser = async (req, res) => {
   } catch {
     res.redirect("/register");
   }
-}
+};
 const getUser = (req, res) => {
   User.findById(req.params.id, (err, user) => {
-    return res.render("specificUser", { user: user })
-  })
-}
-
-
+    return res.render("specificUser", { user: user });
+  });
+};
 
 const addOpinion = async (req, res) => {
-
-  correctName = req.user.username + " " + req.user.secondname;
+  correctName = req.user.name + " " + req.user.surname;
   var foundBusiness = undefined;
   if (req.user.role == "Worker") {
-    console.log("worker halo")
-    foundBusiness = await Business.findOne({ workers: { $elemMatch: { _id: req.user._id } } });
-  }
-  else if (req.user.role == "Owner") {
-    console.log("owner halo")
-    foundBusiness = await Business.findOne({ 'owner._id': req.user._id });
-  } // bugged here 
+    console.log("worker halo");
+    foundBusiness = await Business.findOne({
+      workers: { $elemMatch: { _id: req.user._id } },
+    });
+  } else if (req.user.role == "Owner") {
+    console.log("owner halo");
+    foundBusiness = await Business.findOne({ "owner._id": req.user._id });
+  } // bugged here
   console.log(foundBusiness.name);
   console.log("ELO" + foundBusiness._id);
   if (foundBusiness == undefined) {
-    return res.redirect("/") // wyswietl error
+    return res.redirect("/"); // wyswietl error
   }
   const newOpinion = new Opinion({
     rating: req.body.rating,
@@ -130,30 +130,35 @@ const addOpinion = async (req, res) => {
     ownerId: req.user._id,
     ownerName: correctName,
     businessName: foundBusiness.name,
-    businessId: foundBusiness._id
-  })
-
-
+    businessId: foundBusiness._id,
+  });
 
   User.findById(req.params.id, (err, user) => {
     if (user.opinions.length != 0) {
-      User.findByIdAndUpdate(req.params.id, { $addToSet: { opinions: newOpinion } }, (err, user) => {
-        console.log("OPINIA")
-        console.log(newOpinion)
-        console.log(err)
-        console.log(user)
-        return res.redirect("/")
-      });
-    }
-    else {
-      User.findByIdAndUpdate(req.params.id, { $set: { opinions: newOpinion } }, (err, user) => {
-        console.log(err)
-        console.log(user)
-        return res.redirect("/")
-      });
+      User.findByIdAndUpdate(
+        req.params.id,
+        { $addToSet: { opinions: newOpinion } },
+        (err, user) => {
+          console.log("OPINIA");
+          console.log(newOpinion);
+          console.log(err);
+          console.log(user);
+          return res.redirect("/");
+        }
+      );
+    } else {
+      User.findByIdAndUpdate(
+        req.params.id,
+        { $set: { opinions: newOpinion } },
+        (err, user) => {
+          console.log(err);
+          console.log(user);
+          return res.redirect("/");
+        }
+      );
     }
   });
-}
+};
 
 module.exports = {
   homeView,
@@ -164,5 +169,5 @@ module.exports = {
   loginUser,
   logOutUser,
   addOpinion,
-  getUser
+  getUser,
 };

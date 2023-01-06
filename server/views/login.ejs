@@ -1,50 +1,89 @@
 <!DOCTYPE html>
 <html lang="pl">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="description"
-        content="Visiter-narzędzie stosowane w firmach, gdzie wymaga się od użytkownika wcześniejszego umówienia wizyty w celu wykonania przez pracownika firmy danej usługi." />
-    <meta name="keywords" content="Visiter,Calendar,kalendarz,umówienia,wizyty" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
-
-    <title>Visiter</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
-    <link rel="shortcut icon" href="pic/favicon.ico">
-    <link rel="stylesheet" href="styles/styles.css">
-    <script src="js/index.js"></script>
-
-</head>
-
-<body>
-    <section id="sekcja_logowanie">
-
-        <img src="pic/logo.PNG">
-        <h3>LOGOWANIE</h3>
-        <form action="/login" method="post">
-            <label for="username"></label>
-            <input type="username" name="username" autocomplete placeholder="E-mail">
-            <label for="password"></label>
-            <input id="password" for="password" type="password" name="password" autocomplete placeholder="Hasło">
-            <i class="far fa-eye" id="eye" onclick="pokazhaslo()"></i>
-            </div>
-            <a href="/reset-password">
-                <p>Przypomnij hasło</p>
-            </a>
-            <input id="submit" type="submit" value="Zaloguj się">
-            <br>
-            Nie masz konta? <p><a href="/register">Załóż konto</p>
-        </form>
-    </section>
-    <% if(message){%>
-        <div class="error">
-            <p>
-                <%= message %>
-            </p>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logowanie | Visiter</title>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="./apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../favicon-16x16.png"
+    />
+    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/normalize.css" />
+    <link rel="stylesheet" href="../styles/login.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Main block -->
+    <div class="login--container">
+      <div class="logo--container">
+        <img
+          src="../assets/imgs/visiter-inline.png"
+          alt="Visiter"
+          title="Visiter"
+          class="logo--img"
+        />
+      </div>
+      <h1 class="login--heading">LOGOWANIE</h1>
+      <form class="login--form" action="/login" method="post">
+        <input
+          type="email"
+          class="input--email"
+          name="email"
+          placeholder="E-mail"
+          required
+        />
+        <div class="input--password">
+          <input
+            type="password"
+            name="password"
+            placeholder="Hasło"
+            required
+          /><span class="password__toggle--icon"
+            ><i class="fa-solid fa-eye"></i
+          ></span>
         </div>
-        <% }%>
-</body>
-
+        <a href="/reset-password" class="reset-password--link link"
+          >Przypomnij hasło</a
+        >
+        <button class="login--btn">Zaloguj się</button>
+      </form>
+      <div class="register__info--wrapper">
+        <span class="register--info"
+          >Nie masz konta?
+          <a href="/register" class="register--link link">Złóż konto</a></span
+        >
+      </div>
+    </div>
+    <% if(message){%>
+    <div class="error--popup">
+      <p class="error--message"><%= message %></p>
+    </div>
+    <% }%>
+  </body>
+  <script src="../js/script.js"></script>
 </html>

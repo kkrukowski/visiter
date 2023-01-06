@@ -4,8 +4,8 @@ const Opinion = require("./OpinionForUser");
 
 const userSchema = new Schema({
   email: String,
-  username: String,
-  secondname: String,
+  name: String,
+  surname: String,
   sex: String,
   password: String,
   role: String,

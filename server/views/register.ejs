@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="pl">
 
 <head>
@@ -13,7 +13,7 @@
     <title>Visiter</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
     <link rel="shortcut icon" href="pic/favicon.ico">
-    <link rel="stylesheet" href="styles/styles.css"> <!-- JESLI CHCECIE ZMIENIAC STYLE USUNCIE styles/ -->
+    <link rel="stylesheet" href="styles/styles.css">
     <script src="js/index.js"></script>
 
 </head>
@@ -46,4 +46,112 @@
         <% }%>
 </body>
 
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rejestracja | Visiter</title>
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="../apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="../favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="../favicon-16x16.png"
+    />
+    <link rel="manifest" href="../site.webmanifest" />
+    <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/normalize.css" />
+    <link rel="stylesheet" href="../styles/register.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+    />
+  </head>
+  <body>
+    <!-- Main block -->
+    <div class="register--container">
+      <div class="logo--container">
+        <img
+          src="../assets/imgs/visiter-inline.png"
+          alt="Visiter"
+          title="Visiter"
+          class="logo--img"
+        />
+      </div>
+      <h1 class="register--heading">REJESTRACJA</h1>
+      <form class="register--form" action="/register" method="post">
+        <input
+          class="register--input"
+          type="email"
+          name="email"
+          placeholder="E-mail"
+          required
+        />
+        <input
+          class="register--input"
+          type="text"
+          name="name"
+          placeholder="Imie"
+          required
+        />
+        <input
+          class="register--input"
+          type="text"
+          name="surname"
+          placeholder="Nazwisko"
+          required
+        />
+        <div class="input--password">
+          <input type="password" name="password" placeholder="Hasło" required />
+          <span class="password__toggle--icon">
+            <i class="fa-solid fa-eye"></i>
+          </span>
+        </div>
+        <div class="input--password">
+          <input
+            type="password"
+            name="repeat-password"
+            placeholder="Powtórz hasło"
+            required
+          />
+          <span class="password__toggle--icon">
+            <i class="fa-solid fa-eye"></i>
+          </span>
+        </div>
+        <button class="register--btn">Załóż konto</button>
+      </form>
+      <div class="register__info--wrapper">
+        <span class="register--info"
+          >Masz już konto?
+          <a href="/login" class="register--link link">Zaloguj się</a></span
+        >
+      </div>
+    </div>
+    <% if(message){%>
+    <div class="error--popup">
+      <p class="error--message"><%= message %></p>
+    </div>
+    <% }%>
+  </body>
+  <script src="../js/script.js"></script>
 </html>
