@@ -72,7 +72,7 @@ const homeView = (req, res) => {
         Business.findOne({ 'owner._id': req.user._id }, (err, business) => {
             console.log("Jestes ownerem, dostep mozliwy");
             //console.log(business);
-            return res.render("business", { business });
+            return res.render("business", { business, message: "" });
         });
     }
     else {
@@ -96,7 +96,7 @@ const getBusiness = (req, res) => {
 }
 
 const addOpinion = (req, res) => {
-    correctName = req.user.username + " " + req.user.secondname;
+    correctName = req.user.name + " " + req.user.surname;
     const newOpinion = new Opinion({
         rating: req.body.rating,
         comment: req.body.comment,
@@ -123,7 +123,14 @@ const addOpinion = (req, res) => {
 }
 const addWorker = (req, res) => {
     User.findOne({ _id: req.body.id }, (err, user) => {
-        if (user.role != "Owner" && user.role != "Worker") {
+        console.log(user);
+        if(user === undefined){
+            Business.findById(req.params.id, (err, business) => {
+                const message = "Brak takiego uzytkownika.";
+                console.log(message)
+                return res.render("business", { business, message });
+            })
+        }else if (user.role != "Owner" && user.role != "Worker") {
             User.findByIdAndUpdate(user._id, { $set: { role: "Worker" } }, { new: true }, (err, updateUser) => {
                 console.log(updateUser);
             });
@@ -132,22 +139,25 @@ const addWorker = (req, res) => {
                     Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $addToSet: { workers: user } }, { new: true }, (err, business) => {
                         const message = "Pracownik dodany do firmy."
                         console.log(message)
-                        return res.render("business", { business })
+                        return res.render("business", { business, message })
                     });
                 }
                 else {
                     Business.findOneAndUpdate({ 'owner._id': req.user._id }, { $set: { workers: user } }, { new: true }, (err, business) => {
                         const message = "Pracownik dodany do firmy."
                         console.log(message)
-                        return res.render("business", { business })
+                        return res.render("business", { business, message })
                     });
                 }
-                return res.render("business", { business })
+                const message = "Pracownik dodany do firmy."
+                return res.render("business", { business, message })
             })
         } else {
             const message = "Podany użytkownik jest już pracownikiem lub właścielem.";
             console.log(message)
-            return res.render("business", { business })
+            Business.findById(req.params.id, (err, business) => {
+                return res.render("business", { business, message });
+            })
         }
     });
 
@@ -155,16 +165,18 @@ const addWorker = (req, res) => {
 const removeWorker = (req, res) => {
     User.findOneAndUpdate({ _id: req.params.id }, { role: "User" }, { new: true }, (err, user) => {
         if (err) {
-            return res.render("business", { business }) //dodac message o bledzie
+            const message = "Brak uzytkownika."
+            return res.render("business", { business, message }) //dodac message o bledzie
         }
         console.log(user);
         console.log(user._id);
         Business.findByIdAndUpdate(req.params.idBusiness, { $pull: { workers: { _id: user._id } } }, { new: true }, (err, business) => {
             if (err) {
-                return res.render("business", { business }) //dodac message o bledzie
+                const message = "Brak uzytkownika do usuniecia."
+                return res.render("business", { business, message }) //dodac message o bledzie
             }
-            console.log("uzytkownik usuniety")
-            return res.render("business", { business })
+            const message = "Uzytkownik usunięty."
+            return res.render("business", { business, message })
         });
     });
 }

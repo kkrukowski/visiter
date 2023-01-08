@@ -6,8 +6,8 @@
     <ul>
         <% business.workers.forEach(function(worker) { %>
             <li><a href="/<%= worker._id %>">
-                    <%= worker.username %>
-                        <%= worker.secondname%>
+                    <%= worker.name %>
+                        <%= worker.surname%>
                 </a>
                 <form action="/business/myBusiness/<%= business._id%>/<%= worker._id %>/removeWorker" method="POST">
                     <input type="submit" value="X">
@@ -52,3 +52,6 @@
                     <input type="number" step="0.01" name="duration"><br>
                     <input id="submit" type="submit" value="Dodaj">
                 </form>
+<% if(message!=""){ %>
+    <p><%= message %></p>
+<% } %>
