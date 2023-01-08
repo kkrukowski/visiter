@@ -23,7 +23,8 @@ const registerValidation = (req, res, next) => {
 };
 
 const loginValidation = (req, res, next) => {
-  if (!validator.isEmail(req.body.email)) {
+  console.log(req.body)
+  if (!validator.isEmail(req.body.username)) {
     message = "Email musi być poprawny.";
     return loginView(req, res, "", message);
   }
