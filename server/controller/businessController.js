@@ -190,18 +190,25 @@ const addService = (req, res) => {
         duration: req.body.duration
     });
     Business.findByIdAndUpdate(req.params.id, { $addToSet: { services: newService } }, { new: true }, (err, business) => { //new zwraca odrazu zupdatowany obiekt
+        if (err) {
+            const message = "Błąd w trakcie usuwania serwisu."
+            return res.render("business", { business }) //dodac message o bledzie
+        }
         console.log(business);
-        return res.render("business", { business });
+        const message = "Serwis dodany."
+        return res.render("business", { business, message });
     });
 }
 
 const removeService = (req, res) => {
     Business.findOneAndUpdate({ _id: req.params.idBusiness }, { $pull: { services: { _id: req.params.id } } }, { new: true }, (err, business) => {
         if (err) {
-            return res.render("business", { business }) //dodac message o bledzie
+            const message = "Błąd w trakcie usuwania serwisu."
+            return res.render("business", { business, message }) //dodac message o bledzie
         }
         console.log("serwis usuniety")
-        return res.render("business", { business })
+        const message = "Serwis usuniety."
+        return res.render("business", { business, message })
     });
 }
 

@@ -1,6 +1,39 @@
 <h1><%= business.name %></h1>
 <h2><%= business.description %></h2>
-<h3>Opinions: </h3>
+<h3>Pracownicy: </h3>
+<% if(business.workers != null){ %>
+    <ul>
+        <% business.workers.forEach(function(worker) { %>
+            <li><a href="/<%= worker._id %>">
+                    <%= worker.name %>
+                        <%= worker.surname%>
+                </a>
+            </li>
+            <% }); %>
+    </ul>
+<% } %>
+
+<h3>Usługi: </h3>
+    <% services=business.services %>
+    <% if(services != null){ %>
+    <% services.forEach(function(service){ %>
+        <ul>
+            <% business.services.forEach(function(service) { %>
+                <li>
+                        <%= service.name %>
+                        <br>
+                        <%= service.description %>
+                        <br>
+                        <%= service.price %>zł, <%= service.duration %>h
+                </li>
+            <% }); %>
+        </ul>
+    <% }); %>
+    <% }; %>
+
+</ul>
+
+<h3>Opinie: </h3>
 <ul>
 
     <% opinions=business.opinions %>
