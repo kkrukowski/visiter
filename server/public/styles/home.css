@@ -30,7 +30,10 @@
     grid-row: 2 / 5;
 }
 
-.main__start-business{
+.main__start-business, .main__my-business{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     grid-column: 4;
     grid-row: 6;
 }

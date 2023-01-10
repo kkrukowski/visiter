@@ -49,43 +49,19 @@
         />
       </div>
       <h1 class="login--heading">REJESTRACJA FIRMY</h1>
-      <form class="login--form" action="/business/register" method="POST">
+      <form class="login--form">
+        <input type="text" name="name" placeholder="Nazwa firmy" required />
         <input
-          class="login--input"
-          type="text"
-          name="name"
-          placeholder="Nazwa firmy"
-          required
-        />
-        <input
-          class="login--input"
           type="text"
           name="description"
           placeholder="Opis firmy"
           required
         />
-        <input
-          class="login--input"
-          type="text"
-          name="address"
-          placeholder="Adres firmy"
-          required
-        />
-        <input
-          class="login--input"
-          type="text"
-          name="phone"
-          placeholder="Telefon"
-          required
-        />
+        <input type="text" name="address" placeholder="Adres firmy" required />
+        <input type="text" name="phone" placeholder="Telefon" required />
         <button class="login--btn">Zarejestruj firmę</button>
       </form>
     </div>
-    <% if(message){%>
-    <div class="error--popup">
-      <p class="error--message"><%= message %></p>
-    </div>
-    <% }%>
   </body>
   <script src="../js/script.js"></script>
 </html>

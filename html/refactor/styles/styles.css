@@ -87,6 +87,15 @@ button:active{
     color: #33365E
 }
 
+/* Error popup */
+.error--popup{
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background-color: #33365E;
+    border-radius: 20px;
+}
+
 /* Nav */
 .nav {
     display: flex;

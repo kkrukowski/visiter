@@ -41,7 +41,6 @@ const loginUser = (req, res, next) => {
     }
     // Mail error
     if (!user) {
-      console.log(user);
       message = info.message;
       return loginView(req, res, err, message);
     }

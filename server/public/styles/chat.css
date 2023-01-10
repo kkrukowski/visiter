@@ -1,0 +1,162 @@
+/* Main */
+.main{
+    display: grid;
+    grid-template-columns: 20px 1fr 20px 2fr 20px;
+    grid-template-rows: 20px 1fr 20px;
+}
+
+.main--item{
+    display: flex;
+    background-color: #33365E;
+    border-radius: 20px;
+}
+
+.main__users--list{
+    grid-column: 2;
+    grid-row: 2;
+    padding: 40px
+}
+
+.main__chat{
+    display: flex;
+    flex-flow: column;
+    grid-column: 4;
+    grid-row: 2;
+}
+
+/* Users list */
+.users--list{
+    width: 100%;
+    list-style-type: none;
+    padding: 0;
+}
+
+.user--wrapper{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.user--avatar{
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 60px;
+    margin-right: 10px;
+}
+
+.user--name{
+    color: white;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.selected__user{
+    background-color: #EFEDFF;
+    border-radius: 20px;
+}
+
+.selected__user .user--name{
+    color: #33365E;
+}
+
+/* Chat section */
+.chat__messages--wrapper{
+    display: flex;
+    flex: 1 1 auto;
+    height: 300px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.chat__input--wrapper{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    background-color: #33365E;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+.chat--input{
+    width: 100%;
+    background-color: #33365E;
+    color: white;
+    margin-right: 20px;
+    border: none;
+}
+
+.chat--input:focus{
+    border: none;
+}
+
+.chat__send--btn{
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    background-color: transparent;
+}
+
+.chat__send--btn:hover{
+    background-color: transparent;
+}
+
+.chat__send--img{
+    height: 24px;
+}
+
+/* Messages */
+.chat__messages--wrapper{
+    overflow: auto;
+}
+
+.chat__messages--list{
+    display: flex;
+    flex-direction: column;
+    list-style-type: none;
+    margin-right: 10px;
+    padding: 0;
+    margin-top: 0;
+}
+
+.message--item{
+    position: relative;
+    background-color: #33365E;
+    border-radius: 20px;
+    width: 60%;
+    height: fit-content;
+    margin-bottom: 20px;
+}
+
+.message--content{
+    padding: 20px;
+    margin: 0;
+    color: white;
+}
+
+.sended{
+    align-self: flex-end;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #CBCEF1;
+    border-radius: 20px;
+}
+  
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #33365E;
+    border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #2e3155;
+}
