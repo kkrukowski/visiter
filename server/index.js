@@ -40,8 +40,8 @@ const chat = require("./routes/chat");
 const routes = require("./routes/routes");
 
 // APIs
-app.use("/", loginApi);
 app.use("/", chat);
+app.use("/", loginApi);
 app.use("/business", businessApi);
 app.use("/", routes);
 
@@ -118,7 +118,9 @@ io.on("connection", (socket) => {
   // Message event listener
   socket.on("private_message", ({ content, to }) => {
     console.log("priv", to);
-    const receiverData = users.find((user) => user.userDbId == to);
+    console.log("users: ", users);
+    const receiverData = users.find((user) => user.userDbId === to);
+    console.log("receiver: " + receiverData.userDbId);
     const userInfo = { username: socket.username, userDbId: socket.userDbId };
     const msgInfo = { content, userInfo };
     console.log(receiverData);

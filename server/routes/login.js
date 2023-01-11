@@ -13,7 +13,7 @@ const {
   registerUser,
   logOutUser,
   addOpinion,
-  getUser
+  getUser,
 } = require("../controller/loginController");
 const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
 

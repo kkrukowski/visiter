@@ -1,88 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Visiter | Wiadomości</title>
-    <link rel="stylesheet" href="/styles/chat.css" />
-  </head>
-
-  <body>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="input" autocomplete="off" /><button>Send</button>
-    </form>
-  </body>
-
-  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
-  <script>
-    const username = "<%= username %>";
-    const userDbId = "<%= userDbId %>";
-
-    var socket = io({ autoConnect: false });
-
-    const sessionId = localStorage.getItem("sessionId");
-    console.log("sessionId", sessionId);
-    if (sessionId) {
-      console.log("session exists");
-      socket.auth = { sessionId, username, userDbId };
-      socket.connect();
-    } else {
-      console.log("no sessionId");
-      socket.auth = { username, userDbId };
-      socket.connect();
-    }
-
-    socket.on("session", ({ userSessionId, userDbId, username }) => {
-      socket.auth = { userSessionId, userDbId, username };
-      console.log("create session ", socket.auth);
-      localStorage.setItem("sessionId", userSessionId);
-      console.log("added to storage ", localStorage.getItem("sessionId"));
-    });
-
-    // socket.onAny((event, ...args) => {
-    //   console.log(event, args);
-    // });
-
-    socket.on("users", (users) => {
-      console.log(users);
-    });
-
-    var messages = document.getElementById("messages");
-    var form = document.getElementById("form");
-    var input = document.getElementById("input");
-
-    form.addEventListener("submit", (e) => {
-      e.preventDefault();
-      let content = input.value;
-      if (content) {
-        socket.emit("private_message", {
-          content: content,
-          to: "63a8775c5ff90bfedef93627",
-        });
-        var item = document.createElement("li");
-        item.textContent = "Ja: " + content;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-        input.value = "";
-      }
-    });
-
-    socket.on("private_message", (msg) => {
-      console.log("msg: ", msg);
-      let item = document.createElement("li");
-      console.log(msg.msgInfo.userInfo.userDbId, userDbId);
-      if (msg.msgInfo.userInfo.userDbId !== userDbId) {
-        item.textContent =
-          msg.msgInfo.userInfo.username + ": " + msg.msgInfo.content;
-        messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
-      }
-    });
-  </script>
-</html> -->
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -298,8 +213,8 @@
           </ul>
         </div>
         
-        <form class="chat__input--wrapper">
-          <input class="chat--input" type="text" name="message" placeholder="Aa" required />
+        <form class="chat__input--wrapper" action="">
+          <input class="chat--input" type="text" name="message" placeholder="Aa" autocomplete="off" required />
           <button class="chat__send--btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="chat__send--img">
               <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
@@ -310,4 +225,81 @@
     </main>
   </body>
   <script src="../js/script.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script>
+    document.querySelector(".chat__send--btn").addEventListener('click', () => {
+      console.log("XD")
+    })
+
+    const username = "<%= name %>";
+    const userDbId = "<%= userDbId %>";
+
+    var socket = io({ autoConnect: false });
+
+    const sessionId = localStorage.getItem("sessionId");
+    console.log("sessionId", sessionId);
+    if (sessionId) {
+      console.log("session exists");
+      socket.auth = { sessionId, username, userDbId };
+      socket.connect();
+    } else {
+      console.log("no sessionId");
+      socket.auth = { username, userDbId };
+      socket.connect();
+    }
+
+    socket.on("session", ({ userSessionId, userDbId, username }) => {
+      socket.auth = { userSessionId, userDbId, username };
+      console.log("create session ", socket.auth);
+      localStorage.setItem("sessionId", userSessionId);
+      console.log("added to storage ", localStorage.getItem("sessionId"));
+    });
+
+    // socket.onAny((event, ...args) => {
+    //   console.log(event, args);
+    // });
+
+    socket.on("users", (users) => {
+      console.log(users);
+    });
+
+    var messages = document.querySelector(".chat__messages--list")
+    var form = document.querySelector(".chat__input--wrapper")
+    var input = document.querySelector(".chat--input");
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      let content = input.value;
+      if (content) {
+        socket.emit("private_message", {
+          content: content,
+          to: "63bd6e6f83811e952fa209b0",
+        });
+        var item = document.createElement("li");
+        let contentItem = document.createElement('p')
+        contentItem.textContent = content;
+        contentItem.classList.add("message--content")
+        item.classList.add("message--item sended")
+        item.appendChild(contentItem)
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+        input.value = "";
+      }
+    });
+
+    socket.on("private_message", (msg) => {
+      console.log("msg: ", msg);
+      let item = document.createElement("li");
+      let contentItem = document.createElement("p")
+      console.log(msg.msgInfo.userInfo.userDbId, userDbId);
+      if (msg.msgInfo.userInfo.userDbId !== userDbId) {
+        contentItem.textContent = msg.msgInfo.content;
+        contentItem.classList.add("message--content")
+        item.classList.add("message--item sended")
+        item.appendChild(contentItem)
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      }
+    });
+  </script>
 </html>
