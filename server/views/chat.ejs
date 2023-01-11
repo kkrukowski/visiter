@@ -263,9 +263,10 @@
       console.log(users);
     });
 
-    var messages = document.querySelector(".chat__messages--list")
-    var form = document.querySelector(".chat__input--wrapper")
-    var input = document.querySelector(".chat--input");
+    let messages = document.querySelector(".chat__messages--list")
+    let messagesWrapper = document.querySelector('.chat__messages--wrapper')
+    let form = document.querySelector(".chat__input--wrapper")
+    let input = document.querySelector(".chat--input");
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -273,16 +274,16 @@
       if (content) {
         socket.emit("private_message", {
           content: content,
-          to: "63bd6e6f83811e952fa209b0",
+          to: "63a6ddae1a83354d2702f933",
         });
-        var item = document.createElement("li");
+        let item = document.createElement("li");
         let contentItem = document.createElement('p')
         contentItem.textContent = content;
         contentItem.classList.add("message--content")
-        item.classList.add("message--item sended")
+        item.classList.add("message--item", "sended")
         item.appendChild(contentItem)
         messages.appendChild(item);
-        window.scrollTo(0, document.body.scrollHeight);
+        messagesWrapper.scrollTop = messagesWrapper.scrollHeight
         input.value = "";
       }
     });
@@ -295,7 +296,7 @@
       if (msg.msgInfo.userInfo.userDbId !== userDbId) {
         contentItem.textContent = msg.msgInfo.content;
         contentItem.classList.add("message--content")
-        item.classList.add("message--item sended")
+        item.classList.add("message--item")
         item.appendChild(contentItem)
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);

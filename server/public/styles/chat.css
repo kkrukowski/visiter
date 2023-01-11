@@ -68,6 +68,7 @@
     height: 300px;
     width: 100%;
     margin-bottom: 20px;
+    scroll-behavior: smooth;
 }
 
 .chat__input--wrapper{

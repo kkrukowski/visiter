@@ -112,7 +112,7 @@ io.on("connection", (socket) => {
       username: socket.username,
     });
   }
-  console.log(users);
+  console.log("users", users);
   socket.emit("users", users);
 
   // Message event listener
