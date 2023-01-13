@@ -11,7 +11,7 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
-    width: 90%;
+    width: 60%;
 }
 
 /* Search form */
@@ -67,10 +67,154 @@
 /* Search results */
 .results--wrapper{
     width: 100%;
+    flex: 1 1 auto;
+    overflow-y: auto;
+}
+
+.results--info{
+    align-self: flex-start;
 }
 
 .results--info, .results--input, .results--count{
     font-size: 18px;
     font-weight: 700;
     color: #33365E;
+}
+
+/* Results list */
+.results__businesses--wrapper{
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+.results__businesses--list{
+    padding: 0;
+    margin-right: 20px;
+}
+
+.business--item{
+    display: flex;
+    width: 100%;
+    margin-top: 40px;
+    padding-bottom: 40px;
+    border-bottom: 2px solid #33365E;
+}
+
+.business--item:first-child{
+    margin-top: 0;
+}
+
+.business--item:last-child, .business--item:only-child{
+    border: none;
+    padding: 0;
+}
+
+.business--thumbnail{
+    height: 200px;
+    width: 300px;
+    margin-right: 40px;
+}
+
+.business__thumbnail--img{
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 20px;
+}
+
+.business--info{
+    flex: 1 1 auto;
+}
+
+.business__name--text{
+    font-size: 32px;
+    font-weight: 700;
+    color:#33365E;
+    margin: 0;
+}
+
+.business--address{
+    font-size: 20px;
+    font-weight: 600;
+    color:#33365E;
+    margin: 0;
+}
+
+.business__services--heading{
+    font-size: 22px;
+    font-weight: 700;
+    color:#33365E;
+    margin-bottom: 0;
+}
+
+.service--wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.service--item{
+    margin-top: 10px;
+}
+
+.service--item:first-child{
+    margin: 0
+}
+
+.service--info{
+    width: 100%;
+}
+
+.service--name{
+    font-size: 18px;
+    font-weight: 600;
+    color:#33365E;
+    margin: 0;
+}
+
+.service--desc{
+    font-size: 16px;
+    font-weight: 500;
+    color:#33365E;
+    margin: 0;
+}
+
+.service__order--info{
+    display: flex;
+}
+
+.service--price{
+    font-size: 28px;
+    font-weight:700;
+    color: #33365E;
+    margin: 0;
+}
+
+.service__select--btn{
+    margin-left: 20px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    padding: 30px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: #CBCEF1;
+    border-radius: 20px;
+    margin-bottom: 20px; 
+}
+  
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: #33365E;
+    border-radius: 20px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #2e3155;
 }
