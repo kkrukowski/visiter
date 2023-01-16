@@ -143,6 +143,16 @@
     font-weight: 600;
     color:#33365E;
     margin: 0;
+    margin-bottom: 20px;
+}
+
+.message--btn{
+    padding: 5px 10px;
+    background-color: #F1511B;
+    border-radius: 20px;
+    color: white;
+    text-decoration: none;
+    font-weight: 700;
 }
 
 .business__services--heading{
