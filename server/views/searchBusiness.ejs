@@ -1,13 +1,3 @@
-<!-- <h1>FIRMY:</h1>
-
-<ul>
-  <% businesses.forEach(function(business) { %>
-  <li>
-    <a href="/business/<%= business.id %>"><%= business.name %></a>
-    Description:<%= business.description%>
-  </li>
-  <% }); %>
-</ul> -->
 <!DOCTYPE html>
 <html lang="pl">
   <head>
@@ -225,6 +215,12 @@
               <div class="business--info">
                 <h2 class="business__name--text"><%= business.name %></h2>
                 <p class="business--address"><%= business.adress %></p>
+                <a
+                  href="/chat/<%= business.owner.id %>"
+                  class="message--btn link"
+                >
+                  Wyślij wiadomość
+                </a>
                 <h3 class="business__services--heading">Usługi</h3>
                 <ul class="business__services--list">
                   <% business.services.forEach((service) => { %>

@@ -89,7 +89,7 @@
             </a>
           </li>
           <li class="menu__list--item">
-            <a href="/search" class="item--link"
+            <a href="/business/search" class="item--link"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -180,7 +180,7 @@
       <section class="main__chat">
         <div class="chat__messages--wrapper">
           <ul class="chat__messages--list">
-            <li class="message--item">
+            <!-- <li class="message--item">
               <p class="message--content">Interdum et malesuada fames ac ante ipsum primis in faucibus. Aenean consequat aliquam rutrum. Aliquam erat volutpat. Nulla at sagittis ex. Vivamus quis volutpat eros, eu aliquam nibh.</p>
             </li>
             <li class="message--item sended">
@@ -209,7 +209,7 @@
             </li>
             <li class="message--item sended">
               <p class="message--content">Interdum et malesuada fames ac ante ipsum primis in faucibus. Aenean consequat aliquam rutrum. Aliquam erat volutpat. Nulla at sagittis ex. Vivamus quis volutpat eros, eu aliquam nibh.</p>
-            </li>
+            </li> -->
           </ul>
         </div>
         
@@ -233,6 +233,7 @@
 
     const username = "<%= name %>";
     const userDbId = "<%= userDbId %>";
+    const receiverId = "<%= receiverId %>";
 
     var socket = io({ autoConnect: false });
 
@@ -274,7 +275,7 @@
       if (content) {
         socket.emit("private_message", {
           content: content,
-          to: "63a6ddae1a83354d2702f933",
+          to: receiverId,
         });
         let item = document.createElement("li");
         let contentItem = document.createElement('p')

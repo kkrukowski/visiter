@@ -109,6 +109,11 @@
     padding: 0;
 }
 
+.business--form{
+    display: flex;
+    width: 100%;
+}
+
 .business--thumbnail{
     height: 200px;
     width: 300px;
