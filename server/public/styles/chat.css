@@ -63,7 +63,6 @@
 
 /* Chat section */
 .chat__messages--wrapper{
-    display: flex;
     flex: 1 1 auto;
     height: 300px;
     width: 100%;
@@ -127,6 +126,7 @@
     border-radius: 20px;
     max-width: 60%;
     height: fit-content;
+    width: fit-content;
     margin-bottom: 20px;
 }
 

@@ -9,9 +9,10 @@ const homeView = (req, res) => {
     if (err) {
       return res.render("home");
     }
+    const user = req.user
     console.log("Jestes ownerem, dostep mozliwy");
     console.log(business);
-    return res.render("home", { business });
+    return res.render("home", { business, user });
   });
 };
 

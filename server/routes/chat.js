@@ -10,6 +10,7 @@ router.get("/chat", isLoggedIn, (req, res) => {
   res.render("chat", {
     name: req.user.name,
     userDbId: userId,
+    receiverId: null,
   });
 });
 
