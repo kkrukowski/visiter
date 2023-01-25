@@ -9,7 +9,7 @@ const homeView = (req, res) => {
     if (err) {
       return res.render("home");
     }
-    const user = req.user
+    const user = req.user;
     console.log("Jestes ownerem, dostep mozliwy");
     console.log(business);
     return res.render("home", { business, user });
@@ -102,8 +102,9 @@ const registerUser = async (req, res) => {
   }
 };
 const getUser = (req, res) => {
+  console.log("getUser");
   User.findById(req.params.id, (err, user) => {
-    return res.render("specificUser", { user: user });
+    return res.render("profile", { user: user });
   });
 };
 

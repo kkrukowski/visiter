@@ -24,6 +24,7 @@
     />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/profile.css" />
     <link rel="stylesheet" href="../styles/normalize.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -147,7 +148,46 @@
       </div>
     </nav>
     <!-- Main block -->
-    <main class="main"></main>
+    <main class="main">
+      <section class="main__user main--item">
+        <div class="user--wrapper">
+          <div class="user--avatar">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="avatar--img"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="user__name--wrapper">
+            <p class="user__name--text">Imię Nazwisko</p>
+          </div>
+          <div class="user__role--wrapper">
+            <p class="user__role--text">Klient</p>
+          </div>
+          <div class="user__info--wrapper">
+            <div class="user__info--item">
+              <p class="info--label">E-mail</p>
+              <p class="info--content">testowy@mail.com</p>
+            </div>
+            <div class="user__info--item">
+              <p class="info--label">Numer telefonu</p>
+              <p class="info--content">+48 123 456 789</p>
+            </div>
+          </div>
+          <a class="become__company--link" href="/business/register"
+            >Zostań firmą</a
+          >
+          <button class="logout--btn">Wyloguj się</button>
+        </div>
+      </section>
+      <section class="main__opinions main--item"></section>
+    </main>
   </body>
   <script src="../js/script.js"></script>
 </html>
