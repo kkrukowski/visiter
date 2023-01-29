@@ -178,12 +178,15 @@
               <p class="info--content"><%= user.email %></p>
             </div>
           </div>
+          <% if (isSameUser) { %> <% if (role == "User") { %>
           <a class="become__company--link" href="/business/register"
             >Zostań firmą</a
           >
+          <% } %>
           <form action="/logout" method="POST">
             <button class="logout--btn">Wyloguj się</button>
           </form>
+          <% } %>
         </div>
       </section>
       <section class="main__opinions main--item">
@@ -235,7 +238,9 @@
             class="leave__opinion--input"
             type="number"
             name="rating"
-            placeholder="Ilość gwiazdek"
+            placeholder="Ilość gwiazdek (1-5)"
+            min="1"
+            max="5"
           />
           <button class="leave__opinion--btn">Dodaj opinię</button>
         </form>

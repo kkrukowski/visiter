@@ -155,7 +155,9 @@
       <section class="main__profile-info main--item"></section>
       <% if(business) { %>
       <article class="main__my-business main--item">
-        <a href="/business/myBusiness/<%= business._id %>">MOJA FIRMA</a>
+        <a class="link" href="/business/myBusiness/<%= business._id %>"
+          >MOJA FIRMA</a
+        >
       </article>
       <% }else{ %>
       <section class="main__start-business main--item">
