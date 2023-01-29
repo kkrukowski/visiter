@@ -102,9 +102,11 @@ const registerUser = async (req, res) => {
   }
 };
 const getUser = (req, res) => {
-  console.log("getUser");
   User.findById(req.params.id, (err, user) => {
-    return res.render("profile", { user: user });
+    if (req.params.id === req.session.passport.user) {
+      return res.render("profile", { user: user, isSameUser: true });
+    }
+    return res.render("profile", { user: user, isSameUser: false });
   });
 };
 

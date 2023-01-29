@@ -24,6 +24,7 @@
     />
     <link rel="manifest" href="../site.webmanifest" />
     <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/profile.css" />
     <link rel="stylesheet" href="../styles/normalize.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -87,7 +88,7 @@
             </a>
           </li>
           <li class="menu__list--item">
-            <a href="/business/search" class="item--link"
+            <a href="/search" class="item--link"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -148,30 +149,97 @@
     </nav>
     <!-- Main block -->
     <main class="main">
-      <% if(user){%>
-      <h1><%= user.name %> <%= user.surname %></h1>
-      <h3>Opinions:</h3>
-      <ul>
-        <% opinions=user.opinions %> <% if(opinions != null){ %> <%
-        opinions.forEach(function(opinion){ %>
-        <li>
-          <%= opinion.ownerName %>, <%= opinion.businessName %>
-          <br />
-          <%= opinion.rating %>
-          <br />
-          <%= opinion.comment %>
-        </li>
-        <% }); %> <% } %>
-      </ul>
-      <form action="/<%= user._id %>/opinion" method="POST">
-        <label for="comment">
-          <input type="text" name="comment" />
-        </label>
-        <label for="rating">
-          <input type="number" name="rating" />
-        </label>
-        <input id="submit" type="submit" value="Dodaj opinie" />
-      </form>
+      <section class="main__user main--item">
+        <div class="user--wrapper">
+          <div class="user--avatar">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              class="avatar--img"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div class="user__name--wrapper">
+            <p class="user__name--text"><%= user.name %> <%= user.surname %></p>
+          </div>
+          <div class="user__role--wrapper">
+            <% role="" %> <% if(user.role == "User") role = "Klient" %> <%
+            if(user.role == "Owner") role = "Właściciel" %>
+            <p class="user__role--text"><%= role %></p>
+          </div>
+          <div class="user__info--wrapper">
+            <div class="user__info--item">
+              <p class="info--label">E-mail</p>
+              <p class="info--content"><%= user.email %></p>
+            </div>
+          </div>
+          <a class="become__company--link" href="/business/register"
+            >Zostań firmą</a
+          >
+          <form action="/logout" method="POST">
+            <button class="logout--btn">Wyloguj się</button>
+          </form>
+        </div>
+      </section>
+      <section class="main__opinions main--item">
+        <h3 class="opinions--heading">Opinie</h3>
+        <div class="opinions__list--wrapper">
+          <div class="opinions--list">
+            <% opinions=user.opinions %> <% if(opinions != null){ %> <%
+            opinions.forEach(function(opinion){ %>
+            <div class="opinion--item">
+              <span class="opinion--quotes">”</span>
+              <div class="opinion__content--wrapper">
+                <p class="opinion--content"><%= opinion.comment %></p>
+                <p class="opinion--author">
+                  <%= opinion.ownerName %> z <%= opinion.businessName %>
+                </p>
+                <div class="opinion--stars">
+                  <% stars=opinion.rating %> <% for (let i = 0; i < stars; i++){
+                  %>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="#F1511B"
+                    class="opinion--star"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            <% }); %> <% } %>
+          </div>
+        </div>
+      </section>
+      <% if (!isSameUser) { %>
+      <section class="main__leave__opinion main--item">
+        <h3 class="leave__opinion--heading">Wystaw opinię</h3>
+        <form
+          class="leave__opinion--form"
+          action="/profile/<%= user._id %>/addOpinion"
+          method="POST"
+        >
+          <input type="text" name="comment" placeholder="Treść opini" />
+          <input
+            class="leave__opinion--input"
+            type="number"
+            name="rating"
+            placeholder="Ilość gwiazdek"
+          />
+          <button class="leave__opinion--btn">Dodaj opinię</button>
+        </form>
+      </section>
       <% } %>
     </main>
   </body>

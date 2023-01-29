@@ -25,7 +25,7 @@ router.get("/reset-password", isLoggedOut, forgetPasswordView);
 router.get("/", isLoggedOut, loginView);
 
 router.get("/profile/:id", isLoggedIn, getUser);
-router.post("/profile/:id/opinion", isLoggedIn, addOpinion);
+router.post("/profile/:id/addOpinion", isLoggedIn, addOpinion);
 
 router.post("/login", loginValidation, loginUser);
 router.post("/register", registerValidation, registerUser);
