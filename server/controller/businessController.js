@@ -85,14 +85,81 @@ const homeView = (req, res) => {
   }
 };
 
-const getAllBusiness = (req, res) => {
-  Business.find({}, function (err, business) {
-    if (err) {
-      res.send(err);
-      return res.render("searchBusiness");
-    }
-    return res.render("searchBusiness", { businesses: business });
-  });
+const getAllBusiness = async (req, res) => {
+  const searchName = req.query.name;
+  const searchLocation = req.query.location;
+  if (searchName != null && searchLocation != null) {
+    Business.find(
+      {
+        $and: [
+          {
+            $or: [
+              { name: { $regex: searchName } },
+              { description: { $regex: searchName } },
+            ],
+          },
+          { address: { $regex: searchLocation } },
+        ],
+      },
+      function (err, business) {
+        console.log(business);
+        if (err) {
+          res.send(err);
+          return res.render("searchBusiness");
+        }
+        return res.render("searchBusiness", {
+          businesses: business,
+          searchData: { searchName, searchLocation },
+        });
+      }
+    );
+  } else if (searchName != null && searchLocation == null) {
+    Business.find(
+      {
+        $or: [
+          { name: { $regex: searchName } },
+          { description: { $regex: searchLocation } },
+        ],
+      },
+      function (err, business) {
+        console.log(business);
+        if (err) {
+          res.send(err);
+          return res.render("searchBusiness");
+        }
+        return res.render("searchBusiness", {
+          businesses: business,
+          searchData: { searchName, searchLocation: null },
+        });
+      }
+    );
+  } else if (searchName == null && searchLocation != null) {
+    Business.find(
+      { address: { $regex: searchLocation } },
+      function (err, business) {
+        console.log(business);
+        if (err) {
+          res.send(err);
+          return res.render("searchBusiness");
+        }
+        return res.render("searchBusiness", {
+          businesses: business,
+          searchData: { searchName: null, searchLocation },
+        });
+      }
+    );
+  } else {
+    Business.find({}, function (err, business) {
+      if (err) {
+        res.send(err);
+        return res.render("searchBusiness");
+      }
+      return res.render("searchBusiness", {
+        businesses: business,
+        searchData: { searchName: null, searchLocation: null },
+      });
+    });
+  }
 };
 
 const getBusiness = (req, res) => {

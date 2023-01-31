@@ -148,7 +148,7 @@
     <!-- Main block -->
     <main class="main">
       <div class="search--wrapper">
-        <form class="search--form">
+        <form class="search--form" action="/business/search" method="GET">
           <div class="search__input--wrapper">
             <div class="search__icon--wrapper">
               <svg
@@ -163,14 +163,23 @@
                 />
               </svg>
             </div>
-            <input type="text" placeholder="Czego szukasz?" />
+            <% if (searchData.searchName != null) { %>
+            <input
+              type="text"
+              name="name"
+              placeholder="Czego szukasz?"
+              value="<%= searchData.searchName %>"
+            />
+            <% } else { %>
+            <input type="text" name="name" placeholder="Czego szukasz?" />
+            <% } %>
           </div>
           <div class="search--separator"></div>
           <div class="location__input--wrapper">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
-              fill="currentColor"
+              fill="#33365E"
               class="search--icon"
             >
               <path
@@ -179,13 +188,22 @@
                 clip-rule="evenodd"
               />
             </svg>
-            <input type="text" placeholder="Lokalizacja" />
+            <% if (searchData.searchLocation != null) { %>
+            <input
+              type="text"
+              name="location"
+              placeholder="Lokalizacja"
+              value="<%= searchData.searchLocation %>"
+            />
+            <% } else { %>
+            <input type="text" name="location" placeholder="Lokalizacja" />
+            <% } %>
           </div>
           <button class="search--btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
-              fill="currentColor"
+              fill="#33365E"
               class="search__btn--icon"
             >
               <path
@@ -196,6 +214,7 @@
             </svg>
           </button>
         </form>
+        <% if (businesses != undefined) { %>
         <p class="results--info">
           Wyniki - <span class="results--input">strzyżenie </span>(<span
             class="results--count"
@@ -214,7 +233,7 @@
               </div>
               <div class="business--info">
                 <h2 class="business__name--text"><%= business.name %></h2>
-                <p class="business--address"><%= business.adress %></p>
+                <p class="business--address"><%= business.address %></p>
                 <a href="/chat/<%= business.owner.id %>" class="message--btn">
                   Wyślij wiadomość
                 </a>
@@ -240,6 +259,7 @@
             <% }); %>
           </ul>
         </div>
+        <% } %>
       </div>
     </main>
   </body>
