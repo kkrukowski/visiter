@@ -11,9 +11,7 @@ const {
   forgetPasswordView,
   loginUser,
   registerUser,
-  logOutUser,
-  addOpinion,
-  getUser,
+  logOutUser
 } = require("../controller/loginController");
 const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
 
@@ -23,9 +21,6 @@ router.get("/login", isLoggedOut, loginView);
 router.get("/register", isLoggedOut, registerView);
 router.get("/reset-password", isLoggedOut, forgetPasswordView);
 router.get("/", isLoggedOut, loginView);
-
-router.get("/profile/:id", isLoggedIn, getUser);
-router.post("/profile/:id/addOpinion", isLoggedIn, addOpinion);
 
 router.post("/login", loginValidation, loginUser);
 router.post("/register", registerValidation, registerUser);
