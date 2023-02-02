@@ -287,7 +287,6 @@ const removeWorker = (req, res) => {
 };
 
 const addService = (req, res) => {
-  console.log("HALO");
   const newService = new Service({
     name: req.body.name,
     price: req.body.price,
