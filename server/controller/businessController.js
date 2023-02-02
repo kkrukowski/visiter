@@ -201,16 +201,17 @@ const addWorker = (req, res) => {
         const currentUser = req.user;
         return res.render("business", { currentUser, business, message });
       });
-    } else if (user.role != "Owner" && user.role != "Worker") {
-      User.findByIdAndUpdate(
-        user._id,
-        { $set: { role: "Worker" } },
-        { new: true },
-        (err, updateUser) => {
-          console.log(updateUser);
-        }
-      );
+    } 
+      if (user.role != "Owner" && user.role != "Worker") {
       Business.findOne({ "owner._id": req.user._id }, (err, business) => {
+        User.findByIdAndUpdate(
+          user._id,
+          { $set: { role: "Worker" } },
+          { new: true },
+          (err, updateUser) => {
+            console.log(updateUser);
+          }
+        );
         if (business.workers != null) {
           Business.findOneAndUpdate(
             { "owner._id": req.user._id },
