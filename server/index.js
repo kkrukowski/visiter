@@ -36,6 +36,7 @@ app.use(express.urlencoded({ extended: false }));
 // Routes
 const loginApi = require("./routes/login");
 const businessApi = require("./routes/business");
+const profileApi = require("./routes/profile")
 const chat = require("./routes/chat");
 const routes = require("./routes/routes");
 
@@ -43,6 +44,7 @@ const routes = require("./routes/routes");
 app.use("/", chat);
 app.use("/", loginApi);
 app.use("/business", businessApi);
+app.use("/profile", profileApi);
 app.use("/", routes);
 
 // MongoDB connection

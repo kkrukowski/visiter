@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
-const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
 
 const homeView = (req, res) => {
@@ -10,8 +9,6 @@ const homeView = (req, res) => {
       return res.render("home");
     }
     const user = req.user;
-    console.log("Jestes ownerem, dostep mozliwy");
-    console.log(business);
     return res.render("home", { business, user });
   });
 };
@@ -33,7 +30,6 @@ const forgetPasswordView = (req, res) => {
 };
 
 const loginUser = (req, res, next) => {
-  console.log(req.body.email, req.body.password);
   passport.authenticate("local", function (err, user, info) {
     // Password error
     if (err) {
@@ -56,7 +52,6 @@ const loginUser = (req, res, next) => {
 };
 
 const logOutUser = (req, res) => {
-  console.log("WYLOGOWANO");
   req.logOut(function (err) {
     if (err) {
       return next(err);
@@ -67,13 +62,11 @@ const logOutUser = (req, res) => {
 };
 
 const registerUser = async (req, res) => {
-  console.log("przeszlo");
   const userExists = await User.findOne({
     email: req.body.email.toLowerCase(),
   });
   if (userExists) {
     message = "Użytkownik już istnieje.";
-    console.log(message);
     return registerView(req, res, "", message);
   }
 
@@ -94,73 +87,11 @@ const registerUser = async (req, res) => {
       password: hashedPasword,
       role: "User",
     });
-    console.log(newUser);
     newUser.save();
     res.redirect("/login");
   } catch {
     res.redirect("/register");
   }
-};
-const getUser = (req, res) => {
-  User.findById(req.params.id, (err, user) => {
-    if (req.params.id === req.session.passport.user) {
-      return res.render("profile", { user: user, isSameUser: true });
-    }
-    return res.render("profile", { user: user, isSameUser: false });
-  });
-};
-
-const addOpinion = async (req, res) => {
-  correctName = req.user.name + " " + req.user.surname;
-  var foundBusiness = undefined;
-  if (req.user.role == "Worker") {
-    console.log("worker halo");
-    foundBusiness = await Business.findOne({
-      workers: { $elemMatch: { _id: req.user._id } },
-    });
-  } else if (req.user.role == "Owner") {
-    console.log("owner halo");
-    foundBusiness = await Business.findOne({ "owner._id": req.user._id });
-  } // bugged here
-  console.log(foundBusiness.name);
-  console.log("ELO" + foundBusiness._id);
-  if (foundBusiness == undefined) {
-    return res.redirect("/"); // wyswietl error
-  }
-  const newOpinion = new Opinion({
-    rating: req.body.rating,
-    comment: req.body.comment,
-    ownerId: req.user._id,
-    ownerName: correctName,
-    businessName: foundBusiness.name,
-    businessId: foundBusiness._id,
-  });
-
-  User.findById(req.params.id, (err, user) => {
-    if (user.opinions.length != 0) {
-      User.findByIdAndUpdate(
-        req.params.id,
-        { $addToSet: { opinions: newOpinion } },
-        (err, user) => {
-          console.log("OPINIA");
-          console.log(newOpinion);
-          console.log(err);
-          console.log(user);
-          return res.redirect("/");
-        }
-      );
-    } else {
-      User.findByIdAndUpdate(
-        req.params.id,
-        { $set: { opinions: newOpinion } },
-        (err, user) => {
-          console.log(err);
-          console.log(user);
-          return res.redirect("/");
-        }
-      );
-    }
-  });
 };
 
 module.exports = {
@@ -170,7 +101,5 @@ module.exports = {
   forgetPasswordView,
   registerUser,
   loginUser,
-  logOutUser,
-  addOpinion,
-  getUser,
+  logOutUser
 };

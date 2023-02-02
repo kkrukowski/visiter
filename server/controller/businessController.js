@@ -5,7 +5,6 @@ const Service = require("../models/Service");
 
 const registerView = (req, res, err, message = "") => {
   if (req.user.role == "Owner") {
-    console.log("Jestes ownerem, nie mozesz rejestrowac firmy");
     res.redirect("/business");
   }
   res.render("businessRegister", { message: message });
@@ -45,8 +44,6 @@ const registerBusiness = async (req, res) => {
       adress: req.body.adress,
       phone: req.body.phone,
     });
-
-    console.log(createBusiness);
     createBusiness.save();
     res.redirect("/");
   } catch {
@@ -55,7 +52,6 @@ const registerBusiness = async (req, res) => {
 };
 
 const refreshRole = (req, res) => {
-  console.log(req.user);
   User.findOneAndUpdate(
     { _id: req.user._id },
     { role: "User" },
@@ -76,8 +72,6 @@ const refreshRole = (req, res) => {
 const homeView = (req, res) => {
   if (req.user.role == "Owner") {
     Business.findOne({ "owner._id": req.user._id }, (err, business) => {
-      console.log("Jestes ownerem, dostep mozliwy");
-      //console.log(business);
       return res.render("business", { business, message: "" });
     });
   } else {
@@ -102,12 +96,12 @@ const getAllBusiness = async (req, res) => {
         ],
       },
       function (err, business) {
-        console.log(business);
         if (err) {
           res.send(err);
           return res.render("searchBusiness");
         }
         return res.render("searchBusiness", {
+          user: req.user,
           businesses: business,
           searchData: { searchName, searchLocation },
         });
@@ -122,12 +116,12 @@ const getAllBusiness = async (req, res) => {
         ],
       },
       function (err, business) {
-        console.log(business);
         if (err) {
           res.send(err);
           return res.render("searchBusiness");
         }
         return res.render("searchBusiness", {
+          user: req.user,
           businesses: business,
           searchData: { searchName, searchLocation: null },
         });
@@ -137,13 +131,13 @@ const getAllBusiness = async (req, res) => {
     Business.find(
       { address: { $regex: searchLocation } },
       function (err, business) {
-        console.log(business);
         if (err) {
           res.send(err);
           return res.render("searchBusiness");
         }
         return res.render("searchBusiness", {
           businesses: business,
+          user: req.user,
           searchData: { searchName: null, searchLocation },
         });
       }
@@ -155,6 +149,7 @@ const getAllBusiness = async (req, res) => {
         return res.render("searchBusiness");
       }
       return res.render("searchBusiness", {
+        user: req.user,
         businesses: business,
         searchData: { searchName: null, searchLocation: null },
       });
@@ -164,7 +159,7 @@ const getAllBusiness = async (req, res) => {
 
 const getBusiness = (req, res) => {
   Business.findById(req.params.id, (err, business) => {
-    return res.render("specificBusiness", { business: business, Users: User });
+    return res.render("specificBusiness", { user: req.user, business: business, Users: User });
   });
 };
 
@@ -176,7 +171,6 @@ const addOpinion = (req, res) => {
     ownerId: req.user._id,
     ownerName: correctName,
   });
-  console.log(newOpinion);
   Business.findById(req.params.id, (err, business) => {
     if (business.opinions != null) {
       Business.findByIdAndUpdate(
@@ -184,9 +178,7 @@ const addOpinion = (req, res) => {
         { $addToSet: { opinions: newOpinion } },
         { new: true },
         (err, business) => {
-          console.log(err);
-          console.log(business);
-          return res.redirect("/");
+          return res.render("specificBusiness", { user: req.user, business: business, Users: User });
         }
       );
     } else {
@@ -195,9 +187,7 @@ const addOpinion = (req, res) => {
         { $set: { opinions: newOpinion } },
         { new: true },
         (err, business) => {
-          console.log(err);
-          console.log(business);
-          return res.redirect("/");
+          return res.render("specificBusiness", { user: req.user, business: business, Users: User });
         }
       );
     }
@@ -205,12 +195,11 @@ const addOpinion = (req, res) => {
 };
 const addWorker = (req, res) => {
   User.findOne({ _id: req.body.id }, (err, user) => {
-    console.log(user);
     if (user === undefined) {
       Business.findById(req.params.id, (err, business) => {
         const message = "Brak takiego uzytkownika.";
-        console.log(message);
-        return res.render("business", { business, message });
+        const currentUser = req.user;
+        return res.render("business", { currentUser, business, message });
       });
     } else if (user.role != "Owner" && user.role != "Worker") {
       User.findByIdAndUpdate(
@@ -229,8 +218,8 @@ const addWorker = (req, res) => {
             { new: true },
             (err, business) => {
               const message = "Pracownik dodany do firmy.";
-              console.log(message);
-              return res.render("business", { business, message });
+              const currentUser = req.user;
+              return res.render("business", { currentUser, business, message });
             }
           );
         } else {
@@ -240,19 +229,17 @@ const addWorker = (req, res) => {
             { new: true },
             (err, business) => {
               const message = "Pracownik dodany do firmy.";
-              console.log(message);
-              return res.render("business", { business, message });
+              const currentUser = req.user;
+              return res.render("business", { currentUser, business, message });
             }
           );
         }
-        const message = "Pracownik dodany do firmy.";
-        return res.render("business", { business, message });
       });
     } else {
       const message = "Podany użytkownik jest już pracownikiem lub właścielem.";
-      console.log(message);
+      const currentUser = req.user;
       Business.findById(req.params.id, (err, business) => {
-        return res.render("business", { business, message });
+        return res.render("business", { currentUser, business, message });
       });
     }
   });
@@ -265,10 +252,9 @@ const removeWorker = (req, res) => {
     (err, user) => {
       if (err) {
         const message = "Brak uzytkownika.";
-        return res.render("business", { business, message }); //dodac message o bledzie
+        const currentUser = req.user;
+        return res.render("business", { currentUser, business, message }); //dodac message o bledzie
       }
-      console.log(user);
-      console.log(user._id);
       Business.findByIdAndUpdate(
         req.params.idBusiness,
         { $pull: { workers: { _id: user._id } } },
@@ -276,10 +262,12 @@ const removeWorker = (req, res) => {
         (err, business) => {
           if (err) {
             const message = "Brak uzytkownika do usuniecia.";
-            return res.render("business", { business, message }); //dodac message o bledzie
+            const currentUser = req.user;
+            return res.render("business", { currentUser, business, message }); //dodac message o bledzie
           }
           const message = "Uzytkownik usunięty.";
-          return res.render("business", { business, message });
+          const currentUser = req.user;
+          return res.render("business", { currentUser, business, message });
         }
       );
     }
@@ -301,11 +289,12 @@ const addService = (req, res) => {
       //new zwraca odrazu zupdatowany obiekt
       if (err) {
         const message = "Błąd w trakcie usuwania serwisu.";
-        return res.render("business", { business }); //dodac message o bledzie
+        const currentUser = req.user;
+        return res.render("business", { currentUser, business, message }); //dodac message o bledzie
       }
-      console.log(business);
       const message = "Serwis dodany.";
-      return res.render("business", { business, message });
+      const currentUser = req.user;
+      return res.render("business", { currentUser, business, message });
     }
   );
 };
@@ -318,11 +307,12 @@ const removeService = (req, res) => {
     (err, business) => {
       if (err) {
         const message = "Błąd w trakcie usuwania serwisu.";
-        return res.render("business", { business, message }); //dodac message o bledzie
+        const currentUser = req.user;
+        return res.render("business", { currentUser, business, message }); //dodac message o bledzie
       }
-      console.log("serwis usuniety");
       const message = "Serwis usuniety.";
-      return res.render("business", { business, message });
+      const currentUser = req.user;
+      return res.render("business", { currentUser, business, message });
     }
   );
 };
