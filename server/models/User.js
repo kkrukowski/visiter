@@ -8,6 +8,7 @@ const userSchema = new Schema({
   surname: String,
   sex: String,
   password: String,
+  invCode: String,
   role: String,
   opinions: { type: [Opinion.schema], require: false },
 });

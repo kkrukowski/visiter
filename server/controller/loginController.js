@@ -2,6 +2,8 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const Business = require("../models/Business");
+const e = require("express");
+
 
 const homeView = (req, res) => {
   Business.findOne({ "owner._id": req.user._id }, (err, business) => {
@@ -61,6 +63,22 @@ const logOutUser = (req, res) => {
   });
 };
 
+const generateInvCode = async () => {
+  let code = "#";
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  for (let i = 0; i < 6; i++) {
+    code += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  const codeExists = await User.findOne({ invCode: code });
+
+  if (codeExists) {
+    return generateInvCode()
+  }
+  else {
+    return code;
+  }
+}
+
 const registerUser = async (req, res) => {
   const userExists = await User.findOne({
     email: req.body.email.toLowerCase(),
@@ -78,13 +96,13 @@ const registerUser = async (req, res) => {
     correctSurname =
       req.body.surname.charAt(0).toUpperCase() +
       req.body.surname.slice(1).toLowerCase();
-
     const newUser = new User({
       email: req.body.email.toLowerCase(),
       name: correctName,
       surname: correctSurname,
       sex: req.body.plec,
       password: hashedPasword,
+      invCode: await generateInvCode(),
       role: "User",
     });
     newUser.save();
