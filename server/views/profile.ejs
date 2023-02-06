@@ -177,6 +177,10 @@
               <p class="info--label">E-mail</p>
               <p class="info--content"><%= user.email %></p>
             </div>
+            <div class="user__info--item">
+              <p class="info--label">Kod zaproszeniowy</p>
+              <p class="info--content"><%= user.invCode %></p>
+            </div>
           </div>
           <% if (isSameUser) { %> <% if (role == "User") { %>
           <a class="become__company--link" href="/business/register"
