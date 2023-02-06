@@ -209,6 +209,19 @@
     margin-left: 20px;
 }
 
+/* Pagination */
+.search__pagination--wrapper{
+    display: flex;
+}
+
+.pagination__page--btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    width: 40px;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;

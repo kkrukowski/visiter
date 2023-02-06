@@ -216,10 +216,10 @@
         </form>
         <% if (businesses != undefined) { %>
         <p class="results--info">
-          Wyniki - <span class="results--input">strzyżenie </span>(<span
-            class="results--count"
-            ><%= businesses.length %></span
-          >)
+          Wyniki - <% if (searchData.searchName != null) %><span
+            class="results--input"
+            ><%= searchData.searchName %> </span
+          >(<span class="results--count"><%= paginationData.totalDocs %></span>)
         </p>
         <div class="results--wrapper">
           <ul class="results__businesses--list">
@@ -260,6 +260,45 @@
           </ul>
         </div>
         <% } %>
+        <div class="search__pagination--wrapper">
+          <button class="pagination__page--btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+              stroke="#ffffff"
+              class="pagination__btn--icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+          </button>
+          <div class="pagination__numbers--wrapper">
+            <% for(let i = 1; i <= paginationData.totalPages; i++) { %>
+            <button class="pagination__number--btn"><%= i %></button>
+            <% } %>
+          </div>
+          <button class="pagination__page--btn">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+              stroke="#ffffff"
+              class="pagination__btn--icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </main>
   </body>

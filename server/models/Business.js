@@ -1,10 +1,11 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
+const mongoosePaginate = require("mongoose-paginate-v2");
 const User = require("./User");
 const Opinion = require("./OpinionForBusiness");
 const Service = require("./Service");
 
-const businessSchema = new Schema({
+let businessSchema = new Schema({
   name: String,
   description: String,
   logo: {
@@ -19,6 +20,8 @@ const businessSchema = new Schema({
   opinions: { type: [Opinion.schema], require: false, default: [] },
   services: { type: [Service.schema], require: false, default: [] },
 });
+
+businessSchema.plugin(mongoosePaginate);
 
 const Business = mongoose.model("Business", businessSchema);
 
