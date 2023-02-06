@@ -219,7 +219,7 @@
           Wyniki - <% if (searchData.searchName != null) %><span
             class="results--input"
             ><%= searchData.searchName %> </span
-          >(<span class="results--count"><%= businesses.length %></span>)
+          >(<span class="results--count"><%= paginationData.totalDocs %></span>)
         </p>
         <div class="results--wrapper">
           <ul class="results__businesses--list">
@@ -277,7 +277,11 @@
               />
             </svg>
           </button>
-
+          <div class="pagination__numbers--wrapper">
+            <% for(let i = 1; i <= paginationData.totalPages; i++) { %>
+            <button class="pagination__number--btn"><%= i %></button>
+            <% } %>
+          </div>
           <button class="pagination__page--btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"

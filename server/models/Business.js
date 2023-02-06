@@ -1,5 +1,5 @@
-var mongoose = require("mongoose");
-var Schema = mongoose.Schema;
+const mongoose = require("mongoose");
+const Schema = mongoose.Schema;
 const mongoosePaginate = require("mongoose-paginate-v2");
 const User = require("./User");
 const Opinion = require("./OpinionForBusiness");

@@ -79,7 +79,15 @@ const homeView = (req, res) => {
   }
 };
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 3;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+
 const getAllBusiness = async (req, res) => {
+  const { limit, offset } = getPagination(0, 3);
   const searchName = req.query.name;
   const searchLocation = req.query.location;
   if (searchName != null && searchLocation != null) {
@@ -143,23 +151,34 @@ const getAllBusiness = async (req, res) => {
       }
     );
   } else {
-    Business.find({}, function (err, business) {
-      if (err) {
-        res.send(err);
+    Business.paginate({}, { offset, limit })
+      .then((businesses) => {
+        return res.render("searchBusiness", {
+          user: req.user,
+          businesses: businesses.docs,
+          searchData: { searchName: null, searchLocation: null },
+          paginationData: {
+            totalPages: businesses.totalPages,
+            totalDocs: businesses.totalDocs,
+            page: businesses.page,
+            hasPrevPage: businesses.hasPrevPage,
+            hasNextPage: businesses.hasNextPage,
+          },
+        });
+      })
+      .catch((err) => {
         return res.render("searchBusiness");
-      }
-      return res.render("searchBusiness", {
-        user: req.user,
-        businesses: business,
-        searchData: { searchName: null, searchLocation: null },
       });
-    });
   }
 };
 
 const getBusiness = (req, res) => {
   Business.findById(req.params.id, (err, business) => {
-    return res.render("specificBusiness", { user: req.user, business: business, Users: User });
+    return res.render("specificBusiness", {
+      user: req.user,
+      business: business,
+      Users: User,
+    });
   });
 };
 
@@ -178,7 +197,11 @@ const addOpinion = (req, res) => {
         { $addToSet: { opinions: newOpinion } },
         { new: true },
         (err, business) => {
-          return res.render("specificBusiness", { user: req.user, business: business, Users: User });
+          return res.render("specificBusiness", {
+            user: req.user,
+            business: business,
+            Users: User,
+          });
         }
       );
     } else {
@@ -187,7 +210,11 @@ const addOpinion = (req, res) => {
         { $set: { opinions: newOpinion } },
         { new: true },
         (err, business) => {
-          return res.render("specificBusiness", { user: req.user, business: business, Users: User });
+          return res.render("specificBusiness", {
+            user: req.user,
+            business: business,
+            Users: User,
+          });
         }
       );
     }
