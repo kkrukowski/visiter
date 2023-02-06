@@ -22,7 +22,7 @@
             <input type="text" name="code">
             <input id="submit" type="submit" value="Dodaj">
         </form>
-        <h2>Twoi pracownicy:</h2>
+        <h2>Twoje serwisy:</h2>
         <% if(business.services != null){ %>
             <ul>
                 <% business.services.forEach(function(service) { %>
@@ -52,6 +52,33 @@
                     <input type="number" step="0.01" name="duration"><br>
                     <input id="submit" type="submit" value="Dodaj">
                 </form>
+
+
+<br><br><br><br><br>
+<h1> KALENDARZ </h1>
+
+<div>
+    <% months = ["Styczeń", "Luty", "Marzec", "Kwiecień", "Maj", "Czerwiec", "Lipiec", "Sierpień","Wrzesień", "Październik", "Listopad", "Grudzień"]%>
+    <% days = ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"] %>
+    <% curr = new Date(); %>
+    <% first = curr.getDate() - curr.getDay()+1; %>
+    <% last = first + 6; %>
+
+    <% firstday = new Date(curr.setDate(first)); %>
+    <% lastday = new Date(curr.setDate(last)); %>
+    <%= firstday.getDate() %> <%= days[firstday.getDay()] %> <%= months[firstday.getMonth()] %> <%= firstday.getFullYear() %> - <%= lastday.getDate() %> <%= days[lastday.getDay()] %> <%= months[lastday.getMonth()] %> <%= lastday.getFullYear() %>
+
+    <% calendarDate = firstday %>
+    <div>
+        <% for(i = 0; i < 7; i++){ %>
+        <%  calendarDate = new Date(curr.setDate(first+i)) %>
+        <%= days[calendarDate.getDay()]; %>,
+        <%= months[calendarDate.getMonth()]; %>
+        <%= calendarDate.getDate(); %>   
+        <% } %>
+    </div>
+</div>
+
 <% if(message!=""){ %>
     <p><%= message %></p>
 <% } %>
