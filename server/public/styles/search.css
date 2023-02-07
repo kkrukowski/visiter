@@ -212,14 +212,53 @@
 /* Pagination */
 .search__pagination--wrapper{
     display: flex;
+    margin: 20px 0;
 }
 
 .pagination__page--btn{
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #F1511B;
+    border-radius: 20px;
     height: 40px;
     width: 40px;
+}
+
+.pagination__page--btn.disabled {
+    background-color: #FF7E54;
+}
+
+.pagination__btn--icon{
+    height: 20px;
+}
+
+.pagination__numbers--wrapper{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 15px;
+}
+
+.pagination__number--btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2e3155;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    border-radius: 20px;
+    height: 40px;
+    width: 40px;
+}
+
+.pagination__number--btn:not(:first-child){
+    margin-left: 5px;
+}
+
+.current__page{
+    background-color: #F1511B;
 }
 
 /* Scrollbar */

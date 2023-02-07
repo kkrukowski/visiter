@@ -261,7 +261,12 @@
         </div>
         <% } %>
         <div class="search__pagination--wrapper">
-          <button class="pagination__page--btn">
+          <% if (searchData.searchName != null) { %> <% if
+          (paginationData.hasPrevPage) { %>
+          <a
+            href="/business/search?name=<%= searchData.searchName %>&location=&page=<%= paginationData.currentPage - 1 %>"
+            class="pagination__page--btn"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -276,13 +281,100 @@
                 d="M15.75 19.5L8.25 12l7.5-7.5"
               />
             </svg>
-          </button>
+          </a>
+          <% } else { %>
+          <a class="pagination__page--btn disabled">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+              stroke="#ffffff"
+              class="pagination__btn--icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+          </a>
+          <% } %> <% } else { %> <% if (paginationData.hasPrevPage) { %>
+          <a
+            href="/business/search?page=<%= paginationData.currentPage - 1 %>"
+            class="pagination__page--btn"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+              stroke="#ffffff"
+              class="pagination__btn--icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+          </a>
+          <% } else { %>
+          <a class="pagination__page--btn disabled">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+              stroke="#ffffff"
+              class="pagination__btn--icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+          </a>
+          <% } %> <% } %>
           <div class="pagination__numbers--wrapper">
-            <% for(let i = 1; i <= paginationData.totalPages; i++) { %>
-            <button class="pagination__number--btn"><%= i %></button>
-            <% } %>
+            <% for(let i = 1; i <= paginationData.totalPages; i++) { %> <% if
+            (paginationData.currentPage === i) { %> <% if (searchData.searchName
+            != null) { %>
+            <a
+              href="/business/search?name=<%= searchData.searchName %>&location=&page=<%= i %>"
+              class="pagination__number--btn current__page"
+              ><%= i %></a
+            >
+            <% } else { %>
+            <a
+              href="/business/search?page=<%= i %>"
+              class="pagination__number--btn current__page"
+            >
+              <%= i %>
+            </a>
+            <% } %> <% } else { %> <% if (searchData.searchName != null) { %>
+            <a
+              href="/business/search?name=<%= searchData.searchName %>&location=&page=<%= i %>"
+              class="pagination__number--btn"
+            >
+              <%= i %></a
+            >
+            <% } else { %>
+            <a
+              href="/business/search?page=<%= i %>"
+              class="pagination__number--btn"
+            >
+              <%= i %>
+            </a>
+            <% } %> <% } %> <% } %>
           </div>
-          <button class="pagination__page--btn">
+          <% if (searchData.searchName != null) { %> <% if
+          (paginationData.hasNextPage) { %>
+          <a
+            href="/business/search?name=<%= searchData.searchName %>&location=&page=<%= paginationData.currentPage + 1 %>"
+            class="pagination__page--btn"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -297,7 +389,62 @@
                 d="M8.25 4.5l7.5 7.5-7.5 7.5"
               />
             </svg>
-          </button>
+          </a>
+          <% } else { %>
+          <a class="pagination__page--btn disabled">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+              stroke="#ffffff"
+              class="pagination__btn--icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </a>
+          <% } %> <% } else { %> <% if (paginationData.hasNextPage) { %>
+          <a
+            href="/business/search?page=<%= paginationData.currentPage + 1 %>"
+            class="pagination__page--btn"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+              stroke="#ffffff"
+              class="pagination__btn--icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </a>
+          <% } else { %>
+          <a class="pagination__page--btn disabled">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="3"
+              stroke="#ffffff"
+              class="pagination__btn--icon"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+              />
+            </svg>
+          </a>
+          <% } %> <% } %>
         </div>
       </div>
     </main>

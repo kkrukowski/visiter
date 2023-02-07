@@ -87,11 +87,11 @@ const getPagination = (page, size) => {
 };
 
 const getAllBusiness = async (req, res) => {
-  const { limit, offset } = getPagination(0, 3);
+  const { limit, offset } = getPagination(req.query.page - 1, 3);
   const searchName = req.query.name;
   const searchLocation = req.query.location;
   if (searchName != null && searchLocation != null) {
-    Business.find(
+    Business.paginate(
       {
         $and: [
           {
@@ -103,53 +103,25 @@ const getAllBusiness = async (req, res) => {
           { address: { $regex: searchLocation } },
         ],
       },
-      function (err, business) {
-        if (err) {
-          res.send(err);
-          return res.render("searchBusiness");
-        }
+      { offset, limit }
+    )
+      .then((businesses) => {
         return res.render("searchBusiness", {
           user: req.user,
-          businesses: business,
+          businesses: businesses.docs,
           searchData: { searchName, searchLocation },
+          paginationData: {
+            totalPages: businesses.totalPages,
+            totalDocs: businesses.totalDocs,
+            currentPage: businesses.page,
+            hasPrevPage: businesses.hasPrevPage,
+            hasNextPage: businesses.hasNextPage,
+          },
         });
-      }
-    );
-  } else if (searchName != null && searchLocation == null) {
-    Business.find(
-      {
-        $or: [
-          { name: { $regex: searchName } },
-          { description: { $regex: searchLocation } },
-        ],
-      },
-      function (err, business) {
-        if (err) {
-          res.send(err);
-          return res.render("searchBusiness");
-        }
-        return res.render("searchBusiness", {
-          user: req.user,
-          businesses: business,
-          searchData: { searchName, searchLocation: null },
-        });
-      }
-    );
-  } else if (searchName == null && searchLocation != null) {
-    Business.find(
-      { address: { $regex: searchLocation } },
-      function (err, business) {
-        if (err) {
-          res.send(err);
-          return res.render("searchBusiness");
-        }
-        return res.render("searchBusiness", {
-          businesses: business,
-          user: req.user,
-          searchData: { searchName: null, searchLocation },
-        });
-      }
-    );
+      })
+      .catch((err) => {
+        return res.render("searchBusiness");
+      });
   } else {
     Business.paginate({}, { offset, limit })
       .then((businesses) => {
@@ -160,7 +132,7 @@ const getAllBusiness = async (req, res) => {
           paginationData: {
             totalPages: businesses.totalPages,
             totalDocs: businesses.totalDocs,
-            page: businesses.page,
+            currentPage: businesses.page,
             hasPrevPage: businesses.hasPrevPage,
             hasNextPage: businesses.hasNextPage,
           },
@@ -223,7 +195,7 @@ const addOpinion = (req, res) => {
 const addWorker = (req, res) => {
   User.findOne({ invCode: req.body.code }, (err, user) => {
     if (user == null) {
-      console.log("HALO")
+      console.log("HALO");
       Business.findById(req.params.id, (err, business) => {
         const message = "Brak takiego uzytkownika.";
         const currentUser = req.user;
@@ -248,7 +220,11 @@ const addWorker = (req, res) => {
               (err, business) => {
                 const message = "Pracownik dodany do firmy.";
                 const currentUser = req.user;
-                return res.render("business", { currentUser, business, message });
+                return res.render("business", {
+                  currentUser,
+                  business,
+                  message,
+                });
               }
             );
           } else {
@@ -259,13 +235,18 @@ const addWorker = (req, res) => {
               (err, business) => {
                 const message = "Pracownik dodany do firmy.";
                 const currentUser = req.user;
-                return res.render("business", { currentUser, business, message });
+                return res.render("business", {
+                  currentUser,
+                  business,
+                  message,
+                });
               }
             );
           }
         });
       } else {
-        const message = "Podany użytkownik jest już pracownikiem lub właścielem.";
+        const message =
+          "Podany użytkownik jest już pracownikiem lub właścielem.";
         const currentUser = req.user;
         Business.findById(req.params.id, (err, business) => {
           return res.render("business", { currentUser, business, message });
