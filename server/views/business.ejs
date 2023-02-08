@@ -69,7 +69,7 @@
     <%= firstday.getDate() %> <%= days[firstday.getDay()] %> <%= months[firstday.getMonth()] %> <%= firstday.getFullYear() %> - <%= lastday.getDate() %> <%= days[lastday.getDay()] %> <%= months[lastday.getMonth()] %> <%= lastday.getFullYear() %>
 
     <% calendarDate = firstday %>
-    <div>
+    <div id="calendar">
         <% for(i = 0; i < 7; i++){ %>
         <%  calendarDate = new Date(curr.setDate(first+i)) %>
         <%= days[calendarDate.getDay()]; %>,

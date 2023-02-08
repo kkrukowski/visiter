@@ -4,6 +4,11 @@ const passport = require("passport");
 const Business = require("../models/Business");
 const e = require("express");
 
+const normalize = (string) => {
+  const newString = string.charAt(0).toUpperCase() +
+  string.slice(1).toLowerCase();
+  return newString;
+}
 
 const homeView = (req, res) => {
   Business.findOne({ "owner._id": req.user._id }, (err, business) => {
@@ -90,17 +95,14 @@ const registerUser = async (req, res) => {
 
   try {
     const hashedPasword = await bcrypt.hash(req.body.password, 10);
-    correctName =
-      req.body.name.charAt(0).toUpperCase() +
-      req.body.name.slice(1).toLowerCase();
-    correctSurname =
-      req.body.surname.charAt(0).toUpperCase() +
-      req.body.surname.slice(1).toLowerCase();
     const newUser = new User({
       email: req.body.email.toLowerCase(),
-      name: correctName,
-      surname: correctSurname,
-      sex: req.body.plec,
+      name: normalize(req.body.name),
+      surname: normalize(req.body.surname),
+      //sex: normalize(req.body.sex),  zrobic checkboxa w rejestracji (front) - domyslna wartosc; Mężczyzna w modelu
+      country: normalize(req.body.country),
+      city: normalize(req.body.city),
+      phone: req.body.phone,
       password: hashedPasword,
       invCode: await generateInvCode(),
       role: "User",

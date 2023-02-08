@@ -2,6 +2,11 @@ const User = require("../models/User");
 const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
 
+const editProfileView = async (req, res) =>{
+    const user = req.user;
+    return res.render("editProfile", { user });
+};
+
 const getUser = (req, res) => {
     User.findById(req.params.id, (err, user) => {
         if (req.params.id === req.session.passport.user) {
@@ -66,5 +71,6 @@ const addOpinion = async (req, res) => {
 
 module.exports = {
     getUser,
-    addOpinion
+    addOpinion,
+    editProfileView
 }
