@@ -128,26 +128,81 @@
             </div>
           </nav>
           <main class="main">
-            <div id="editPanel name_surname">
-              Imie i nazwisko: &emsp; <%= user.name %> <%= user.surname %> <a>Edytuj</a>
+            <div class="toEdit" id="name_surname">
+              Imie i nazwisko: &emsp; <%= user.name %> <%= user.surname %> <button onclick="editPanel(this)" value="name_surname">Edytuj</button>
             </div>
-            <div id="editPanel email">
-              Email: &emsp; <%= user.email %> <%= user.surname %> <a>Edytuj</a>
+            <div class="editPanel" id="name_surname" style = "display: none;">
+              <form action="/profile/<%= user._id %>/edit" method="POST">
+                  Imie: <input type="text" name="name" placeholder="<%= user.name %>" required>
+                  Nazwisko: <input type="text" name="surname" placeholder="<%= user.surname %>" required>
+                <button>Zapisz zmiany</button>            
+              </form>
             </div>
-            <div id="editPanel phone">
-              Telefon: &emsp; <%= user.phone %> <a>Edytuj</a>
+            <div class="toEdit" id="email">
+              Email: &emsp; <%= user.email %> <%= user.surname %> <button onclick="editPanel(this)" value="email">Edytuj</button>
             </div>
-            <div id="editPanel country">
-              Kraj: &emsp; <%= user.country %> <a>Edytuj</a>
+            <div class="editPanel" id="email"style = "display: none;">
+              <form action="/profile/<%= user._id %>/edit" method="POST">
+                  Email: <input type="text" name="email" placeholder="<%= user.email %>" required>
+                <button>Zapisz zmiany</button>
+              </form>
             </div>
-            <div id="editPanel city">
-              Miasto: &emsp; <%= user.city %> <a>Edytuj</a>
+            <div class="toEdit" id="phone">
+              Telefon: &emsp; <%= user.phone %> <button onclick="editPanel(this)" value="phone">Edytuj</button>
             </div>
-            <div id="editPanel delAcc">
-              <a>Usun konto</a>
+            <div class="editPanel" id="phone" style = "display: none;">
+              <form action="/profile/<%= user._id %>/edit" method="POST">
+                Telefon: <input type="text" name="phone" placeholder="<%= user.phone %>" required>
+                <button>Zapisz zmiany</button>
+              </form>
+            </div>
+            <div class="toEdit" id="country">
+              Kraj: &emsp; <%= user.country %> <button onclick="editPanel(this)" value="country">Edytuj</button>
+            </div>
+            <div class="editPanel" id="country" style = "display: none;">
+              <form action="/profile/<%= user._id %>/edit" method="POST">
+                  Kraj: <input type="text" name="country" placeholder="<%= user.country %>" required>
+                <button>Zapisz zmiany</button>
+              </form>
+            </div>
+            <div class="toEdit" id="city">
+              Miasto: &emsp; <%= user.city %> <button onclick="editPanel(this)" value="city">Edytuj</button>
+            </div>
+            <div class="editPanel" id="city" style = "display: none;">
+              <form action="/profile/<%= user._id %>/edit" method="POST">
+                Miasto: <input type="text" name="city" placeholder="<%= user.city %>" required>
+                <button>Zapisz zmiany</button>
+              </form>
+            </div>
+            <div id="delAcc">
+              <button>Usun konto</button>
             </div>
           </main>
-
   </body>
+  <script>
+    function editPanel(btn){
+      console.log(btn.value)
+      var divsToEdit = document.getElementsByClassName('toEdit');
+      var divsEditPanel = document.getElementsByClassName('editPanel');
+
+      for(var i = 0; i<divsToEdit.length; i++){ //CZEMU FOREACH NIE DZIALA KURWA
+        if(divsToEdit[i].id == btn.value){
+          divsToEdit[i].style.display = 'none';
+          divsEditPanel[i].style.display = 'none';
+        }
+        else{
+          divsToEdit[i].style.display = 'block';
+        }
+      }
+      for(var i = 0; i<divsEditPanel.length; i++){ //CZEMU FOREACH NIE DZIALA KURWA
+        if(divsEditPanel[i].id == btn.value){
+          divsEditPanel[i].style.display = 'block';
+        }
+        else{
+          divsEditPanel[i].style.display = 'none';
+        }
+      }
+    }
+  </script>
 </html>
 

@@ -7,6 +7,11 @@ const editProfileView = async (req, res) =>{
     return res.render("editProfile", { user });
 };
 
+const editProfile = (req, res) => {
+    const user = req.user;
+    return res.render("editProfile", { user });
+};
+
 const getUser = (req, res) => {
     User.findById(req.params.id, (err, user) => {
         if (req.params.id === req.session.passport.user) {
@@ -72,5 +77,6 @@ const addOpinion = async (req, res) => {
 module.exports = {
     getUser,
     addOpinion,
-    editProfileView
+    editProfileView,
+    editProfile
 }

@@ -1,3 +1,11 @@
 h1{
     background-color: blue;
 }
+.toEdit{
+    margin: 5px;
+    border: 2px solid;
+}
+.editPanel{
+    margin: 5px;
+    border: 2px solid;
+}
