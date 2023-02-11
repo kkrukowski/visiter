@@ -7,6 +7,61 @@ const editProfileView = async (req, res) =>{
     return res.render("editProfile", { user });
 };
 
+const editProfile = (req, res) => {
+    if(req.body.name && req.body.surname){
+        User.findByIdAndUpdate(req.params.id, {name: req.body.name, surname: req.body.surname}, {new: true}, (err, user) =>{
+            if(err){
+                return res.render("editProfile", {user, message: err})
+            }
+            else{
+                return res.render("editProfile", {user, message: "Edycja pomyślna."})
+            }
+        });
+    } else if(req.body.email){
+        User.findByIdAndUpdate(req.params.id, {email: req.body.email}, {new: true}, (err, user) =>{
+            if(err){
+                return res.render("editProfile", {user, message: err})
+            }
+            else{
+                return res.render("editProfile", {user, message: "Edycja pomyślna."})
+            }
+        });        
+    } else if(req.body.phone){ 
+        var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{3})$/; //validation of phone
+        if (!re.test(req.body.phone)) {
+            const message = "Podaj prawidłowy numer telefonu.";
+            const user = req.user;
+            return res.render("editProfile", {user, message});
+        }
+        User.findByIdAndUpdate(req.params.id, {phone: req.body.phone}, {new: true}, (err, user) =>{
+            if(err){
+                return res.render("editProfile", {user, message: err})
+            }
+            else{
+                return res.render("editProfile", {user, message: "Edycja pomyślna."})
+            }
+        });
+    } else if(req.body.country){
+        User.findByIdAndUpdate(req.params.id, {country: req.body.country}, {new: true}, (err, user) =>{
+            if(err){
+                return res.render("editProfile", {user, message: err})
+            }
+            else{
+                return res.render("editProfile", {user, message: "Edycja pomyślna."})
+            }
+        });
+    } else if(req.body.city){
+        User.findByIdAndUpdate(req.params.id, {city: req.body.city}, {new: true}, (err, user) =>{
+            if(err){
+                return res.render("editProfile", {user, message: err})
+            }
+            else{
+                return res.render("editProfile", {user, message: "Edycja pomyślna."})
+            }
+        });
+    }
+};
+
 const getUser = (req, res) => {
     User.findById(req.params.id, (err, user) => {
         if (req.params.id === req.session.passport.user) {
@@ -72,5 +127,6 @@ const addOpinion = async (req, res) => {
 module.exports = {
     getUser,
     addOpinion,
-    editProfileView
+    editProfileView,
+    editProfile
 }
