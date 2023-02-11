@@ -5,27 +5,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Profil | Visiter</title>
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="../apple-touch-icon.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="../favicon-32x32.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="../favicon-16x16.png"
-    />
-    <link rel="manifest" href="../site.webmanifest" />
-    <link rel="stylesheet" href="../styles/styles.css" />
-    <link rel="stylesheet" href="../styles/profile.css" />
-    <link rel="stylesheet" href="../styles/normalize.css" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/profile.css" />
+    <link rel="stylesheet" href="/styles/normalize.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -43,7 +29,7 @@
       <div class="nav__wrapper">
         <a href="/" class="nav__img--link"
           ><img
-            src="../assets/imgs/visiter-inline.png"
+            src="/assets/imgs/visiter-inline.png"
             alt="Visiter"
             title="Visiter"
             class="nav--img"
@@ -149,7 +135,25 @@
     </nav>
     <!-- Main block -->
     <main class="main">
-      <p>EDYTUJ SWOJ PROFIL <%= user.name %> <%= user.surname %></p>
+      <div id="editPanel name_surname">
+        Imie i nazwisko: &emsp; <%= user.name %> <%= user.surname %>
+        <a>Edytuj</a>
+      </div>
+      <div id="editPanel email">
+        Email: &emsp; <%= user.email %> <%= user.surname %> <a>Edytuj</a>
+      </div>
+      <div id="editPanel phone">
+        Telefon: &emsp; <%= user.phone %> <a>Edytuj</a>
+      </div>
+      <div id="editPanel country">
+        Kraj: &emsp; <%= user.country %> <a>Edytuj</a>
+      </div>
+      <div id="editPanel city">
+        Miasto: &emsp; <%= user.city %> <a>Edytuj</a>
+      </div>
+      <div id="editPanel delAcc">
+        <a>Usun konto</a>
+      </div>
     </main>
   </body>
   <script src="../js/script.js"></script>
