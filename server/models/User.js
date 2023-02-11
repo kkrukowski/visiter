@@ -15,8 +15,8 @@ const userSchema = new Schema({
   invCode: String,
   role: String,
   opinions: { type: [Opinion.schema] },
-  visits: [Visit.schema],
-  schedule: [Visit.schema],
+  clientVisits: [{ type: Schema.Types.ObjectId, ref: "Visit" }],
+  workerVisits: [{ type: Schema.Types.ObjectId, ref: "Visit" }],
 });
 
 const User = mongoose.model("User", userSchema);

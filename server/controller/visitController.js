@@ -1,48 +1,94 @@
 const Business = require("../models/Business");
 const User = require("../models/User");
 const Visit = require("../models/Visit");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 const moment = require("moment");
 
 // test id - 63bd2f8b35c597866c9fe176
 const getAllClientVisits = (req, res) => {
-  const userId = req.params.id;
-  User.findById(userId, (err, user) => {
+  // Get array of visits ids
+  const clientId = req.params.id;
+  User.findById(clientId, (err, user) => {
     if (err) return res.send(err);
-    return res.render("clientVisits", { user: user, visits: user.visits });
+    // Get visits data
+    const visitsIds = user.clientVisits;
+    Visit.find({ id: visitsIds }, (err, visits) => {
+      if (err) return res.send(err);
+      return res.render("clientVisits", {
+        user: user,
+        visits: visits,
+      });
+    });
   });
 };
 
 // const getWorkerSchedule = () => {};
 
-const addVisitToClient = (req, res) => {
-  const userId = req.params.id;
-  const visitDate = moment().set({
-    year: 2023,
-    month: 1,
-    date: 18,
-    hour: 10,
-    minute: 30,
-    second: 0,
-  });
+const createVisit = (req, res) => {
+  console.log("XD");
   // Create new Visit
-  const visit = new Visit({
-    createdAt: moment(),
-    visitDate: visitDate,
-    businessId: "id",
-    workerId: "id",
-    service: "service",
-    status: "waiting",
-  });
-  const update = { $push: { visits: visit } };
-  // Update visits for user
-  User.findByIdAndUpdate(userId, update, (err, user) => {
-    if (err) return res.send(err);
-    console.log(user);
-    return res.send("Added visit");
-  });
+  const clientId = req.params.clientId;
+  const workerId = req.params.clientId;
+  const businessId = ObjectId("63dbed7434490cecd68fac20");
+  const serviceId = ObjectId("63bd5fdb1c51c90174884dda");
+
+  if (
+    ObjectId.isValid(clientId) &&
+    ObjectId.isValid(workerId) &&
+    ObjectId.isValid(businessId) &&
+    ObjectId.isValid(serviceId)
+  ) {
+    const visitDate = moment().set({
+      year: 2023,
+      month: 1,
+      date: 18,
+      hour: 10,
+      minute: 30,
+      second: 0,
+    });
+    // Create new Visit
+    const newVisit = new Visit({
+      createdAt: moment(),
+      visitDate: visitDate,
+      businessId: businessId,
+      workerId: workerId,
+      clientId: clientId,
+      serviceId: serviceId,
+      status: "waiting",
+    });
+
+    newVisit.save((err, visit) => {
+      if (err) return handleError(err);
+      // Add to client's visits list
+      const clientUpdate = { $push: { clientVisits: visit.id } };
+      // Update visits for user
+      const updatedClient = User.findByIdAndUpdate(
+        clientId,
+        clientUpdate,
+        (err, client) => {
+          if (err) return res.send(err);
+        }
+      );
+
+      // Add to worker's visits list
+      const workerUpdate = { $push: { workerVisits: visit.id } };
+      // Update visits for user
+      const updatedWorker = User.findByIdAndUpdate(
+        workerId,
+        workerUpdate,
+        (err, client) => {
+          if (err) return res.send(err);
+        }
+      );
+
+      return res.send("Visit successfully added!");
+    });
+  } else {
+    return res.status(404).send({ err: "ID is not valid!" });
+  }
 };
 
 // const addVisitToWorker = () => {};
 
-module.exports = { getAllClientVisits, addVisitToClient };
+module.exports = { getAllClientVisits, createVisit };

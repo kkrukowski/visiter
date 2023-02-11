@@ -3,10 +3,10 @@ const router = express.Router();
 
 const {
   getAllClientVisits,
-  addVisitToClient,
+  createVisit,
 } = require("../controller/visitController");
 
 router.get("/:id", getAllClientVisits);
-router.post("/client/add/:id", addVisitToClient);
+router.post("/add/client/:clientId", createVisit);
 
 module.exports = router;
