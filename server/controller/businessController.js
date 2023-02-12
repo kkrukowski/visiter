@@ -195,7 +195,6 @@ const addOpinion = (req, res) => {
 const addWorker = (req, res) => {
   User.findOne({ invCode: req.body.code }, (err, user) => {
     if (user == null) {
-      console.log("HALO");
       Business.findById(req.params.id, (err, business) => {
         const message = "Brak takiego uzytkownika.";
         const currentUser = req.user;
@@ -215,22 +214,7 @@ const addWorker = (req, res) => {
           if (business.workers != null) {
             Business.findOneAndUpdate(
               { "owner._id": req.user._id },
-              { $addToSet: { workers: user } },
-              { new: true },
-              (err, business) => {
-                const message = "Pracownik dodany do firmy.";
-                const currentUser = req.user;
-                return res.render("business", {
-                  currentUser,
-                  business,
-                  message,
-                });
-              }
-            );
-          } else {
-            Business.findOneAndUpdate(
-              { "owner._id": req.user._id },
-              { $set: { workers: user } },
+              { $push: { workers: user.id } },
               { new: true },
               (err, business) => {
                 const message = "Pracownik dodany do firmy.";
@@ -286,28 +270,35 @@ const removeWorker = (req, res) => {
 };
 
 const addService = (req, res) => {
+  const businessId = req.params.id;
   const newService = new Service({
     name: req.body.name,
     price: req.body.price,
     description: req.body.description,
     duration: req.body.duration,
+    businessId: businessId,
   });
-  Business.findByIdAndUpdate(
-    req.params.id,
-    { $addToSet: { services: newService } },
-    { new: true },
-    (err, business) => {
-      //new zwraca odrazu zupdatowany obiekt
+
+  newService.save((err, service) => {
+    if (err) {
+      const business = Business.findById(businessId);
+      const message = "Błąd w trakcie dodawania serwisu.";
+      const currentUser = req.user;
+      return res.render("business", { currentUser, business, message }); //dodac message o bledzie
+    }
+    const update = {
+      $push: { services: service.id },
+    };
+    Business.findByIdAndUpdate(businessId, update, (err, business) => {
+      const currentUser = req.user;
       if (err) {
-        const message = "Błąd w trakcie usuwania serwisu.";
-        const currentUser = req.user;
-        return res.render("business", { currentUser, business, message }); //dodac message o bledzie
+        const message = "Błąd podczas dodawania serwisu do firmy!";
+        return res.render("business", { currentUser, business, message });
       }
       const message = "Serwis dodany.";
-      const currentUser = req.user;
       return res.render("business", { currentUser, business, message });
-    }
-  );
+    });
+  });
 };
 
 const removeService = (req, res) => {

@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const visitSchema = new Schema({
-  createdAt: String,
-  visitDate: String,
+  createdAt: Date,
+  visitDate: Date,
   businessId: { type: Schema.Types.ObjectId, ref: "Business" },
   workerId: { type: Schema.Types.ObjectId, ref: "User" },
   clientId: { type: Schema.Types.ObjectId, ref: "User" },

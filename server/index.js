@@ -47,6 +47,7 @@ app.use("/", loginApi);
 app.use("/business", businessApi);
 app.use("/profile", profileApi);
 app.use("/visits", visitApi);
+app.use("/business/visits", () => {});
 app.use("/", routes);
 
 // MongoDB connection

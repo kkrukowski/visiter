@@ -6,6 +6,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const moment = require("moment");
 
 // test id - 63bd2f8b35c597866c9fe176
+// test business id - 63b7015741e1b4cc6ecc9b62
 const getAllClientVisits = (req, res) => {
   // Get array of visits ids
   const clientId = req.params.id;
@@ -23,10 +24,33 @@ const getAllClientVisits = (req, res) => {
   });
 };
 
+const getAllWorkerVisits = (req, res) => {
+  const workerId = req.params.workerId;
+  if (ObjectId.isValid(workerId)) {
+    User.findById(workerId, (err, user) => {
+      if (err) return res.send(err);
+      // Get worker visits
+      const visitsIds = user.workerVisits;
+      const dateNow = moment();
+      Visit.find(
+        { id: visitsIds, visitDate: { $gt: dateNow } },
+        (err, visits) => {
+          if (err) return res.send(err);
+          console.log(visits);
+          return res.send(visits);
+          // return res.render("clientVisits", {
+          //   user: user,
+          //   workerVisits: visits,
+          // });
+        }
+      );
+    });
+  }
+};
+
 // const getWorkerSchedule = () => {};
 
 const createVisit = (req, res) => {
-  console.log("XD");
   // Create new Visit
   const clientId = req.params.clientId;
   const workerId = req.params.clientId;
@@ -91,4 +115,15 @@ const createVisit = (req, res) => {
 
 // const addVisitToWorker = () => {};
 
-module.exports = { getAllClientVisits, createVisit };
+const getAllServiceDates = (req, res) => {
+  const serviceId = req.params.serviceId;
+  if (ObjectId.isValid(serviceId)) {
+  }
+};
+
+module.exports = {
+  getAllClientVisits,
+  getAllWorkerVisits,
+  createVisit,
+  getAllServiceDates,
+};

@@ -16,9 +16,9 @@ let businessSchema = new Schema({
   address: String,
   phone: String,
 
-  workers: { type: [User.schema], require: false, default: [] },
+  workers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   opinions: { type: [Opinion.schema], require: false, default: [] },
-  services: { type: [Service.schema], require: false, default: [] },
+  services: [{ type: Schema.Types.ObjectId, ref: "Service" }],
 });
 
 businessSchema.plugin(mongoosePaginate);
