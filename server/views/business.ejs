@@ -4,7 +4,7 @@
 <h2>Twoi pracownicy:</h2>
 <% if(business.workers != null){ %>
     <ul>
-        <% business.workers.forEach(function(worker) { %>
+        <% workers.forEach(function(worker) { %>
             <li><a href="/<%= worker._id %>">
                     <%= worker.name %>
                         <%= worker.surname%>
@@ -25,7 +25,7 @@
         <h2>Twoje serwisy:</h2>
         <% if(business.services != null){ %>
             <ul>
-                <% business.services.forEach(function(service) { %>
+                <% services.forEach(function(service) { %>
                     <li>
                             <%= service.name %>
                             <br>

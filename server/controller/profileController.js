@@ -64,17 +64,45 @@ const editProfile = (req, res) => {
 
 const getUser = (req, res) => {
     User.findById(req.params.id, (err, user) => {
-        if (req.params.id === req.session.passport.user) {
-            return res.render("profile", { user: user, isSameUser: true });
-        }
-        return res.render("profile", { user: user, isSameUser: false });
+        const opinionsIds = user.opinions;
+        Opinion.find({ "_id": { $in: opinionsIds } }, (err, opinions) => {
+            var userIds = [];
+            opinions.forEach((opinion) => {
+                userIds.push(opinion.ownerId);
+            })
+            console.log("USERIDS", userIds)
+            User.find({ "_id": { $in: userIds } }, (err, users) => {
+                var userInfo = [];
+                users.forEach((user) => {
+                    userInfo.push(user.name)
+                });
+                console.log("USERINFO", userInfo);
+                var businessIds = [];
+                opinions.forEach((opinion) => {
+                    businessIds.push(opinion.businessId);
+                })
+                console.log(businessIds);
+                Business.find({ "_id": { $in: businessIds } }, (err, businesses) => {
+                    var businessInfo = [];
+                    businesses.forEach((business) => {
+                        console.log(business.name)
+                        businessInfo.push(business.name)
+                    });
+                    console.log("BUSINESSINFO", businessInfo)
+                    if (req.params.id === req.session.passport.user) {
+                        return res.render("profile", { user: user, opinions, isSameUser: true });
+                    }
+                    return res.render("profile", { user: user, opinions, isSameUser: false });
+                })
+            });
+        });
     });
 };
 
 const addOpinion = (req, res) => {
     correctName = req.user.name + " " + req.user.surname;
     if (req.user.role == "Worker") {
-        Business.findOne({ workers: req.user._id, }, (err, business) =>{
+        Business.findOne({ workers: req.user._id, }, (err, business) => {
             const newOpinion = new Opinion({
                 rating: req.body.rating,
                 comment: req.body.comment,
@@ -85,14 +113,14 @@ const addOpinion = (req, res) => {
                 if (err) {
                     return res.redirect("/");
                 } else {
-                    User.findByIdAndUpdate(req.params.id, { $push: { opinions: opinion } }, { new: true }, (err, user) =>{
+                    User.findByIdAndUpdate(req.params.id, { $push: { opinions: opinion } }, { new: true }, (err, user) => {
                         return res.redirect("/") //dodac render
                     });
                 };
             });
         });
     } else if (req.user.role == "Owner") {
-        Business.findOne({ "owner._id": req.user._id }, (err, business) =>{
+        Business.findOne({ "owner._id": req.user._id }, (err, business) => {
             const newOpinion = new Opinion({
                 rating: req.body.rating,
                 comment: req.body.comment,
@@ -103,7 +131,7 @@ const addOpinion = (req, res) => {
                 if (err) {
                     return res.redirect("/");
                 } else {
-                    User.findByIdAndUpdate(req.params.id, { $push: { opinions: opinion } }, { new: true }, (err, user) =>{
+                    User.findByIdAndUpdate(req.params.id, { $push: { opinions: opinion } }, { new: true }, (err, user) => {
                         return res.redirect("/") //dodac render
                     });
                 };

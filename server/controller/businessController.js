@@ -73,7 +73,17 @@ const refreshRole = (req, res) => {
 const homeView = (req, res) => {
   if (req.user.role == "Owner") {
     Business.findOne({ "owner._id": req.user._id }, (err, business) => {
-      return res.render("business", { business, message: "" });
+      const workersIds = business.workers;
+      console.log("WORKERSID", workersIds)
+      User.find({ "_id": { $in: workersIds } }, (err, workers) => {
+        const servicesIds = business.services;
+        Service.find({ "_id": { $in: servicesIds } }, (err, services) => {
+          const opinionsIds = business.opinions;
+          Opinion.find({ "_id": { $in: opinionsIds } }, (err, opinions) => {
+            return res.render("business", { business, workers, services, opinions, message: "" });
+          });
+        });
+      });
     });
   } else {
     res.redirect("/business/register");
@@ -147,10 +157,23 @@ const getAllBusiness = async (req, res) => {
 
 const getBusiness = (req, res) => {
   Business.findById(req.params.id, (err, business) => {
-    return res.render("specificBusiness", {
-      user: req.user,
-      business: business,
-      Users: User,
+    const workersIds = business.workers;
+    console.log("WORKERSID", workersIds)
+    User.find({ "_id": { $in: workersIds } }, (err, workers) => {
+      const servicesIds = business.services;
+      Service.find({ "_id": { $in: servicesIds } }, (err, services) => {
+        const opinionsIds = business.opinions;
+        Opinion.find({ "_id": { $in: opinionsIds } }, (err, opinions) => {
+          return res.render("specificBusiness", {
+            user: req.user,
+            workers,
+            services,
+            opinions,
+            business: business,
+            Users: User,
+          });
+        });
+      });
     });
   });
 };
