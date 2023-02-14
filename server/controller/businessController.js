@@ -2,6 +2,7 @@ const Business = require("../models/Business");
 const User = require("../models/User");
 const Opinion = require("../models/OpinionForBusiness");
 const Service = require("../models/Service");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 const registerView = (req, res, err, message = "") => {
   if (req.user.role == "Owner") {
@@ -159,39 +160,23 @@ const addOpinion = (req, res) => {
   const newOpinion = new Opinion({
     rating: req.body.rating,
     comment: req.body.comment,
-    ownerId: req.user._id,
-    ownerName: correctName,
+    ownerId: req.user._id
   });
-  Business.findById(req.params.id, (err, business) => {
-    if (business.opinions != null) {
-      Business.findByIdAndUpdate(
-        req.params.id,
-        { $addToSet: { opinions: newOpinion } },
-        { new: true },
-        (err, business) => {
-          return res.render("specificBusiness", {
-            user: req.user,
-            business: business,
-            Users: User,
-          });
-        }
-      );
+
+  newOpinion.save((err, service) => {
+    if (err) {
+      const business = Business.findById(req.params.id);
+      const message = "Błąd w trakcie dodawania opinii.";
+      return res.render("specificBusiness", { user: req.user, business: business, Users: User, message });
     } else {
-      Business.findByIdAndUpdate(
-        req.params.id,
-        { $set: { opinions: newOpinion } },
-        { new: true },
-        (err, business) => {
-          return res.render("specificBusiness", {
-            user: req.user,
-            business: business,
-            Users: User,
-          });
-        }
-      );
-    }
+      Business.findByIdAndUpdate(req.params.id, { $push: { opinions: service.id } }, { new: true }, (err, business) => {
+        const message = "Dodano opinie.";
+        return res.render("specificBusiness", { user: req.user, business: business, Users: User, message });
+      });
+    };
   });
 };
+
 const addWorker = (req, res) => {
   User.findOne({ invCode: req.body.code }, (err, user) => {
     if (user == null) {
@@ -252,7 +237,7 @@ const removeWorker = (req, res) => {
       }
       Business.findByIdAndUpdate(
         req.params.idBusiness,
-        { $pull: { workers: { _id: user._id } } },
+        { $pull: { workers: user._id } },
         { new: true },
         (err, business) => {
           if (err) {
@@ -260,6 +245,7 @@ const removeWorker = (req, res) => {
             const currentUser = req.user;
             return res.render("business", { currentUser, business, message }); //dodac message o bledzie
           }
+          console.log(business.workers);
           const message = "Uzytkownik usunięty.";
           const currentUser = req.user;
           return res.render("business", { currentUser, business, message });
@@ -284,12 +270,12 @@ const addService = (req, res) => {
       const business = Business.findById(businessId);
       const message = "Błąd w trakcie dodawania serwisu.";
       const currentUser = req.user;
-      return res.render("business", { currentUser, business, message }); //dodac message o bledzie
+      return res.render("business", { currentUser, business, message });
     }
     const update = {
       $push: { services: service.id },
     };
-    Business.findByIdAndUpdate(businessId, update, (err, business) => {
+    Business.findByIdAndUpdate(businessId, update, { new: true }, (err, business) => {
       const currentUser = req.user;
       if (err) {
         const message = "Błąd podczas dodawania serwisu do firmy!";
@@ -304,18 +290,19 @@ const addService = (req, res) => {
 const removeService = (req, res) => {
   Business.findOneAndUpdate(
     { _id: req.params.idBusiness },
-    { $pull: { services: { _id: req.params.id } } },
+    { $pull: { services: req.params.id } },
     { new: true },
     (err, business) => {
       if (err) {
         const message = "Błąd w trakcie usuwania serwisu.";
         const currentUser = req.user;
-        return res.render("business", { currentUser, business, message }); //dodac message o bledzie
+        return res.render("business", { currentUser, business, message });
       }
       const message = "Serwis usuniety.";
       const currentUser = req.user;
       return res.render("business", { currentUser, business, message });
     }
+    // dodac usuwanie z bazy Services
   );
 };
 

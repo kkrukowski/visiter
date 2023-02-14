@@ -14,7 +14,7 @@ const userSchema = new Schema({
   password: String,
   invCode: String,
   role: String,
-  opinions: { type: [Opinion.schema] },
+  opinions: [{ type: Schema.Types.ObjectId, ref: "OpinionForUser" }],
   clientVisits: [{ type: Schema.Types.ObjectId, ref: "Visit" }],
   workerVisits: [{ type: Schema.Types.ObjectId, ref: "Visit" }],
 });

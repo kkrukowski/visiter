@@ -5,8 +5,6 @@ const opinionSchema = new Schema({
   rating: Number,
   comment: String,
   ownerId: { type: Schema.Types.ObjectId, ref: "User" },
-  ownerName: String,
-  businessName: String,
   businessId: { type: Schema.Types.ObjectId, ref: "Business" },
 });
 

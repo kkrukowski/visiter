@@ -17,7 +17,7 @@ let businessSchema = new Schema({
   phone: String,
 
   workers: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  opinions: { type: [Opinion.schema], require: false, default: [] },
+  opinions: [{ type: Schema.Types.ObjectId, ref: "OpinionForBusiness" }],
   services: [{ type: Schema.Types.ObjectId, ref: "Service" }],
 });
 
