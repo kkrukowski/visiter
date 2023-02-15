@@ -117,17 +117,20 @@ const getAllBusiness = async (req, res) => {
       { offset, limit }
     )
       .then((businesses) => {
-        return res.render("searchBusiness", {
-          user: req.user,
-          businesses: businesses.docs,
-          searchData: { searchName, searchLocation },
-          paginationData: {
-            totalPages: businesses.totalPages,
-            totalDocs: businesses.totalDocs,
-            currentPage: businesses.page,
-            hasPrevPage: businesses.hasPrevPage,
-            hasNextPage: businesses.hasNextPage,
-          },
+        Business.find({}).populate("services").exec((err, businessesWithServices) => {
+          console.log(businessesWithServices);
+          return res.render("searchBusiness", {
+            user: req.user,
+            businesses: businessesWithServices,
+            searchData: { searchName, searchLocation },
+            paginationData: {
+              totalPages: businesses.totalPages,
+              totalDocs: businesses.totalDocs,
+              currentPage: businesses.page,
+              hasPrevPage: businesses.hasPrevPage,
+              hasNextPage: businesses.hasNextPage,
+            },
+          });
         });
       })
       .catch((err) => {
@@ -136,17 +139,20 @@ const getAllBusiness = async (req, res) => {
   } else {
     Business.paginate({}, { offset, limit })
       .then((businesses) => {
-        return res.render("searchBusiness", {
-          user: req.user,
-          businesses: businesses.docs,
-          searchData: { searchName: null, searchLocation: null },
-          paginationData: {
-            totalPages: businesses.totalPages,
-            totalDocs: businesses.totalDocs,
-            currentPage: businesses.page,
-            hasPrevPage: businesses.hasPrevPage,
-            hasNextPage: businesses.hasNextPage,
-          },
+        Business.find({}).populate("services").exec((err, businessesWithServices) => {
+          console.log(businessesWithServices);
+          return res.render("searchBusiness", {
+            user: req.user,
+            businesses: businessesWithServices,
+            searchData: { searchName: null, searchLocation: null },
+            paginationData: {
+              totalPages: businesses.totalPages,
+              totalDocs: businesses.totalDocs,
+              currentPage: businesses.page,
+              hasPrevPage: businesses.hasPrevPage,
+              hasNextPage: businesses.hasNextPage,
+            },
+          });
         });
       })
       .catch((err) => {
