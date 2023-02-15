@@ -164,7 +164,6 @@ const getAllBusiness = async (req, res) => {
 const getBusiness = (req, res) => {
   Business.findById(req.params.id, (err, business) => {
     const workersIds = business.workers;
-    console.log("WORKERSID", workersIds)
     User.find({ "_id": { $in: workersIds } }, (err, workers) => {
       const servicesIds = business.services;
       Service.find({ "_id": { $in: servicesIds } }, (err, services) => {
@@ -308,10 +307,10 @@ const addService = (req, res) => {
       const currentUser = req.user;
       if (err) {
         const message = "Błąd podczas dodawania serwisu do firmy!";
-        return res.render("business", { currentUser, business, message });
+        return homeView(req, res);
       }
       const message = "Serwis dodany.";
-      return res.render("business", { currentUser, business, message });
+      return homeView(req, res);
     });
   });
 };
@@ -325,11 +324,13 @@ const removeService = (req, res) => {
       if (err) {
         const message = "Błąd w trakcie usuwania serwisu.";
         const currentUser = req.user;
-        return res.render("business", { currentUser, business, message });
+        return homeView(req, res);
       }
-      const message = "Serwis usuniety.";
-      const currentUser = req.user;
-      return res.render("business", { currentUser, business, message });
+      Service.findOneAndDelete({_id: req.params.id}, {new: true}, (err, service) =>{
+        const message = "Serwis usuniety.";
+        const currentUser = req.user;
+        return homeView(req, res);
+      });
     }
     // dodac usuwanie z bazy Services
   );
