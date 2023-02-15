@@ -65,36 +65,9 @@ const editProfile = (req, res) => {
 const getUser = (req, res) => {
     User.findById(req.params.id, (err, user) => {
         const opinionsIds = user.opinions;
-        Opinion.find({ "_id": { $in: opinionsIds } }, (err, opinions) => {
-            var userIds = [];
-            opinions.forEach((opinion) => {
-                userIds.push(opinion.ownerId);
-            })
-            console.log("USERIDS", userIds)
-            User.find({ "_id": { $in: userIds } }, (err, users) => {
-                var userInfo = [];
-                users.forEach((user) => {
-                    userInfo.push(user.name)
-                });
-                console.log("USERINFO", userInfo);
-                var businessIds = [];
-                opinions.forEach((opinion) => {
-                    businessIds.push(opinion.businessId);
-                })
-                console.log(businessIds);
-                Business.find({ "_id": { $in: businessIds } }, (err, businesses) => {
-                    var businessInfo = [];
-                    businesses.forEach((business) => {
-                        console.log(business.name)
-                        businessInfo.push(business.name)
-                    });
-                    console.log("BUSINESSINFO", businessInfo)
-                    if (req.params.id === req.session.passport.user) {
-                        return res.render("profile", { user: user, opinions, isSameUser: true });
-                    }
-                    return res.render("profile", { user: user, opinions, isSameUser: false });
-                })
-            });
+        Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
+            if (err) return res.redirect("/")
+            return res.render("profile", { user: user, opinions, isSameUser: false });
         });
     });
 };

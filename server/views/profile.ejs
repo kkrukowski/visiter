@@ -193,7 +193,7 @@
               <div class="opinion__content--wrapper">
                 <p class="opinion--content"><%= opinion.comment %></p>
                 <p class="opinion--author">
-                  <%= opinion.ownerName %> z <%= opinion.businessName %>
+                  <%= opinion.ownerId.name %> z <%= opinion.businessId.name %>
                 </p>
                 <div class="opinion--stars">
                   <% stars=opinion.rating %> <% for (let i = 0; i < stars; i++){

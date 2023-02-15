@@ -123,17 +123,20 @@ const getAllBusiness = async (req, res) => {
       { offset, limit }
     )
       .then((businesses) => {
-        return res.render("searchBusiness", {
-          user: req.user,
-          businesses: businesses.docs,
-          searchData: { searchName, searchLocation },
-          paginationData: {
-            totalPages: businesses.totalPages,
-            totalDocs: businesses.totalDocs,
-            currentPage: businesses.page,
-            hasPrevPage: businesses.hasPrevPage,
-            hasNextPage: businesses.hasNextPage,
-          },
+        Business.find({}).populate("services").exec((err, businessesWithServices) => {
+          console.log(businessesWithServices);
+          return res.render("searchBusiness", {
+            user: req.user,
+            businesses: businessesWithServices,
+            searchData: { searchName, searchLocation },
+            paginationData: {
+              totalPages: businesses.totalPages,
+              totalDocs: businesses.totalDocs,
+              currentPage: businesses.page,
+              hasPrevPage: businesses.hasPrevPage,
+              hasNextPage: businesses.hasNextPage,
+            },
+          });
         });
       })
       .catch((err) => {
@@ -142,18 +145,20 @@ const getAllBusiness = async (req, res) => {
   } else {
     Business.paginate({}, { offset, limit })
       .then((businesses) => {
-        return res.render("searchBusiness", {
-          user: req.user,
-          businesses: businesses.docs,
-          businessesServices: getServicesFromBusiness(businesses.docs),
-          searchData: { searchName: null, searchLocation: null },
-          paginationData: {
-            totalPages: businesses.totalPages,
-            totalDocs: businesses.totalDocs,
-            currentPage: businesses.page,
-            hasPrevPage: businesses.hasPrevPage,
-            hasNextPage: businesses.hasNextPage,
-          },
+        Business.find({}).populate("services").exec((err, businessesWithServices) => {
+          console.log(businessesWithServices);
+          return res.render("searchBusiness", {
+            user: req.user,
+            businesses: businessesWithServices,
+            searchData: { searchName: null, searchLocation: null },
+            paginationData: {
+              totalPages: businesses.totalPages,
+              totalDocs: businesses.totalDocs,
+              currentPage: businesses.page,
+              hasPrevPage: businesses.hasPrevPage,
+              hasNextPage: businesses.hasNextPage,
+            },
+          });
         });
       })
       .catch((err) => {
@@ -179,8 +184,7 @@ const getServicesFromBusiness = (businessesDocs) => {
 const getBusiness = (req, res) => {
   Business.findById(req.params.id, (err, business) => {
     const workersIds = business.workers;
-    console.log("WORKERSID", workersIds);
-    User.find({ _id: { $in: workersIds } }, (err, workers) => {
+    User.find({ "_id": { $in: workersIds } }, (err, workers) => {
       const servicesIds = business.services;
       Service.find({ _id: { $in: servicesIds } }, (err, services) => {
         const opinionsIds = business.opinions;
@@ -334,20 +338,15 @@ const addService = (req, res) => {
     const update = {
       $push: { services: service.id },
     };
-    Business.findByIdAndUpdate(
-      businessId,
-      update,
-      { new: true },
-      (err, business) => {
-        const currentUser = req.user;
-        if (err) {
-          const message = "Błąd podczas dodawania serwisu do firmy!";
-          return res.render("business", { currentUser, business, message });
-        }
-        const message = "Serwis dodany.";
-        return res.render("business", { currentUser, business, message });
+    Business.findByIdAndUpdate(businessId, update, { new: true }, (err, business) => {
+      const currentUser = req.user;
+      if (err) {
+        const message = "Błąd podczas dodawania serwisu do firmy!";
+        return homeView(req, res);
       }
-    );
+      const message = "Serwis dodany.";
+      return homeView(req, res);
+    });
   });
 };
 
@@ -360,11 +359,13 @@ const removeService = (req, res) => {
       if (err) {
         const message = "Błąd w trakcie usuwania serwisu.";
         const currentUser = req.user;
-        return res.render("business", { currentUser, business, message });
+        return homeView(req, res);
       }
-      const message = "Serwis usuniety.";
-      const currentUser = req.user;
-      return res.render("business", { currentUser, business, message });
+      Service.findOneAndDelete({_id: req.params.id}, {new: true}, (err, service) =>{
+        const message = "Serwis usuniety.";
+        const currentUser = req.user;
+        return homeView(req, res);
+      });
     }
     // dodac usuwanie z bazy Services
   );
