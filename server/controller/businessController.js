@@ -74,13 +74,19 @@ const homeView = (req, res) => {
   if (req.user.role == "Owner") {
     Business.findOne({ "owner._id": req.user._id }, (err, business) => {
       const workersIds = business.workers;
-      console.log("WORKERSID", workersIds)
-      User.find({ "_id": { $in: workersIds } }, (err, workers) => {
+      console.log("WORKERSID", workersIds);
+      User.find({ _id: { $in: workersIds } }, (err, workers) => {
         const servicesIds = business.services;
-        Service.find({ "_id": { $in: servicesIds } }, (err, services) => {
+        Service.find({ _id: { $in: servicesIds } }, (err, services) => {
           const opinionsIds = business.opinions;
-          Opinion.find({ "_id": { $in: opinionsIds } }, (err, opinions) => {
-            return res.render("business", { business, workers, services, opinions, message: "" });
+          Opinion.find({ _id: { $in: opinionsIds } }, (err, opinions) => {
+            return res.render("business", {
+              business,
+              workers,
+              services,
+              opinions,
+              message: "",
+            });
           });
         });
       });
@@ -139,6 +145,7 @@ const getAllBusiness = async (req, res) => {
         return res.render("searchBusiness", {
           user: req.user,
           businesses: businesses.docs,
+          businessesServices: getServicesFromBusiness(businesses.docs),
           searchData: { searchName: null, searchLocation: null },
           paginationData: {
             totalPages: businesses.totalPages,
@@ -155,15 +162,29 @@ const getAllBusiness = async (req, res) => {
   }
 };
 
+const getServicesFromBusiness = (businessesDocs) => {
+  let businessesServices = [];
+  for (let i = 0; i < businessesDocs.length; i++) {
+    const servicesIds = businessesDocs[i].services;
+    Service.find({ _id: servicesIds }, (err, servicesData) => {
+      if (err) return res.send(err);
+      businessesServices.push(servicesData);
+      console.log(businessesServices);
+    });
+  }
+  console.log(businessesServices);
+  return businessesServices;
+};
+
 const getBusiness = (req, res) => {
   Business.findById(req.params.id, (err, business) => {
     const workersIds = business.workers;
-    console.log("WORKERSID", workersIds)
-    User.find({ "_id": { $in: workersIds } }, (err, workers) => {
+    console.log("WORKERSID", workersIds);
+    User.find({ _id: { $in: workersIds } }, (err, workers) => {
       const servicesIds = business.services;
-      Service.find({ "_id": { $in: servicesIds } }, (err, services) => {
+      Service.find({ _id: { $in: servicesIds } }, (err, services) => {
         const opinionsIds = business.opinions;
-        Opinion.find({ "_id": { $in: opinionsIds } }, (err, opinions) => {
+        Opinion.find({ _id: { $in: opinionsIds } }, (err, opinions) => {
           return res.render("specificBusiness", {
             user: req.user,
             workers,
@@ -183,20 +204,35 @@ const addOpinion = (req, res) => {
   const newOpinion = new Opinion({
     rating: req.body.rating,
     comment: req.body.comment,
-    ownerId: req.user._id
+    ownerId: req.user._id,
   });
 
   newOpinion.save((err, service) => {
     if (err) {
       const business = Business.findById(req.params.id);
       const message = "Błąd w trakcie dodawania opinii.";
-      return res.render("specificBusiness", { user: req.user, business: business, Users: User, message });
-    } else {
-      Business.findByIdAndUpdate(req.params.id, { $push: { opinions: service.id } }, { new: true }, (err, business) => {
-        const message = "Dodano opinie.";
-        return res.render("specificBusiness", { user: req.user, business: business, Users: User, message });
+      return res.render("specificBusiness", {
+        user: req.user,
+        business: business,
+        Users: User,
+        message,
       });
-    };
+    } else {
+      Business.findByIdAndUpdate(
+        req.params.id,
+        { $push: { opinions: service.id } },
+        { new: true },
+        (err, business) => {
+          const message = "Dodano opinie.";
+          return res.render("specificBusiness", {
+            user: req.user,
+            business: business,
+            Users: User,
+            message,
+          });
+        }
+      );
+    }
   });
 };
 
@@ -298,15 +334,20 @@ const addService = (req, res) => {
     const update = {
       $push: { services: service.id },
     };
-    Business.findByIdAndUpdate(businessId, update, { new: true }, (err, business) => {
-      const currentUser = req.user;
-      if (err) {
-        const message = "Błąd podczas dodawania serwisu do firmy!";
+    Business.findByIdAndUpdate(
+      businessId,
+      update,
+      { new: true },
+      (err, business) => {
+        const currentUser = req.user;
+        if (err) {
+          const message = "Błąd podczas dodawania serwisu do firmy!";
+          return res.render("business", { currentUser, business, message });
+        }
+        const message = "Serwis dodany.";
         return res.render("business", { currentUser, business, message });
       }
-      const message = "Serwis dodany.";
-      return res.render("business", { currentUser, business, message });
-    });
+    );
   });
 };
 

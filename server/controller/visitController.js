@@ -1,6 +1,7 @@
 const Business = require("../models/Business");
 const User = require("../models/User");
 const Visit = require("../models/Visit");
+const Service = require("../models/Service");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const moment = require("moment");
@@ -115,9 +116,29 @@ const createVisit = (req, res) => {
 
 // const addVisitToWorker = () => {};
 
+// Get service
+// Get Business id
+// Get all available dates by workers
 const getAllServiceDates = (req, res) => {
   const serviceId = req.params.serviceId;
   if (ObjectId.isValid(serviceId)) {
+    Service.findById(serviceId, (err, service) => {
+      if (err) return res.send(err);
+      const businessId = service.businessId;
+      Business.findById(businessId, (err, business) => {
+        if (err) return res.send(err);
+        const workersIds = business.workers;
+        // findById wyszukuje jedno tylko
+        User.findById(workersIds, (err, workers) => {
+          if (err) return res.send(err);
+          const allVisitsIds = workers.workerVisits;
+          Visit.findById(allVisitsIds, (err, visits) => {
+            if (err) return res.send(err);
+            console.log(visits.visitDate);
+          });
+        });
+      });
+    });
   }
 };
 

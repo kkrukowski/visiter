@@ -225,7 +225,7 @@
                 </a>
                 <h3 class="business__services--heading">Usługi</h3>
                 <ul class="business__services--list">
-                  <% business.services.forEach((service) => { %>
+                  <% business.services.forEach((service) => { %> <%= service %>
                   <li class="service--item">
                     <div class="service--wrapper">
                       <div class="service--info">
@@ -234,7 +234,11 @@
                       </div>
                       <div class="service__order--info">
                         <p class="service--price"><%= service.price %>zł</p>
-                        <button class="service__select--btn">Umów</button>
+                        <a
+                          href="/visit/<%= business.id %>"
+                          class="service__select--btn"
+                          >Umów</a
+                        >
                       </div>
                     </div>
                   </li>
