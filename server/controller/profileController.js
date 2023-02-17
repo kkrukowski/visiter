@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
+const { get } = require("mongoose");
 
 const editProfileView = async (req, res) => {
     const user = req.user;
@@ -67,7 +68,7 @@ const getUser = (req, res) => {
         const opinionsIds = user.opinions;
         Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
             if (err) return res.redirect("/")
-            return res.render("profile", { user: user, opinions, isSameUser: false });
+            return res.render("profile", { currentUser: req.user, user: user, opinions, isSameUser: false });
         });
     });
 };
@@ -115,9 +116,19 @@ const addOpinion = (req, res) => {
     }
 };
 
+const removeOpinion = (req, res) => {
+    User.findByIdAndUpdate(req.params.id, { $pull: { opinions: req.params.idOpinion } }, { new: true }, (err, user) => {
+        if(err) return getUser(req, res); // DODAC MESSAGE O BLEDZIE
+        Opinion.findByIdAndDelete(req.params.idOpinion, {new: true}, (err, opinion) => {
+            return getUser(req, res);
+        });
+    });
+};
+
 module.exports = {
     getUser,
     addOpinion,
     editProfileView,
-    editProfile
+    editProfile,
+    removeOpinion
 }

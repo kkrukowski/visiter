@@ -189,6 +189,13 @@
             <% if(opinions != null){ %> <%
             opinions.forEach(function(opinion){ %>
             <div class="opinion--item">
+              <% if(opinion.ownerId._id == currentUser.id){ %>
+              <div>                
+                <form action="/profile/<%= user._id %>/<%= opinion._id %>/removeOpinion" method="POST">
+                  <input type="submit" value="X">
+                </form>
+              </div>
+              <% } %>
               <span class="opinion--quotes">”</span>
               <div class="opinion__content--wrapper">
                 <p class="opinion--content"><%= opinion.comment %></p>
