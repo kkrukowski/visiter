@@ -182,7 +182,9 @@
               </form>
             </div>
             <div id="delAcc">
-              <button>Usun konto</button>
+              <form action="/profile/<%= user._id %>/edit/removeProfile" method="POST">
+                <button type="submit" >Usun konto</button>
+              </form>
             </div>
           </main>
   </body>
