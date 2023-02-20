@@ -126,37 +126,40 @@ const removeOpinion = (req, res) => {
 
 const removeProfile = (req, res) => {
     if (req.params.id == req.user._id) {
-        if(req.user.role == "User"){
-            
+        if (req.user.role == "User") {
+
 
             User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
                 if (err) return res.render("home"); //dodac message o bledzie
                 const opinions = user.opinions;
-                Opinion.findByIdAndDelete(opinions, (err, opinions) =>{
+                Opinion.findByIdAndDelete(opinions, (err, opinions) => {
                     req.logOut(err => {
                         if (err) return next(err);
-        
+
                         const message = "Konto usunięte.";
                         return res.render("login", { message: message });
                     });
                 });
             });
         }
-        else if(req.user.role == "Owner"){
+        else if (req.user.role == "Owner") {
             const message = "Aby usunąć konto, usuń najpierw firmę."
-            return res.render("home", { message: message });
+            Business.findOne({ owner: req.user._id }, (err, business) => {
+                if (err) return res.render("home", { user: req.user, message: message });
+                return res.render("home", { user: req.user, business, message: message });
+            });
         }
-        else{
-            Business.findOneAndUpdate({workers: req.params.id}, {$pull: {workers: req.params.id}}, (err, business) => {
-                if(err) res.render("home") //dodac message o bledzie
+        else {
+            Business.findOneAndUpdate({ workers: req.params.id }, { $pull: { workers: req.params.id } }, (err, business) => {
+                if (err) res.render("home") //dodac message o bledzie
                 User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
                     if (err) return res.render("home"); //dodac message o bledzie
-                    
+
                     const opinions = user.opinions;
-                    Opinion.findByIdAndDelete(opinions, (err, opinions) =>{
+                    Opinion.findByIdAndDelete(opinions, (err, opinions) => {
                         req.logOut(err => {
                             if (err) return next(err);
-            
+
                             const message = "Konto usunięte.";
                             return res.render("login", { message: message });
                         });
