@@ -188,7 +188,7 @@ const getBusiness = (req, res) => {
       const servicesIds = business.services;
       Service.find({ _id: { $in: servicesIds } }, (err, services) => {
         const opinionsIds = business.opinions;
-        Opinion.find({ _id: { $in: opinionsIds } }, (err, opinions) => {
+        Opinion.find({ _id: { $in: opinionsIds } }).populate("ownerId").exec((err, opinions) => {
           return res.render("specificBusiness", {
             user: req.user,
             workers,

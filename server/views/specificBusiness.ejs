@@ -17,15 +17,13 @@
     <% if(services != null){ %>
     <% services.forEach(function(service){ %>
         <ul>
-            <% services.forEach(function(service) { %>
-                <li>
-                        <%= service.name %>
-                        <br>
-                        <%= service.description %>
-                        <br>
-                        <%= service.price %>zł, <%= service.duration %>h
-                </li>
-            <% }); %>
+            <li>
+                    <%= service.name %>
+                    <br>
+                    <%= service.description %>
+                    <br>
+                    <%= service.price %>zł, <%= service.duration %>h
+            </li>
         </ul>
     <% }); %>
     <% }; %>
@@ -37,7 +35,7 @@
     <% if(opinions != null){ %>
     <% opinions.forEach(function(opinion){ %>
         <li>
-            <%= opinion.ownerName %>
+            <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
             <br>
             <%= opinion.rating %>
             <br>
