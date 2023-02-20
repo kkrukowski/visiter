@@ -52,6 +52,16 @@
                     <input type="number" step="0.01" name="duration"><br>
                     <input id="submit" type="submit" value="Dodaj">
                 </form>
+<h2>Twoje opinie:</h2>
+    <% if(business.opinions != null){ %>
+        <ul>
+            <% opinions.forEach(function(opinion) { %>
+                <li>
+                    <%= opinion.comment %> - <%= opinion.rating %> od <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
+                </li>
+            <% }) %>
+        </ul>
+    <% } %>
 <% if(message!=""){ %>
     <p><%= message %></p>
 <% } %>

@@ -67,7 +67,12 @@ const getUser = (req, res) => {
         const opinionsIds = user.opinions;
         Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
             if (err) return res.redirect("/")
-            return res.render("profile", { currentUser: req.user, user: user, opinions, isSameUser: false });
+            return res.render("profile", { 
+                currentUser: req.user, 
+                user: user, 
+                opinions,
+                isSameUser: req.params.id == req.user._id ? true : false
+            });
         });
     });
 };
