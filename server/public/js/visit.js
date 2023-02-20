@@ -1,6 +1,7 @@
-const submitBtn = document.querySelector(".submit--btn");
+// const submitBtn = document.querySelector(".submit--btn");
 
-submitBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  console.log("Submitted");
-});
+// submitBtn.addEventListener("click", (e) => {
+//   e.preventDefault();
+//   // const url = `/visits/add/client/${}`
+//   // axios.post("")
+// });

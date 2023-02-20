@@ -10,6 +10,9 @@ const {
 
 router.get("/:id", getAllClientVisits);
 router.get("/book/:serviceId", getAllServiceDates);
-router.post("/add/client/:clientId", createVisit);
+router.post(
+  "/add/client/:clientId/worker/:workerId/business/:businessId/service/:serviceId",
+  createVisit
+);
 
 module.exports = router;
