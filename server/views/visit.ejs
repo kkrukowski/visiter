@@ -56,7 +56,7 @@
             </a>
           </li>
           <li class="menu__list--item">
-            <a href="/profile/<%= user._id %>" class="item--link"
+            <a href="/profile/<%= user.id %>" class="item--link"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -145,6 +145,19 @@
     </main>
   </body>
   <script src="/js/script.js"></script>
-  <script src="/js/visit.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    const submitBtn = document.querySelector(".submit--btn");
+    const clientId = "<%= user.id %>";
+    const businessId = "<%= business.id %>";
+    const serviceId = "<%= service.id %>";
+    const workerId = "<%= workers[0].id %>";
+
+    submitBtn.addEventListener("click", (e) => {
+      console.log(clientId, businessId, serviceId, workerId);
+      e.preventDefault();
+      const url = `/visits/add/client/${clientId}/worker/${workerId}/business/${businessId}/service/${serviceId}`;
+      axios.post(url);
+    });
+  </script>
 </html>

@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="stylesheet" href="/styles/styles.css" />
-    <link rel="stylesheet" href="/styles/profile.css" />
+    <link rel="stylesheet" href="/styles/editProfile.css" />
     <link rel="stylesheet" href="/styles/normalize.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -182,7 +182,9 @@
               </form>
             </div>
             <div id="delAcc">
-              <button>Usun konto</button>
+              <form action="/profile/<%= user._id %>/edit/removeProfile" method="POST">
+                <button type="submit" >Usun konto</button>
+              </form>
             </div>
           </main>
   </body>

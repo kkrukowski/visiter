@@ -56,7 +56,7 @@
             </a>
           </li>
           <li class="menu__list--item">
-            <a href="/profile/<%= user._id %>" class="item--link"
+            <a href="/profile/<%= currentUser._id %>" class="item--link"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -137,9 +137,11 @@
     <main class="main">
       <section class="main__user main--item">
         <div class="user--wrapper">
+          <% if(isSameUser) { %>
           <a href="/profile/<%= user._id %>/edit">
-            <p>zębatka</p>
+            <p>zębatka</p> <!-- if same user-->
           </a>
+          <% } %>
           <div class="user--avatar">
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +173,7 @@
               <p class="info--content"><%= user.invCode %></p>
             </div>
           </div>
-          <% if (isSameUser) { %> <% if (role == "User") { %>
+          <% if (isSameUser) { %> <% if (user.role == "User") { %>
           <a class="become__company--link" href="/business/register"
             >Zostań firmą</a
           >
@@ -189,6 +191,13 @@
             <% if(opinions != null){ %> <%
             opinions.forEach(function(opinion){ %>
             <div class="opinion--item">
+              <% if(opinion.ownerId._id == currentUser.id){ %>
+              <div>                
+                <form action="/profile/<%= user._id %>/<%= opinion._id %>/removeOpinion" method="POST">
+                  <input type="submit" value="X">
+                </form>
+              </div>
+              <% } %>
               <span class="opinion--quotes">”</span>
               <div class="opinion__content--wrapper">
                 <p class="opinion--content"><%= opinion.comment %></p>

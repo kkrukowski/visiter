@@ -67,7 +67,12 @@ const getUser = (req, res) => {
         const opinionsIds = user.opinions;
         Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
             if (err) return res.redirect("/")
-            return res.render("profile", { user: user, opinions, isSameUser: false });
+            return res.render("profile", { 
+                currentUser: req.user, 
+                user: user, 
+                opinions,
+                isSameUser: req.params.id == req.user._id ? true : false
+            });
         });
     });
 };
@@ -115,9 +120,66 @@ const addOpinion = (req, res) => {
     }
 };
 
+const removeOpinion = (req, res) => {
+    User.findByIdAndUpdate(req.params.id, { $pull: { opinions: req.params.idOpinion } }, { new: true }, (err, user) => {
+        if (err) return getUser(req, res); // DODAC MESSAGE O BLEDZIE
+        Opinion.findByIdAndDelete(req.params.idOpinion, { new: true }, (err, opinion) => {
+            return getUser(req, res);
+        });
+    });
+};
+
+const removeProfile = (req, res) => {
+    if (req.params.id == req.user._id) {
+        if (req.user.role == "User") {
+
+
+            User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
+                if (err) return res.render("home"); //dodac message o bledzie
+                const opinions = user.opinions;
+                Opinion.findByIdAndDelete(opinions, (err, opinions) => {
+                    req.logOut(err => {
+                        if (err) return next(err);
+
+                        const message = "Konto usunięte.";
+                        return res.render("login", { message: message });
+                    });
+                });
+            });
+        }
+        else if (req.user.role == "Owner") {
+            const message = "Aby usunąć konto, usuń najpierw firmę."
+            Business.findOne({ owner: req.user._id }, (err, business) => {
+                if (err) return res.render("home", { user: req.user, message: message });
+                return res.render("home", { user: req.user, business, message: message });
+            });
+        }
+        else {
+            Business.findOneAndUpdate({ workers: req.params.id }, { $pull: { workers: req.params.id } }, (err, business) => {
+                if (err) res.render("home") //dodac message o bledzie
+                User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
+                    if (err) return res.render("home"); //dodac message o bledzie
+
+                    const opinions = user.opinions;
+                    Opinion.findByIdAndDelete(opinions, (err, opinions) => {
+                        req.logOut(err => {
+                            if (err) return next(err);
+
+                            const message = "Konto usunięte.";
+                            return res.render("login", { message: message });
+                        });
+                    });
+                });
+            });
+        }
+    };
+};
+
 module.exports = {
     getUser,
     addOpinion,
     editProfileView,
-    editProfile
+    editProfile,
+    removeOpinion,
+    removeProfile
 }

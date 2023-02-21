@@ -52,11 +52,12 @@ const getAllWorkerVisits = (req, res) => {
 // const getWorkerSchedule = () => {};
 
 const createVisit = (req, res) => {
+  console.log("Create");
   // Create new Visit
   const clientId = req.params.clientId;
-  const workerId = req.params.clientId;
-  const businessId = ObjectId("63dbed7434490cecd68fac20");
-  const serviceId = ObjectId("63bd5fdb1c51c90174884dda");
+  const workerId = req.params.workerId;
+  const businessId = req.params.businessId;
+  const serviceId = req.params.serviceId;
 
   if (
     ObjectId.isValid(clientId) &&
@@ -67,7 +68,7 @@ const createVisit = (req, res) => {
     const visitDate = moment().set({
       year: 2023,
       month: 1,
-      date: 18,
+      date: 23,
       hour: 10,
       minute: 30,
       second: 0,
@@ -129,12 +130,19 @@ const getAllServiceDates = (req, res) => {
         if (err) return res.send(err);
         const workersIds = business.workers;
         // findById wyszukuje jedno tylko
-        User.findById(workersIds, (err, workers) => {
+        User.find({ id: workersIds }, (err, workers) => {
           if (err) return res.send(err);
-          const allVisitsIds = workers.workerVisits;
-          Visit.findById(allVisitsIds, (err, visits) => {
-            if (err) return res.send(err);
-            console.log(visits.visitDate);
+          // const allVisitsIds = workers.workerVisits;
+          // Visit.find({ id: allVisitsIds }, (err, visits) => {
+          //   if (err) return res.send(err);
+          //   console.log(visits.visitDate);
+          // });
+          const currentUser = req.user;
+          return res.render("visit", {
+            user: currentUser,
+            workers,
+            business,
+            service,
           });
         });
       });
