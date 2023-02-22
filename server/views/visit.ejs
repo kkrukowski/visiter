@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="stylesheet" href="/styles/styles.css" />
-    <link rel="stylesheet" href="/styles/profile.css" />
+    <link rel="stylesheet" href="/styles/main.css" />
     <link rel="stylesheet" href="/styles/normalize.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -135,29 +135,29 @@
     </nav>
     <!-- Main block -->
     <main class="main">
-      <form>
+      <div>
+        <% workers.forEach((worker) => { %>
+        <a href="/visits/book/<%= service.id %>/worker/<%= worker.id %>"
+          ><%= worker.name %></a
+        >
+        <% }) %>
+      </div>
+      <div>
+        <% datesInfo.availableHours.forEach((startTime) => { %>
+        <a
+          href="/visits/book/<%= service.id %>/day/<%= datesInfo.todaysDate.day %>/month/<%= datesInfo.todaysDate.month %>/year/<%= datesInfo.todaysDate.year %>/hour/<%= startTime[0] %>/minute/<%= startTime[1] %>"
+          ><%= startTime[0] %>:<%= startTime[1] %></a
+        >
+        <% }) %>
+      </div>
+      <!-- <form>
         <input type="text" name="workerId" placeholder="Worker ID" />
         <input type="number" name="day" placeholder="Day" />
         <input type="number" name="hour" placeholder="Hour" />
         <input type="number" name="minute" placeholder="Minute" />
         <button class="submit--btn">Potwierdź</button>
-      </form>
+      </form> -->
     </main>
   </body>
   <script src="/js/script.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script>
-    const submitBtn = document.querySelector(".submit--btn");
-    const clientId = "<%= user.id %>";
-    const businessId = "<%= business.id %>";
-    const serviceId = "<%= service.id %>";
-    const workerId = "<%= workers[0].id %>";
-
-    submitBtn.addEventListener("click", (e) => {
-      console.log(clientId, businessId, serviceId, workerId);
-      e.preventDefault();
-      const url = `/visits/add/client/${clientId}/worker/${workerId}/business/${businessId}/service/${serviceId}`;
-      axios.post(url);
-    });
-  </script>
 </html>

@@ -6,6 +6,8 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 const moment = require("moment");
 
+const { getAvailableHours } = require("../middlewares/visitHandler");
+
 // test id - 63bd2f8b35c597866c9fe176
 // test business id - 63b7015741e1b4cc6ecc9b62
 const getAllClientVisits = (req, res) => {
@@ -115,11 +117,6 @@ const createVisit = (req, res) => {
   }
 };
 
-// const addVisitToWorker = () => {};
-
-// Get service
-// Get Business id
-// Get all available dates by workers
 const getAllServiceDates = (req, res) => {
   const serviceId = req.params.serviceId;
   if (ObjectId.isValid(serviceId)) {
@@ -129,20 +126,18 @@ const getAllServiceDates = (req, res) => {
       Business.findById(businessId, (err, business) => {
         if (err) return res.send(err);
         const workersIds = business.workers;
-        // findById wyszukuje jedno tylko
-        User.find({ id: workersIds }, (err, workers) => {
-          if (err) return res.send(err);
-          // const allVisitsIds = workers.workerVisits;
-          // Visit.find({ id: allVisitsIds }, (err, visits) => {
-          //   if (err) return res.send(err);
-          //   console.log(visits.visitDate);
-          // });
+        console.log("IDS: ", workersIds);
+        Visit.find({ workerId: workersIds }).then((visits) => {
+          console.log(visits);
           const currentUser = req.user;
+          const serviceDuration = service.duration;
+          const datesInfo = getAvailableHours(serviceDuration);
           return res.render("visit", {
             user: currentUser,
-            workers,
             business,
+            workers,
             service,
+            datesInfo,
           });
         });
       });
@@ -150,9 +145,12 @@ const getAllServiceDates = (req, res) => {
   }
 };
 
+const getServicesDatesForWorker = (req, res) => {};
+
 module.exports = {
   getAllClientVisits,
   getAllWorkerVisits,
   createVisit,
   getAllServiceDates,
+  getServicesDatesForWorker,
 };
