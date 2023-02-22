@@ -13,10 +13,12 @@ const normalize = (string) => {
 const homeView = (req, res) => {
   Business.findOne({ "owner._id": req.user._id }, (err, business) => {
     if (err) {
-      return res.render("home");
+      const message = "Coś poszło nie tak."
+      return res.render("home", {business, user, message}); //dodac error message
     }
     const user = req.user;
-    return res.render("home", { business, user });
+    const message = "";
+    return res.render("home", { business, user, message});
   });
 };
 

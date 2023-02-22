@@ -67,9 +67,9 @@ const getUser = (req, res) => {
         const opinionsIds = user.opinions;
         Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
             if (err) return res.redirect("/")
-            return res.render("profile", { 
-                currentUser: req.user, 
-                user: user, 
+            return res.render("profile", {
+                currentUser: req.user,
+                user: user,
                 opinions,
                 isSameUser: req.params.id == req.user._id ? true : false
             });
@@ -148,17 +148,18 @@ const removeProfile = (req, res) => {
             });
         }
         else if (req.user.role == "Owner") {
-            const message = "Aby usunąć konto, usuń najpierw firmę."
+
             Business.findOne({ owner: req.user._id }, (err, business) => {
-                if (err) return res.render("home", { user: req.user, message: message });
+                if (err) return res.render("home", { user: req.user, message: "Coś poszło nie tak." });
+                const message = "Aby usunąć konto, usuń najpierw firmę."
                 return res.render("home", { user: req.user, business, message: message });
             });
         }
         else {
             Business.findOneAndUpdate({ workers: req.params.id }, { $pull: { workers: req.params.id } }, (err, business) => {
-                if (err) res.render("home") //dodac message o bledzie
+                if (err) res.render("home", { business, user, message: "Coś poszło nie tak." }) //dodac message o bledzie
                 User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
-                    if (err) return res.render("home"); //dodac message o bledzie
+                    if (err) return res.render("home", { business, user, message: "Coś poszło nie tak." }); //dodac message o bledzie
 
                     const opinions = user.opinions;
                     Opinion.findByIdAndDelete(opinions, (err, opinions) => {
