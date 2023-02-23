@@ -4,7 +4,7 @@
 <h2>Twoi pracownicy:</h2>
 <% if(business.workers != null){ %>
     <ul>
-        <% workers.forEach(function(worker) { %>
+        <% business.workers.forEach(function(worker) { %>
             <li><a href="/profile/<%= worker._id %>">
                     <%= worker.name %>
                         <%= worker.surname%>
@@ -25,7 +25,7 @@
         <h2>Twoje serwisy:</h2>
         <% if(business.services != null){ %>
             <ul>
-                <% services.forEach(function(service) { %>
+                <% business.services.forEach(function(service) { %>
                     <li>
                             <%= service.name %>
                             <br>
@@ -55,13 +55,15 @@
 <h2>Twoje opinie:</h2>
     <% if(business.opinions != null){ %>
         <ul>
-            <% opinions.forEach(function(opinion) { %>
+            <% business.opinions.forEach(function(opinion) { %>
                 <li>
                     <%= opinion.comment %> - <%= opinion.rating %> od <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
                 </li>
             <% }) %>
         </ul>
     <% } %>
-<% if(message!=""){ %>
-    <p><%= message %></p>
-<% } %>
+    <% if(message){%>
+        <div class="error--popup">
+          <p class="error--message"><%= message %></p>
+        </div>
+      <% }%>

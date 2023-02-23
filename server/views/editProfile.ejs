@@ -187,6 +187,11 @@
               </form>
             </div>
           </main>
+          <% if(message){%>
+            <div class="error--popup">
+              <p class="error--message"><%= message %></p>
+            </div>
+          <% }%>
   </body>
   <script>
     function editPanel(btn){
