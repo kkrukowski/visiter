@@ -52,10 +52,10 @@ const registerBusiness = async (req, res) => {
   }
 };
 
-const homeView = (req, res) => {
+const homeView = (req, res, next = "", message = "") => {
   if (req.user.role == "Owner") {
     Business.findOne({ "owner._id": req.user._id }).populate(["workers", "opinions", "services"]).exec((err, business) => {
-      return res.render("business", { business, message: "" })
+      return res.render("business", { user: req.user, business, message: message })
     });
   } else {
     res.redirect("/business/register");
@@ -234,7 +234,7 @@ const addWorker = (req, res) => {
               { new: true },
               (err, business) => {
                 const message = "Pracownik dodany do firmy.";
-                return homeView(req, res);
+                return homeView(req, res, "", message);
               }
             );
           }
@@ -242,7 +242,7 @@ const addWorker = (req, res) => {
       } else {
         const message = "Podany użytkownik jest już pracownikiem lub właścielem.";
         Business.findById(req.params.id, (err, business) => {
-          return homeView(req, res);
+          return homeView(req, res, "", message);
         });
       }
     }
@@ -265,11 +265,11 @@ const removeWorker = (req, res) => {
         (err, business) => {
           if (err) {
             const message = "Brak uzytkownika do usuniecia.";
-            return homeView(req, res);
+            return homeView(req, res, "", message);
           }
           console.log(business.workers);
           const message = "Uzytkownik usunięty.";
-          return homeView(req, res);
+          return homeView(req, res, "", message);
         }
       );
     }
@@ -290,7 +290,7 @@ const addService = (req, res) => {
     if (err) {
       const business = Business.findById(businessId);
       const message = "Błąd w trakcie dodawania serwisu.";
-      return homeView(req, res);
+      return homeView(req, res, "", message);
     }
     const update = {
       $push: { services: service.id },
@@ -298,10 +298,10 @@ const addService = (req, res) => {
     Business.findByIdAndUpdate(businessId, update, { new: true }, (err, business) => {
       if (err) {
         const message = "Błąd podczas dodawania serwisu do firmy!";
-        return homeView(req, res);
+        return homeView(req, res, "", message);
       }
       const message = "Serwis dodany.";
-      return homeView(req, res);
+      return homeView(req, res, "", message);
     });
   });
 };
@@ -314,11 +314,11 @@ const removeService = (req, res) => {
     (err, business) => {
       if (err) {
         const message = "Błąd w trakcie usuwania serwisu.";
-        return homeView(req, res);
+        return homeView(req, res, "", message);
       }
       Service.findOneAndDelete({ _id: req.params.id }, { new: true }, (err, service) => {
         const message = "Serwis usuniety.";
-        return homeView(req, res);
+        return homeView(req, res, "", message);
       });
     }
   );
