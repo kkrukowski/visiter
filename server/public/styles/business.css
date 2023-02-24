@@ -1,0 +1,39 @@
+.main{
+    display: grid;
+    grid-template-columns: 20px 1fr 20px 1fr 20px;
+    grid-template-rows: 20px 1fr 20px 1fr 20px 1fr 20px;
+}
+
+.main--item{
+    display: flex;
+    background-color: #33365E;
+    border-radius: 20px;
+}
+
+.main__workers{
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.main__services{
+    grid-column: 2;
+    grid-row: 4;
+}
+
+.main__messages{
+    grid-column: 2;
+    grid-row: 6;
+}
+
+.main__profile-info{
+    grid-column: 4;
+    grid-row: 2 / 5;
+}
+
+.main__opinions, .main__my-business{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    grid-column: 4;
+    grid-row: 6;
+}

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Strona główna | Visiter</title>
+    <title>Twoja Firma | Visiter</title>
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
@@ -55,7 +55,7 @@
             </a>
           </li>
           <li class="menu__list--item">
-            <a href="profile/<%= user._id %>" class="item--link"
+            <a href="/profile/<%= user._id %>" class="item--link"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -134,69 +134,80 @@
       </div>
     </nav>
     <!-- Main block -->
-<main>
+<main class="main">
+<section class="main__workers main--item">
+  <h2>Twoi pracownicy:</h2>
+  <% if(business.workers != null){ %>
+      <ul>
+          <% business.workers.forEach(function(worker) { %>
+              <li><a href="/profile/<%= worker._id %>">
+                      <%= worker.name %>
+                          <%= worker.surname%>
+                  </a>
+                  <form action="/business/myBusiness/<%= business._id%>/<%= worker._id %>/removeWorker" method="POST">
+                      <input type="submit" value="X">
+                  </form>
+              </li>
+              <% }); %>
+      </ul>
+      <% } %>
+          <p>Dodaj uzytkownika</p>
+          <form action="/business/myBusiness/<%=business._id%>/addWorker" method="POST">
+              <label for="code"></label>
+              <input type="text" name="code">
+              <input id="submit" type="submit" value="Dodaj">
+          </form>
+</section>
+<section class="main__profile-info main--item">
 <h1>TWOJA FIRMA</h1>
-<h2>Twoi pracownicy:</h2>
-<% if(business.workers != null){ %>
-    <ul>
-        <% business.workers.forEach(function(worker) { %>
-            <li><a href="/profile/<%= worker._id %>">
-                    <%= worker.name %>
-                        <%= worker.surname%>
-                </a>
-                <form action="/business/myBusiness/<%= business._id%>/<%= worker._id %>/removeWorker" method="POST">
-                    <input type="submit" value="X">
-                </form>
-            </li>
-            <% }); %>
-    </ul>
-    <% } %>
-        <p>Dodaj uzytkownika</p>
-        <form action="/business/myBusiness/<%=business._id%>/addWorker" method="POST">
-            <label for="code"></label>
-            <input type="text" name="code">
-            <input id="submit" type="submit" value="Dodaj">
-        </form>
-        <h2>Twoje serwisy:</h2>
-        <% if(business.services != null){ %>
-            <ul>
-                <% business.services.forEach(function(service) { %>
-                    <li>
-                            <%= service.name %>
-                            <br>
-                            <%= service.description %>
-                            <br>
-                            <%= service.price %>zł, <%= service.duration %>h
-                        <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService"
-                            method="POST">
-                            <input type="submit" value="X">
-                        </form>
-                    </li>
-                    <% }); %>
-            </ul>
-            <% } %>
-                <p>Dodaj serwis</p>
-                <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
-                    <label for="name">Nazwa</label>
-                    <input type="text" name="name"><br>
-                    <label for="description">Opis</label>
-                    <input type="text" name="description"><br>
-                    <label for="price">Cena</label>
-                    <input type="number" step="0.01" name="price"><br>
-                    <label for="duration">Czas</label>
-                    <input type="number" step="0.01" name="duration"><br>
-                    <input id="submit" type="submit" value="Dodaj">
-                </form>
-<h2>Twoje opinie:</h2>
-    <% if(business.opinions != null){ %>
-        <ul>
-            <% business.opinions.forEach(function(opinion) { %>
-                <li>
-                    <%= opinion.comment %> - <%= opinion.rating %> od <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
-                </li>
-            <% }) %>
-        </ul>
-    <% } %>
+</section>
+<section class="main__services main--item">
+  <h2>Twoje serwisy:</h2>
+  <% if(business.services != null){ %>
+      <ul>
+          <% business.services.forEach(function(service) { %>
+              <li>
+                      <%= service.name %>
+                      <br>
+                      <%= service.description %>
+                      <br>
+                      <%= service.price %>zł, <%= service.duration %>h
+                  <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService"
+                      method="POST">
+                      <input type="submit" value="X">
+                  </form>
+              </li>
+              <% }); %>
+      </ul>
+      <% } %>
+          <p>Dodaj serwis</p>
+          <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
+              <label for="name">Nazwa</label>
+              <input type="text" name="name"><br>
+              <label for="description">Opis</label>
+              <input type="text" name="description"><br>
+              <label for="price">Cena</label>
+              <input type="number" step="0.01" name="price"><br>
+              <label for="duration">Czas</label>
+              <input type="number" step="0.01" name="duration"><br>
+              <input id="submit" type="submit" value="Dodaj">
+          </form>
+</section>
+<section class="main__messages main--item">
+<p>WIADOMOSCI</p>
+</section>
+<section class="main__opinions main--item">
+  <h2>Twoje opinie:</h2>
+  <% if(business.opinions != null){ %>
+      <ul>
+          <% business.opinions.forEach(function(opinion) { %>
+              <li>
+                  <%= opinion.comment %> - <%= opinion.rating %> od <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
+              </li>
+          <% }) %>
+      </ul>
+  <% } %>
+</section>
 </main>
     <% if(message){%>
         <div class="error--popup">
