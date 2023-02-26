@@ -2,8 +2,6 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const mongoosePaginate = require("mongoose-paginate-v2");
 const User = require("./User");
-const Opinion = require("./OpinionForBusiness");
-const Service = require("./Service");
 
 let businessSchema = new Schema({
   name: String,
@@ -12,7 +10,7 @@ let businessSchema = new Schema({
     type: String,
     required: false,
   },
-  owner: { type: User.schema, require: true },
+  ownerId: { type: Schema.Types.ObjectId, ref: "User"},
   address: String,
   phone: String,
 

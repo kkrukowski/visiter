@@ -2,6 +2,7 @@
     display: grid;
     grid-template-columns: 20px 1fr 20px 1fr 20px;
     grid-template-rows: 20px 1fr 20px 1fr 20px 1fr 20px;
+    color: white;
 }
 
 .main--item{
@@ -25,9 +26,53 @@
     grid-row: 6;
 }
 
-.main__profile-info{
+.main__profile{
     grid-column: 4;
     grid-row: 2 / 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding: 40px 60px;
+}
+.business__edit{
+    position: relative;
+    width: 100%;
+}
+.business__edit--img{
+    position: absolute;
+    top: 100%;
+    height: 28px;
+}
+.profile--header--text{
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+}
+.profile--desc--text{
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 7; /* start showing ellipsis when 3rd line is reached */
+    white-space: pre-wrap; /* let the text wrap preserving spaces */
+    text-align: justify;
+}
+.profile--info{
+    width: 100%;
+}
+.profile--info--item{
+    margin-top: 10px;
+}
+.profile--info--label{
+    color: #C8C8C8;
+    font-size: 16px;
+    font-weight: 700; 
+    margin: 0;
+}
+.profile--info--text{
+    display: inline;
+    font-weight: 700;
 }
 
 .main__opinions, .main__my-business{

@@ -43,6 +43,17 @@
     width: 200px;
 }
 
+.user__edit{
+    position: relative;
+    width: 100%;
+    align-items: left;
+}
+.user__edit--img{
+    position: absolute;
+    top: 100%;
+    height: 28px;
+}
+
 .user__name--text{
     font-size: 24px;
     font-weight: 700;

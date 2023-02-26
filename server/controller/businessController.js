@@ -50,11 +50,12 @@ const registerBusiness = async (req, res) => {
   } catch {
     res.redirect("/business/register");
   }
-};
+}; // dodac res.rendery, sprawdzanie czy nie jest juz workerem/ownerem
 
 const homeView = (req, res, next = "", message = "") => {
   if (req.user.role == "Owner") {
-    Business.findOne({ "owner._id": req.user._id }).populate(["workers", "opinions", "services"]).exec((err, business) => {
+    Business.findOne({ ownerId: req.user._id }).populate(["ownerId", "workers", "opinions", "services"]).exec((err, business) => {
+      console.log(business)
       return res.render("business", { user: req.user, business, message: message })
     });
   } else {
@@ -90,7 +91,7 @@ const getAllBusiness = async (req, res) => {
       { offset, limit }
     )
       .then((businesses) => {
-        Business.find({}).populate("services").exec((err, businessesWithServices) => {
+        Business.find({}).populate("services", "ownerId").exec((err, businessesWithServices) => {
           console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
