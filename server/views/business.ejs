@@ -135,27 +135,46 @@
     <!-- Main block -->
 <main class="main">
 <section class="main__workers main--item">
-  <h2>Twoi pracownicy:</h2>
+  <div class="workers--header">
+    <p class="workers--header--text">Twoi pracownicy</p>
+  </div>
   <% if(business.workers != null){ %>
-      <ul>
-          <% business.workers.forEach(function(worker) { %>
-              <li><a href="/profile/<%= worker._id %>">
-                      <%= worker.name %>
-                          <%= worker.surname%>
-                  </a>
-                  <form action="/business/myBusiness/<%= business._id%>/<%= worker._id %>/removeWorker" method="POST">
-                      <input type="submit" value="X">
-                  </form>
-              </li>
-              <% }); %>
-      </ul>
+    <div class="workers--wraper">
+      <% business.workers.forEach(function(worker) { %>
+      <div class="workers--item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            class="avatar--img"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+              clip-rule="evenodd"
+            />
+          </svg>
+            <p class="user-info--text">
+              <a href="/profile/<%= worker._id %>">
+                <%= worker.name %>
+                <br>
+                    <%= worker.surname%>
+              </a>
+            </p>
+          <form action="/business/myBusiness/<%= business._id%>/<%= worker._id %>/removeWorker" method="POST">
+              <button class="btn--removeWorker" type="submit">Usuń </button>
+          </form>
+      </div>
+      <% }); %>
+    </div>
       <% } %>
+      <!--
           <p>Dodaj uzytkownika</p>
           <form action="/business/myBusiness/<%=business._id%>/addWorker" method="POST">
               <label for="code"></label>
               <input type="text" name="code">
               <input id="submit" type="submit" value="Dodaj">
           </form>
+      -->
 </section>
 <section class="main__profile main--item">
   <div class="business__edit">
@@ -193,7 +212,7 @@
   </div>
 </section>
 <section class="main__services main--item">
-  <h2>Twoje serwisy:</h2>
+  <!--<h2>Twoje serwisy:</h2>
   <% if(business.services != null){ %>
       <ul>
           <% business.services.forEach(function(service) { %>
@@ -222,7 +241,7 @@
               <label for="duration">Czas</label>
               <input type="number" step="0.01" name="duration"><br>
               <input id="submit" type="submit" value="Dodaj">
-          </form>
+          </form>-->
 </section>
 <section class="main__messages main--item">
 <p>WIADOMOSCI</p>

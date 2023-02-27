@@ -1,6 +1,6 @@
 .main{
     display: grid;
-    grid-template-columns: 20px 1fr 20px 1fr 20px;
+    grid-template-columns: 20px 1.5fr 20px 1fr 20px;
     grid-template-rows: 20px 1fr 20px 1fr 20px 1fr 20px;
     color: white;
 }
@@ -14,6 +14,7 @@
 .main__workers{
     grid-column: 2;
     grid-row: 2;
+    min-width: 0;
 }
 
 .main__services{
@@ -74,11 +75,72 @@
     display: inline;
     font-weight: 700;
 }
-
+.main__workers{
+    display:flex;
+    flex-direction: column;
+}
 .main__opinions, .main__my-business{
     display: flex;
     justify-content: center;
     align-items: center;
     grid-column: 4;
     grid-row: 6;
+}
+.workers--wraper{
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+}
+.workers--wraper::-webkit-scrollbar{
+    border-radius: 10px;
+    background: white;
+    
+}
+.workers--wraper::-webkit-scrollbar-thumb:horizontal{
+    background: #868ce2;
+    border-radius: 10px;
+}
+.workers--item{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: 25%;
+    height: 100%;
+    background-color: #444774;
+    margin-left: 20px;
+    border-radius: 20px;
+    padding-bottom: 15px;
+}
+.user-info--text{
+    width: 100%;
+    text-align: center;
+}
+.user-info--text a{
+    color: white;
+    font-weight: 700;
+    text-decoration: none;
+}
+.user-info--text a:hover{
+    -webkit-transition: color 0.1s ease-out;
+    -moz-transition: color 0.1s ease-out;
+    -o-transition: color 1s ease-out;
+    transition: color 0.3s ease-out;
+    color: #F1511B;
+}
+.workers--header{
+    width: 100%;
+}
+.avatar--img{
+    height: 125px;
+    width: 125px;
+}
+.workers--header--text{
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
 }
