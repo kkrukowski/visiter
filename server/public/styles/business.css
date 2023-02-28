@@ -1,8 +1,9 @@
 .main{
     display: grid;
     grid-template-columns: 20px 1.5fr 20px 1fr 20px;
-    grid-template-rows: 20px 1fr 20px 1fr 20px 1fr 20px;
+    grid-template-rows: 20px 45% 20px 45% 20px 33% 20px;
     color: white;
+    overflow-x: auto;
 }
 
 .main--item{
@@ -20,6 +21,8 @@
 .main__services{
     grid-column: 2;
     grid-row: 4;
+    display: flex;
+    flex-direction: column;
 }
 
 .main__messages{
@@ -143,4 +146,36 @@
     font-weight: 700;
     color: white;
     text-align: center;
+}
+/* SERVICES */
+.services--header{
+    width: 100%;
+}
+.services--item{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: 25%;
+    height: 100%;
+    background-color: #444774;
+    margin-left: 20px;
+    border-radius: 20px;
+    padding-bottom: 15px;
+}
+.services--header--text{
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+}
+.services--wraper{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-around;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
 }
