@@ -218,22 +218,69 @@
       <div class="services--wraper">
         <% business.services.forEach(function(service) { %>
         <div class="services--item">
-          <div class="service--removeBtn">
-            <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService" method="POST">
-              <input type="submit" value="X">
-            </form>
-          </div>
           <div class="service--name">
-            <%= service.name %>
+            <p class="service--name--text"><%= service.name %></p>
           </div>
           <div class="service--desc">
-            <%= service.description %>
+            <p class="service--desc--text"><%= service.description %></p>
           </div>
           <div class="service--price">
-            <%= service.price %>zł
+            <p class="service--price--text"><%= service.price %>zł</p>
+          </div>
+          <div class="service--btn">
+            <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService" method="POST">
+              <button type="input">Usuń</button>
+            </form>
+          </div>
+          <div class="service--btn">
+            <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/editService" method="POST">
+              <button type="input">Edytuj</button>
+            </form>
+          </div>
+        </div>
+        <div class="services--item">
+          <div class="service--name">
+            <p class="service--name--text">Strzyżenie testowe</p>
+          </div>
+          <div class="service--desc">
+            <p class="service--desc--text">Jakiś dłuższy opis strzyżenia testwoego zaby przetestwoac dzialania divow przy dluzszych descripszonach hehe xdd</p>
+          </div>
+          <div class="service--price">
+            <p class="service--price--text">255zł</p>
+          </div>
+          <div class="service--btn">
+            <form action="" method="POST">
+              <button type="input">Usuń</button>
+            </form>
+          </div>
+          <div class="service--btn">
+            <form action="" method="POST">
+              <button type="input">Edytuj</button>
+            </form>
           </div>
         </div>
         <% }); %>
+        <div class="services--item">
+          <div class="service--name">
+            <p class="service--name--text">Strzyżenie testowe</p>
+          </div>
+          <div class="service--desc">
+            <p class="service--desc--text">Jakiś dłuższy opis strzyżenia testwoego zaby przetestwoac dzialania divow przy dluzszych descripszonach hehe xdd</p>
+          </div>
+          <div class="service--price">
+            <p class="service--price--text">255zł</p>
+          </div>
+          <div class="service--btn">
+            <form action="" method="POST">
+              <button type="input">Usuń</button>
+            </form>
+          </div>
+          <div class="service--btn">
+            <form action="" method="POST">
+              <button type="input">Edytuj</button>
+            </form>
+          </div>
+        </div>
       </div>
           <!--<p>Dodaj serwis</p>
           <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
