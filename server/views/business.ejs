@@ -137,6 +137,7 @@
 <section class="main__workers main--item">
   <div class="workers--header">
     <p class="workers--header--text">Twoi pracownicy</p>
+    <button class="addingBtn">+</button>
   </div>
   <% if(business.workers != null){ %>
     <div class="workers--wraper">
@@ -214,6 +215,7 @@
 <section class="main__services main--item">
   <div class="services--header">
     <p class="services--header--text">Twoje serwisy</p>
+    <button class="addingBtn">+</button>
   </div>
       <div class="services--wraper">
         <% business.services.forEach(function(service) { %>
@@ -311,7 +313,13 @@
   
 </section>
 <section class="main__messages main--item">
-  <p>WIADOMOSCI</p>
+  <button id="myBtn">Kliknij mnie</button>
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p style="color:black;">Tssss</p>
+    </div>
+  </div>
 </section>
 </main>
     <% if(message){%>
@@ -319,3 +327,25 @@
           <p class="error--message"><%= message %></p>
         </div>
       <% }%>
+<script>
+  var modal = document.getElementById("myModal");
+var btn = document.getElementsByClassName("addingBtn")[0];
+var span = document.getElementsByClassName("close")[0];
+
+btn.onclick = function() {
+  modal.style.display = "block";
+  document.body.style.backgroundColor = "rgba(0,0,0,0.4)"; // wyszarzenie strony
+}
+
+span.onclick = function() {
+  modal.style.display = "none";
+  document.body.style.backgroundColor = "initial"; // przywrócenie koloru tła strony
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+    document.body.style.backgroundColor = "initial"; // przywrócenie koloru tła strony
+  }
+}
+</script>
