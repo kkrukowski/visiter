@@ -200,6 +200,7 @@
     font-size: large;
     font-weight: 700;
     color: white;
+    margin-bottom: 0px;
 }
 .service--name, .service--desc, .service--price{
     text-align: center;
@@ -207,6 +208,22 @@
 }
 .service--desc{
     text-align: center;
+}
+.service--name-text, .service--desc--text, .service--price--text{
+    margin-bottom: 0px;
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; /* start showing ellipsis when 3rd line is reached */
+    white-space: pre-wrap; /* let the text wrap preserving spaces */
+    text-align: center;
+}
+.service--btns{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-self: flex-end;
+    justify-content: space-around;
 }
 .service--btn{
     margin: 10px;

@@ -227,15 +227,17 @@
           <div class="service--price">
             <p class="service--price--text"><%= service.price %>zł</p>
           </div>
-          <div class="service--btn">
-            <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService" method="POST">
-              <button type="input">Usuń</button>
-            </form>
-          </div>
-          <div class="service--btn">
-            <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/editService" method="POST">
-              <button type="input">Edytuj</button>
-            </form>
+          <div class="service--btns">
+            <div class="service--btn">
+              <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService" method="POST">
+                <button type="input">Usuń</button>
+              </form>
+            </div>
+            <div class="service--btn">
+              <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/editService" method="POST">
+                <button type="input">Edytuj</button>
+              </form>
+            </div>
           </div>
         </div>
         <div class="services--item">
@@ -248,15 +250,17 @@
           <div class="service--price">
             <p class="service--price--text">255zł</p>
           </div>
-          <div class="service--btn">
-            <form action="" method="POST">
-              <button type="input">Usuń</button>
-            </form>
-          </div>
-          <div class="service--btn">
-            <form action="" method="POST">
-              <button type="input">Edytuj</button>
-            </form>
+          <div class="service--btns">
+            <div class="service--btn">
+              <form action="" method="POST">
+                <button type="input">Usuń</button>
+              </form>
+            </div>
+            <div class="service--btn">
+              <form action="" method="POST">
+                <button type="input">Edytuj</button>
+              </form>
+            </div>
           </div>
         </div>
         <% }); %>
@@ -270,15 +274,17 @@
           <div class="service--price">
             <p class="service--price--text">255zł</p>
           </div>
-          <div class="service--btn">
-            <form action="" method="POST">
-              <button type="input">Usuń</button>
-            </form>
-          </div>
-          <div class="service--btn">
-            <form action="" method="POST">
-              <button type="input">Edytuj</button>
-            </form>
+          <div class="service--btns">
+            <div class="service--btn">
+              <form action="" method="POST">
+                <button type="input">Usuń</button>
+              </form>
+            </div>
+            <div class="service--btn">
+              <form action="" method="POST">
+                <button type="input">Edytuj</button>
+              </form>
+            </div>
           </div>
         </div>
       </div>
