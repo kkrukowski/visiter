@@ -55,8 +55,11 @@ const registerBusiness = async (req, res) => {
 const homeView = (req, res, next = "", message = "") => {
   if (req.user.role == "Owner") {
     Business.findOne({ ownerId: req.user._id }).populate(["ownerId", "workers", "opinions", "services"]).exec((err, business) => {
-      console.log(business)
-      return res.render("business", { user: req.user, business, message: message })
+      const opinionsIds = business.opinions;
+        Opinion.find({ "_id": { $in: opinionsIds } }).populate("ownerId").exec(function (err, opinions) {
+          console.log(business)
+          return res.render("business", { currentUser: req.user, user: req.user, business, message: message, opinions: opinions })
+        });
     });
   } else {
     res.redirect("/business/register");

@@ -240,53 +240,7 @@
             </div>
           </div>
         </div>
-        <div class="services--item">
-          <div class="service--name">
-            <p class="service--name--text">Strzyżenie testowe</p>
-          </div>
-          <div class="service--desc">
-            <p class="service--desc--text">Jakiś dłuższy opis strzyżenia testwoego zaby przetestwoac dzialania divow przy dluzszych descripszonach hehe xdd</p>
-          </div>
-          <div class="service--price">
-            <p class="service--price--text">255zł</p>
-          </div>
-          <div class="service--btns">
-            <div class="service--btn">
-              <form action="" method="POST">
-                <button type="input">Usuń</button>
-              </form>
-            </div>
-            <div class="service--btn">
-              <form action="" method="POST">
-                <button type="input">Edytuj</button>
-              </form>
-            </div>
-          </div>
-        </div>
         <% }); %>
-        <div class="services--item">
-          <div class="service--name">
-            <p class="service--name--text">Strzyżenie testowe</p>
-          </div>
-          <div class="service--desc">
-            <p class="service--desc--text">Jakiś dłuższy opis strzyżenia testwoego zaby przetestwoac dzialania divow przy dluzszych descripszonach hehe xdd</p>
-          </div>
-          <div class="service--price">
-            <p class="service--price--text">255zł</p>
-          </div>
-          <div class="service--btns">
-            <div class="service--btn">
-              <form action="" method="POST">
-                <button type="input">Usuń</button>
-              </form>
-            </div>
-            <div class="service--btn">
-              <form action="" method="POST">
-                <button type="input">Edytuj</button>
-              </form>
-            </div>
-          </div>
-        </div>
       </div>
           <!--<p>Dodaj serwis</p>
           <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
@@ -301,12 +255,11 @@
               <input id="submit" type="submit" value="Dodaj">
           </form>-->
 </section>
-<section class="main__messages main--item">
-<p>WIADOMOSCI</p>
-</section>
 <section class="main__opinions main--item">
-  <h2>Twoje opinie:</h2>
-  <% if(business.opinions != null){ %>
+  <div class="opinions--header">
+    <p class="opinions--header--text">Twoje opinie</p>
+  </div>
+  <!--<% if(business.opinions != null){ %>
       <ul>
           <% business.opinions.forEach(function(opinion) { %>
               <li>
@@ -314,7 +267,51 @@
               </li>
           <% }) %>
       </ul>
-  <% } %>
+  <% } %> -->
+  <div class="opinions__list--wrapper">
+    <div class="opinions--list">
+      <% if(opinions != null){ %> <%
+        opinions.forEach(function(opinion){ %>
+      <div class="opinion--item">
+        <% if(opinion.ownerId == currentUser.id){ %>
+        <div>                
+          <form action="/profile/<%= user._id %>/<%= opinion._id %>/removeOpinion" method="POST">
+            <input type="submit" value="X">
+          </form>
+        </div>
+        <% } %>
+        <span class="opinion--quotes">”</span>
+        <div class="opinion__content--wrapper">
+          <p class="opinion--content"><%= opinion.comment %></p>
+          <p class="opinion--author">
+            <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
+          </p>
+          <div class="opinion--stars">
+            <% stars=opinion.rating %> <% for (let i = 0; i < stars; i++){
+            %>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="#F1511B"
+              class="opinion--star"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                clip-rule="evenodd"
+              />
+            </svg>
+            <% } %>
+          </div>
+        </div>
+      </div>
+      <% }); %> <% } %>
+    </div>
+  </div>
+  
+</section>
+<section class="main__messages main--item">
+  <p>WIADOMOSCI</p>
 </section>
 </main>
     <% if(message){%>
