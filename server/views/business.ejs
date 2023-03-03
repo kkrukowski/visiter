@@ -137,7 +137,7 @@
 <section class="main__workers main--item">
   <div class="workers--header">
     <p class="workers--header--text">Twoi pracownicy</p>
-    <button class="addingBtn">+</button>
+    <button id="addWorker" class="addingBtn">+</button>
   </div>
   <% if(business.workers != null){ %>
     <div class="workers--wraper">
@@ -168,14 +168,6 @@
       <% }); %>
     </div>
       <% } %>
-      <!--
-          <p>Dodaj uzytkownika</p>
-          <form action="/business/myBusiness/<%=business._id%>/addWorker" method="POST">
-              <label for="code"></label>
-              <input type="text" name="code">
-              <input id="submit" type="submit" value="Dodaj">
-          </form>
-      -->
 </section>
 <section class="main__profile main--item">
   <div class="business__edit">
@@ -215,7 +207,7 @@
 <section class="main__services main--item">
   <div class="services--header">
     <p class="services--header--text">Twoje serwisy</p>
-    <button class="addingBtn">+</button>
+    <button id="addService" class="addingBtn">+</button>
   </div>
       <div class="services--wraper">
         <% business.services.forEach(function(service) { %>
@@ -236,40 +228,17 @@
               </form>
             </div>
             <div class="service--btn">
-              <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/editService" method="POST">
-                <button type="input">Edytuj</button>
-              </form>
+                <button type="input" id="btnServiceEdit" onclick="setInfo('<%= business._id %>','<%= service._id %>','<%= service.name %>','<%= service.description %>','<%= service.price %>')">Edytuj</button>
             </div>
           </div>
         </div>
         <% }); %>
       </div>
-          <!--<p>Dodaj serwis</p>
-          <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
-              <label for="name">Nazwa</label>
-              <input type="text" name="name"><br>
-              <label for="description">Opis</label>
-              <input type="text" name="description"><br>
-              <label for="price">Cena</label>
-              <input type="number" step="0.01" name="price"><br>
-              <label for="duration">Czas</label>
-              <input type="number" step="0.01" name="duration"><br>
-              <input id="submit" type="submit" value="Dodaj">
-          </form>-->
 </section>
 <section class="main__opinions main--item">
   <div class="opinions--header">
     <p class="opinions--header--text">Twoje opinie</p>
   </div>
-  <!--<% if(business.opinions != null){ %>
-      <ul>
-          <% business.opinions.forEach(function(opinion) { %>
-              <li>
-                  <%= opinion.comment %> - <%= opinion.rating %> od <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
-              </li>
-          <% }) %>
-      </ul>
-  <% } %> -->
   <div class="opinions__list--wrapper">
     <div class="opinions--list">
       <% if(opinions != null){ %> <%
@@ -310,41 +279,114 @@
       <% }); %> <% } %>
     </div>
   </div>
-  
 </section>
 <section class="main__messages main--item">
-  <button id="myBtn">Kliknij mnie</button>
-  <div id="myModal" class="modal">
-    <div class="modal-content">
-      <span class="close">&times;</span>
-      <p style="color:black;">Tssss</p>
-    </div>
-  </div>
 </section>
 </main>
-    <% if(message){%>
-        <div class="error--popup">
-          <p class="error--message"><%= message %></p>
-        </div>
-      <% }%>
+<div class="modal">
+  <div class="modal-content">
+      <span class="close">&times;</span>
+    <div class="modal--content--header">
+      <p class="modal--content--header--text">Dodaj uzytkownika</p>
+    </div>
+    <div class="modal--content--form">
+      <form action="/business/myBusiness/<%=business._id%>/addWorker" method="POST">
+        <label for="code"></label>
+        <input type="text" name="code" placeholder="Kod użytkownika">
+        <input id="submit" type="submit" value="Dodaj">
+    </form>
+    </div>
+  </div>
+</div>
+<div class="modal">
+  <div class="modal-content">
+      <span class="close">&times;</span>
+    <div class="modal--content--header">
+      <p class="modal--content--header--text">Dodaj serwis</p>
+    </div>
+    <div class="modal--content--form">
+          <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
+              <input type="text" placeholder="Nazwa" required><br>
+              <input type="text" name="description" placeholder="Opis"><br>
+              <input type="number" step="0.01" name="price" placeholder="Cena" required><br>
+              <input type="number" step="0.01" name="duration" placeholder="Czas (h)"><br>
+              <input id="submit" type="submit" value="Dodaj">
+          </form>
+    </div>
+  </div>
+</div>
+<div class="modal">
+  <div class="modal-content">
+      <span class="close">&times;</span>
+    <div class="modal--content--header">
+      <p class="modal--content--header--text" id="editServiceName">Edytuj serwis:</p>
+    </div>
+    <div class="modal--content--form">
+          <form id="formEditService" action="/business/myBusiness/<%=business._id%>/editService/" method="POST">
+              <input type="text" name="name" value="" id="editServiceName" required><br>
+              <input type="text" name="description" id="editServiceDesc" value=""><br>
+              <input type="number" step="0.01" name="price" id="editServicePrice" value="" required><br>
+              <input id="submit" type="submit" value="Dodaj">
+          </form>
+    </div>
+  </div>
+</div>
+<% if(message) {%>
+  <div class="error--popup">
+    <p class="error--message"><%= message %></p>
+  </div>
+<% }%>
 <script>
-  var modal = document.getElementById("myModal");
-var btn = document.getElementsByClassName("addingBtn")[0];
-var span = document.getElementsByClassName("close")[0];
+var modal = document.getElementsByClassName("modal");
+var btnWorkerAdd = document.getElementById("addWorker");
+var btnServiceAdd = document.getElementById("addService");
+//var btnServiceEdit = document.getElementById("editService");
+var span = document.getElementsByClassName("close");
 
-btn.onclick = function() {
+function setInfo(businessId,serviceId,name,description,price){
+  console.log(businessId,serviceId,name,description,price);
+  let form = document.getElementById('formEditService');
+  form.setAttribute('action', '/business/myBusiness/${businessId}/editService/${serviceId}');
+  let nameInput = document.getElementById('editServiceName');
+  let descInput = document.getElementById('editServiceDesc');
+  let priceInput = document.getElementById('editServicePrice');
+
+  nameInput.value = name;
+  descInput.value = description;
+  priceInput.value = price;
+
+}
+
+btnWorkerAdd.onclick = function(event) {
+  modal[0].style.display = "block";
+  document.body.style.backgroundColor = "rgba(0,0,0,0.4)"; // wyszarzenie strony
+}
+
+btnServiceAdd.onclick = function() {
+  modal[1].style.display = "block";
+  document.body.style.backgroundColor = "rgba(0,0,0,0.4)"; // wyszarzenie strony
+}
+
+btnServiceEdit.onclick = function() {
+  console.log("serviced");
   modal.style.display = "block";
   document.body.style.backgroundColor = "rgba(0,0,0,0.4)"; // wyszarzenie strony
 }
 
-span.onclick = function() {
-  modal.style.display = "none";
+span[0].onclick = function() {
+  modal[0].style.display = "none";
+  document.body.style.backgroundColor = "initial"; // przywrócenie koloru tła strony
+}
+
+span[1].onclick = function() {
+  modal[1].style.display = "none";
   document.body.style.backgroundColor = "initial"; // przywrócenie koloru tła strony
 }
 
 window.onclick = function(event) {
-  if (event.target == modal) {
-    modal.style.display = "none";
+  if (event.target == modal[0] || event.target == modal[1]) {
+    modal[0].style.display = "none";
+    modal[1].style.display = "none";
     document.body.style.backgroundColor = "initial"; // przywrócenie koloru tła strony
   }
 }
