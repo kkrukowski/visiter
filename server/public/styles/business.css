@@ -219,6 +219,24 @@
 .service--name, .service--price, .service--btns{
     height: 20%;
 }
+.worker--content, .worker--btns{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 30%;
+}
+.worker--btns form{
+    display: flex;
+}
+.btn--removeWorker{
+    align-self: flex-end;
+}
+.worker--avatar{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 40%;
+}
 .service--desc{
     height: 40%;
     text-align: center;
@@ -389,3 +407,15 @@
     cursor: pointer;
     border-radius: 10px;
 }
+/* MESSAGES */
+.messages--header{
+    width: 100%;
+}
+.messages--header--text{
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+    text-align: center;
+}
+
+

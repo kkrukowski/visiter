@@ -56,10 +56,9 @@ const homeView = (req, res, next = "", message = "") => {
   if (req.user.role == "Owner") {
     Business.findOne({ ownerId: req.user._id }).populate(["ownerId", "workers", "opinions", "services"]).exec((err, business) => {
       const opinionsIds = business.opinions;
-        Opinion.find({ "_id": { $in: opinionsIds } }).populate("ownerId").exec(function (err, opinions) {
-          console.log(business)
-          return res.render("business", { currentUser: req.user, user: req.user, business, message: message, opinions: opinions })
-        });
+      Opinion.find({ "_id": { $in: opinionsIds }}).populate("ownerId").exec(function (err, opinions) {
+        return res.render("business", { currentUser: req.user, user: req.user, business, message: message, opinions: opinions })
+      });
     });
   } else {
     res.redirect("/business/register");
@@ -328,6 +327,18 @@ const removeService = (req, res) => {
   );
 };
 
+const editService = (req, res) => {
+  console.log(req.params.idService, req.body.name, req.body.description);
+  Service.findByIdAndUpdate(req.params.idService, { name: req.body.name, description: req.body.description, price: req.body.price }, { new: true }, (err, service) => {
+    if (err) {
+      const message = "Błąd w trakcie edytowania serwisu.";
+      return homeView(req, res, "", message);
+    }
+    const message = "Serwis edytowany."
+    return homeView(req, res, "", message);
+  });
+};
+
 module.exports = {
   registerView,
   registerBusiness,
@@ -339,4 +350,5 @@ module.exports = {
   removeWorker,
   addService,
   removeService,
+  editService
 };

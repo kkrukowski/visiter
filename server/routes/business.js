@@ -11,6 +11,7 @@ const {
   removeWorker,
   addService,
   removeService,
+  editService,
 } = require("../controller/businessController");
 
 const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
@@ -42,5 +43,7 @@ router.post(
   removeService
 );
 router.post("/myBusiness/:id/addService", isLoggedIn, addService);
+
+router.post("/myBusiness/:id/editService/:idService", isLoggedIn, editService)
 
 module.exports = router;
