@@ -162,6 +162,7 @@
     width: 100%;
 }
 .services--item{
+    min-height: auto;
     display: flex;
     justify-content: center;
     flex-wrap: wrap;
@@ -215,8 +216,11 @@
     text-align: center;
     width: 100%;
 }
+.service--name, .service--price, .service--btns{
+    height: 20%;
+}
 .service--desc{
-    height: 30%;
+    height: 40%;
     text-align: center;
 }
 .service--name-text, .service--desc--text, .service--price--text{
