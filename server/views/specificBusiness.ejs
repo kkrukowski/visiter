@@ -54,3 +54,8 @@
     </label>
     <input id="submit" type="submit" value="Dodaj opinie">
 </form>
+<% if(message){%>
+    <div class="error--popup">
+      <p class="error--message"><%= message %></p>
+    </div>
+<% }%>

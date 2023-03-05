@@ -6,7 +6,7 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 const registerView = (req, res, err, message = "") => {
   if (req.user.role == "Owner") {
-    res.redirect("/business");
+    res.redirect("/business"); //tu do zmiany
   }
   res.render("businessRegister", { message: message });
 };
@@ -50,51 +50,21 @@ const registerBusiness = async (req, res) => {
   } catch {
     res.redirect("/business/register");
   }
-};
+}; // dodac res.rendery, sprawdzanie czy nie jest juz workerem/ownerem
 
-const refreshRole = (req, res) => {
-  User.findOneAndUpdate(
-    { _id: req.user._id },
-    { role: "User" },
-    function (error, result) {
-      if (error) {
-        console.log("False");
-      } else {
-        console.log("True");
-      }
-    },
-    { new: true }
-  );
-
-  Business.findOneAndDelete({ "owner.id": req.user._id });
-  res.redirect("/");
-};
-
-const homeView = (req, res) => {
+const homeView = (req, res, next = "", message = "") => {
   if (req.user.role == "Owner") {
-    Business.findOne({ "owner._id": req.user._id }, (err, business) => {
-      const workersIds = business.workers;
-      console.log("WORKERSID", workersIds);
-      User.find({ _id: { $in: workersIds } }, (err, workers) => {
-        const servicesIds = business.services;
-        Service.find({ _id: { $in: servicesIds } }, (err, services) => {
-          const opinionsIds = business.opinions;
-          Opinion.find({ _id: { $in: opinionsIds } }, (err, opinions) => {
-            return res.render("business", {
-              business,
-              workers,
-              services,
-              opinions,
-              message: "",
-            });
-          });
-        });
+    Business.findOne({ ownerId: req.user._id }).populate(["ownerId", "workers", "opinions", "services"]).exec((err, business) => {
+      const opinionsIds = business.opinions;
+      Opinion.find({ "_id": { $in: opinionsIds }}).populate("ownerId").exec(function (err, opinions) {
+        return res.render("business", { currentUser: req.user, user: req.user, business, message: message, opinions: opinions })
       });
     });
   } else {
     res.redirect("/business/register");
   }
 };
+
 
 const getPagination = (page, size) => {
   const limit = size ? +size : 3;
@@ -123,7 +93,7 @@ const getAllBusiness = async (req, res) => {
       { offset, limit }
     )
       .then((businesses) => {
-        Business.find({}).populate("services").exec((err, businessesWithServices) => {
+        Business.find({}).populate("services", "ownerId").exec((err, businessesWithServices) => {
           console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
@@ -196,6 +166,7 @@ const getBusiness = (req, res) => {
             opinions,
             business: business,
             Users: User,
+            message: ""
           });
         });
       });
@@ -246,7 +217,7 @@ const addWorker = (req, res) => {
       Business.findById(req.params.id, (err, business) => {
         const message = "Brak takiego uzytkownika.";
         const currentUser = req.user;
-        return res.render("business", { currentUser, business, message });
+        return homeView(req, res);;
       });
     } else {
       if (user.role != "Owner" && user.role != "Worker") {
@@ -266,22 +237,15 @@ const addWorker = (req, res) => {
               { new: true },
               (err, business) => {
                 const message = "Pracownik dodany do firmy.";
-                const currentUser = req.user;
-                return res.render("business", {
-                  currentUser,
-                  business,
-                  message,
-                });
+                return homeView(req, res, "", message);
               }
             );
           }
         });
       } else {
-        const message =
-          "Podany użytkownik jest już pracownikiem lub właścielem.";
-        const currentUser = req.user;
+        const message = "Podany użytkownik jest już pracownikiem lub właścielem.";
         Business.findById(req.params.id, (err, business) => {
-          return res.render("business", { currentUser, business, message });
+          return homeView(req, res, "", message);
         });
       }
     }
@@ -295,8 +259,7 @@ const removeWorker = (req, res) => {
     (err, user) => {
       if (err) {
         const message = "Brak uzytkownika.";
-        const currentUser = req.user;
-        return res.render("business", { currentUser, business, message }); //dodac message o bledzie
+        return res.render("business", { user: req.user, business, message });
       }
       Business.findByIdAndUpdate(
         req.params.idBusiness,
@@ -305,13 +268,11 @@ const removeWorker = (req, res) => {
         (err, business) => {
           if (err) {
             const message = "Brak uzytkownika do usuniecia.";
-            const currentUser = req.user;
-            return res.render("business", { currentUser, business, message }); //dodac message o bledzie
+            return homeView(req, res, "", message);
           }
           console.log(business.workers);
           const message = "Uzytkownik usunięty.";
-          const currentUser = req.user;
-          return res.render("business", { currentUser, business, message });
+          return homeView(req, res, "", message);
         }
       );
     }
@@ -332,20 +293,18 @@ const addService = (req, res) => {
     if (err) {
       const business = Business.findById(businessId);
       const message = "Błąd w trakcie dodawania serwisu.";
-      const currentUser = req.user;
-      return res.render("business", { currentUser, business, message });
+      return homeView(req, res, "", message);
     }
     const update = {
       $push: { services: service.id },
     };
     Business.findByIdAndUpdate(businessId, update, { new: true }, (err, business) => {
-      const currentUser = req.user;
       if (err) {
         const message = "Błąd podczas dodawania serwisu do firmy!";
-        return homeView(req, res);
+        return homeView(req, res, "", message);
       }
       const message = "Serwis dodany.";
-      return homeView(req, res);
+      return homeView(req, res, "", message);
     });
   });
 };
@@ -358,24 +317,32 @@ const removeService = (req, res) => {
     (err, business) => {
       if (err) {
         const message = "Błąd w trakcie usuwania serwisu.";
-        const currentUser = req.user;
-        return homeView(req, res);
+        return homeView(req, res, "", message);
       }
-      Service.findOneAndDelete({_id: req.params.id}, {new: true}, (err, service) =>{
+      Service.findOneAndDelete({ _id: req.params.id }, { new: true }, (err, service) => {
         const message = "Serwis usuniety.";
-        const currentUser = req.user;
-        return homeView(req, res);
+        return homeView(req, res, "", message);
       });
     }
-    // dodac usuwanie z bazy Services
   );
+};
+
+const editService = (req, res) => {
+  console.log(req.params.idService, req.body.name, req.body.description);
+  Service.findByIdAndUpdate(req.params.idService, { name: req.body.name, description: req.body.description, price: req.body.price }, { new: true }, (err, service) => {
+    if (err) {
+      const message = "Błąd w trakcie edytowania serwisu.";
+      return homeView(req, res, "", message);
+    }
+    const message = "Serwis edytowany."
+    return homeView(req, res, "", message);
+  });
 };
 
 module.exports = {
   registerView,
   registerBusiness,
   homeView,
-  refreshRole,
   getAllBusiness,
   getBusiness,
   addOpinion,
@@ -383,4 +350,5 @@ module.exports = {
   removeWorker,
   addService,
   removeService,
+  editService
 };

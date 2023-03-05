@@ -4,7 +4,6 @@ const {
   registerView,
   registerBusiness,
   homeView,
-  refreshRole,
   getAllBusiness,
   getBusiness,
   addOpinion,
@@ -12,6 +11,7 @@ const {
   removeWorker,
   addService,
   removeService,
+  editService,
 } = require("../controller/businessController");
 
 const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
@@ -19,7 +19,6 @@ const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
 //register
 router.get("/register", isLoggedIn, registerView);
 router.post("/register", isLoggedIn, registerBusiness);
-router.get("/refreshRole", isLoggedIn, refreshRole);
 
 //views
 router.get("/search", isLoggedIn, getAllBusiness);
@@ -44,5 +43,7 @@ router.post(
   removeService
 );
 router.post("/myBusiness/:id/addService", isLoggedIn, addService);
+
+router.post("/myBusiness/:id/editService/:idService", isLoggedIn, editService)
 
 module.exports = router;
