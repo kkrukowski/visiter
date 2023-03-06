@@ -44,6 +44,8 @@ const registerBusiness = async (req, res) => {
       owner: req.user,
       adress: req.body.adress,
       phone: req.body.phone,
+      address: req.body.address,
+      ownerId: req.user
     });
     createBusiness.save();
     res.redirect("/");
