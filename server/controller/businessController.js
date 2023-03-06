@@ -154,24 +154,12 @@ const getServicesFromBusiness = (businessesDocs) => {
 };
 
 const getBusiness = (req, res) => {
-  Business.findById(req.params.id, (err, business) => {
-    const workersIds = business.workers;
-    User.find({ "_id": { $in: workersIds } }, (err, workers) => {
-      const servicesIds = business.services;
-      Service.find({ _id: { $in: servicesIds } }, (err, services) => {
-        const opinionsIds = business.opinions;
-        Opinion.find({ _id: { $in: opinionsIds } }).populate("ownerId").exec((err, opinions) => {
-          return res.render("specificBusiness", {
-            user: req.user,
-            workers,
-            services,
-            opinions,
-            business: business,
-            Users: User,
-            message: ""
-          });
-        });
-      });
+
+  Business.findById(req.params.id).populate(["ownerId", "workers", "opinions", "services"]).exec((err, business) => {
+    const opinionsIds = business.opinions;
+    Opinion.find({ "_id": { $in: opinionsIds }}).populate("ownerId").exec(function (err, opinions) {
+      const message="";
+      return res.render("specificBusiness", { currentUser: req.user, user: req.user, business, message: message, opinions: opinions })
     });
   });
 };

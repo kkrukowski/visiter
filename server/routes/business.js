@@ -14,7 +14,7 @@ const {
   editService,
 } = require("../controller/businessController");
 
-const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
+const { isLoggedIn, isLoggedOut, isOwner } = require("../middlewares/authHandler");
 
 //register
 router.get("/register", isLoggedIn, registerView);
@@ -23,27 +23,27 @@ router.post("/register", isLoggedIn, registerBusiness);
 //views
 router.get("/search", isLoggedIn, getAllBusiness);
 router.get("/:id", isLoggedIn, getBusiness);
-router.get("/myBusiness/:id", isLoggedIn, homeView);
+router.get("/myBusiness/:id", [isLoggedIn, isOwner], homeView);
 
 //opinions
 router.post("/:id/opinion", isLoggedIn, addOpinion);
 
 //workers
-router.post("/myBusiness/:id/addWorker", isLoggedIn, addWorker);
+router.post("/myBusiness/:id/addWorker", [isLoggedIn, isOwner], addWorker);
 router.post(
   "/myBusiness/:idBusiness/:id/removeWorker",
-  isLoggedIn,
+  [isLoggedIn, isOwner],
   removeWorker
 );
 
 //services
 router.post(
   "/myBusiness/:idBusiness/:id/removeService",
-  isLoggedIn,
+  [isLoggedIn, isOwner],
   removeService
 );
-router.post("/myBusiness/:id/addService", isLoggedIn, addService);
+router.post("/myBusiness/:id/addService", [isLoggedIn, isOwner], addService);
 
-router.post("/myBusiness/:id/editService/:idService", isLoggedIn, editService)
+router.post("/myBusiness/:id/editService/:idService", [isLoggedIn, isOwner], editService)
 
 module.exports = router;
