@@ -47,6 +47,7 @@
     position: relative;
     width: 100%;
     align-items: left;
+    cursor: pointer;
 }
 .user__edit--img{
     position: absolute;
@@ -249,3 +250,73 @@
 ::-webkit-scrollbar-thumb:hover {
     background: #9598B9;
 }
+
+/* EDIT MODAL */
+
+
+.modal--content--header{
+    width: 100%;
+    text-align: center;
+}
+.modal--content--header--text{
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+}
+.modal--content--form{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    overflow: auto;
+    color: white;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+  }
+.text--header{
+    font-size: 18px;
+    font-weight: 700;
+}
+  
+.modal-content {
+    position: relative;
+    background-color: #444774;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #33365E;
+    border-radius: 10px;
+    width: 50%;
+}
+.modal--content--items{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.toEdit{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin: 10px;
+}
+.toEdit div{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.editPanel{
+    display: flex;
+    width: 100%;
+    margin: 10px;
+}
+.editPanel form{
+    display: flex;
+    width: 100%;
+    justify-content: space-between; 
+}
+  
