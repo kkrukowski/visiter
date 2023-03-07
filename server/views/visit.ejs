@@ -137,26 +137,16 @@
     <main class="main">
       <div>
         <% workers.forEach((worker) => { %>
-        <a href="/visits/book/<%= service.id %>/worker/<%= worker.id %>"
+        <a
+          href="/visits/book/<%= service.id %>/worker/<%= worker.id %>/day/8/month/3/year/2023/hour/10/minute/20"
           ><%= worker.name %></a
         >
         <% }) %>
       </div>
-      <div>
-        <% datesInfo.availableHours.forEach((startTime) => { %>
-        <a
-          href="/visits/book/<%= service.id %>/day/<%= datesInfo.todaysDate.day %>/month/<%= datesInfo.todaysDate.month %>/year/<%= datesInfo.todaysDate.year %>/hour/<%= startTime[0] %>/minute/<%= startTime[1] %>"
-          ><%= startTime[0] %>:<%= startTime[1] %></a
-        >
-        <% }) %>
-      </div>
-      <!-- <form>
-        <input type="text" name="workerId" placeholder="Worker ID" />
-        <input type="number" name="day" placeholder="Day" />
-        <input type="number" name="hour" placeholder="Hour" />
-        <input type="number" name="minute" placeholder="Minute" />
+
+      <form method="POST">
         <button class="submit--btn">Potwierdź</button>
-      </form> -->
+      </form>
     </main>
   </body>
   <script src="/js/script.js"></script>

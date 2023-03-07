@@ -17,6 +17,7 @@ const userSchema = new Schema({
   opinions: [{ type: Schema.Types.ObjectId, ref: "OpinionForUser" }],
   clientVisits: [{ type: Schema.Types.ObjectId, ref: "Visit" }],
   workerVisits: [{ type: Schema.Types.ObjectId, ref: "Visit" }],
+  workerBusyAvailability: Schema.Types.Mixed,
 });
 
 const User = mongoose.model("User", userSchema);

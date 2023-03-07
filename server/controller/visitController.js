@@ -54,64 +54,99 @@ const getAllWorkerVisits = (req, res) => {
 // const getWorkerSchedule = () => {};
 
 const createVisit = (req, res) => {
-  console.log("Create");
   // Create new Visit
-  const clientId = req.params.clientId;
   const workerId = req.params.workerId;
-  const businessId = req.params.businessId;
+  const clientId = req.user.id;
   const serviceId = req.params.serviceId;
+  const { day, month, year, hour, minute } = req.params;
+  console.log(serviceId, workerId, clientId);
 
-  if (
-    ObjectId.isValid(clientId) &&
-    ObjectId.isValid(workerId) &&
-    ObjectId.isValid(businessId) &&
-    ObjectId.isValid(serviceId)
-  ) {
-    const visitDate = moment().set({
-      year: 2023,
-      month: 1,
-      date: 23,
-      hour: 10,
-      minute: 30,
-      second: 0,
-    });
-    // Create new Visit
-    const newVisit = new Visit({
-      createdAt: moment(),
-      visitDate: visitDate,
-      businessId: businessId,
-      workerId: workerId,
-      clientId: clientId,
-      serviceId: serviceId,
-      status: "waiting",
-    });
+  if (ObjectId.isValid(workerId) && ObjectId.isValid(serviceId)) {
+    Service.findById(serviceId)
+      .then((serviceInfo) => {
+        const visitDate = moment().set({
+          year: year,
+          month: month,
+          date: day,
+          hour: hour,
+          minute: minute,
+          second: 0,
+        });
 
-    newVisit.save((err, visit) => {
-      if (err) return handleError(err);
-      // Add to client's visits list
-      const clientUpdate = { $push: { clientVisits: visit.id } };
-      // Update visits for user
-      const updatedClient = User.findByIdAndUpdate(
-        clientId,
-        clientUpdate,
-        (err, client) => {
-          if (err) return res.send(err);
-        }
-      );
+        // Create new Visit
+        const newVisit = new Visit({
+          createdAt: moment(),
+          visitDate: visitDate,
+          businessId: serviceInfo.businessId,
+          workerId: workerId,
+          clientId: clientId,
+          serviceId: serviceId,
+          status: "waiting",
+        });
 
-      // Add to worker's visits list
-      const workerUpdate = { $push: { workerVisits: visit.id } };
-      // Update visits for user
-      const updatedWorker = User.findByIdAndUpdate(
-        workerId,
-        workerUpdate,
-        (err, client) => {
-          if (err) return res.send(err);
-        }
-      );
-
-      return res.send("Visit successfully added!");
-    });
+        newVisit.save((err, visit) => {
+          if (err) return handleError(err);
+          // Add to client's visits list
+          const clientUpdate = { $push: { clientVisits: visit.id } };
+          // Update visits for user
+          const updatedClient = User.findByIdAndUpdate(
+            clientId,
+            clientUpdate,
+            (err, client) => {
+              if (err) return res.send(err);
+              // Add to worker's visits list
+              const workerUpdate = { $push: { workerVisits: visit.id } };
+              // Update visits for user
+              const updatedWorker = User.findByIdAndUpdate(
+                workerId,
+                workerUpdate,
+                (err, client) => {
+                  if (err) return res.send(err);
+                  // Edit worker's availability
+                  const date = new Date(year, month, day);
+                  const time = hour + ":" + minute;
+                  const updateAvailability = User.updateOne(
+                    {
+                      _id: ObjectId(workerId),
+                      "workerBusyAvailability.date": date,
+                    },
+                    {
+                      $addToSet: {
+                        "workerBusyAvailability.$.hours": time,
+                      },
+                    },
+                    (err, availability) => {
+                      if (err) return res.send(err);
+                      if (availability.modifiedCount === 0) {
+                        User.updateOne(
+                          {
+                            _id: ObjectId(workerId),
+                          },
+                          {
+                            $addToSet: {
+                              workerBusyAvailability: {
+                                date: date,
+                                hours: [time],
+                              },
+                            },
+                          },
+                          (err, availability) => {
+                            if (err) return res.send(err);
+                          }
+                        );
+                      }
+                    }
+                  );
+                }
+              );
+            }
+          );
+          return res.send("Visit successfully added!");
+        });
+      })
+      .catch((err) => {
+        if (err) return res.status(404).send({ err });
+      });
   } else {
     return res.status(404).send({ err: "ID is not valid!" });
   }
@@ -127,17 +162,18 @@ const getAllServiceDates = (req, res) => {
         if (err) return res.send(err);
         const workersIds = business.workers;
         console.log("IDS: ", workersIds);
-        Visit.find({ workerId: workersIds }).then((visits) => {
-          console.log(visits);
-          const currentUser = req.user;
-          const serviceDuration = service.duration;
-          const datesInfo = getAvailableHours(serviceDuration);
-          return res.render("visit", {
-            user: currentUser,
-            business,
-            workers,
-            service,
-            datesInfo,
+        User.find({ _id: workersIds }).then((workers) => {
+          Visit.find({ workerId: workersIds }).then((visits) => {
+            console.log(visits);
+            const currentUser = req.user;
+            const serviceDuration = service.duration;
+            //const datesInfo = getAvailableHours(visits, serviceDuration);
+            return res.render("visit", {
+              user: currentUser,
+              business,
+              workers,
+              service,
+            });
           });
         });
       });
