@@ -58,8 +58,9 @@ const createVisit = (req, res) => {
   const workerId = req.params.workerId;
   const clientId = req.user.id;
   const serviceId = req.params.serviceId;
-  const { day, month, year, hour, minute } = req.params;
-  console.log(serviceId, workerId, clientId);
+  const { year, hour, minute } = req.params;
+  const day = req.params.day;
+  const month = req.params.month;
 
   if (ObjectId.isValid(workerId) && ObjectId.isValid(serviceId)) {
     Service.findById(serviceId)
@@ -103,7 +104,7 @@ const createVisit = (req, res) => {
                 (err, client) => {
                   if (err) return res.send(err);
                   // Edit worker's availability
-                  const date = new Date(year, month, day);
+                  const date = new Date(year, month, day, 0, 0, 0);
                   const time = hour + ":" + minute;
                   const updateAvailability = User.updateOne(
                     {
@@ -163,20 +164,64 @@ const getAllServiceDates = (req, res) => {
         const workersIds = business.workers;
         console.log("IDS: ", workersIds);
         User.find({ _id: workersIds }).then((workers) => {
-          Visit.find({ workerId: workersIds }).then((visits) => {
-            console.log(visits);
-            const currentUser = req.user;
-            const serviceDuration = service.duration;
-            //const datesInfo = getAvailableHours(visits, serviceDuration);
-            return res.render("visit", {
-              user: currentUser,
-              business,
-              workers,
-              service,
+          const currentUser = req.user;
+          return res.render("visit", {
+            user: currentUser,
+            business,
+            workers,
+            service,
+            availableHours: null,
+          });
+          // Visit.find({ workerId: workersIds }).then((visits) => {
+          //   console.log(visits);
+          //   const currentUser = req.user;
+          //   const serviceDuration = service.duration;
+          //   const datesInfo = getAvailableHours(visits, serviceDuration);
+
+          // });
+        });
+      });
+    });
+  }
+};
+
+const getAvailableHoursForWorker = (req, res) => {
+  const workerId = req.params.workerId;
+  const serviceId = req.params.serviceId;
+  const { year, month, day } = req.params;
+  const searchingDate = new Date(year, month, day, 0, 0, 0);
+  const currentUser = req.user;
+  if (ObjectId.isValid(workerId) && ObjectId.isValid(serviceId)) {
+    User.findById(workerId, (err, worker) => {
+      if (err) res.send(err);
+      const workerBusyAvailabilityDates = worker.workerBusyAvailability;
+      console.log(workerBusyAvailabilityDates, searchingDate);
+      const searchingDateObject = workerBusyAvailabilityDates.filter(
+        (elem) => elem.date.getTime() == searchingDate.getTime()
+      );
+      if (searchingDateObject) {
+        // Get only available hours for this worker
+        const busyHours = searchingDateObject[0].hours;
+        const availableHours = getAvailableHours(busyHours, 9, 17);
+        Service.findById(serviceId, (err, service) => {
+          if (err) return res.send(err);
+          const businessId = service.businessId;
+          Business.findById(businessId, (err, business) => {
+            if (err) return res.send(err);
+            const workersIds = business.workers;
+            User.find({ _id: workersIds }).then((workers) => {
+              const currentUser = req.user;
+              return res.render("visit", {
+                user: currentUser,
+                business,
+                workers,
+                service,
+                availableHours,
+              });
             });
           });
         });
-      });
+      }
     });
   }
 };
@@ -188,5 +233,6 @@ module.exports = {
   getAllWorkerVisits,
   createVisit,
   getAllServiceDates,
+  getAvailableHoursForWorker,
   getServicesDatesForWorker,
 };
