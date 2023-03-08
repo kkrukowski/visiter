@@ -371,6 +371,7 @@
     width: 100%;
     height: 100%;
     overflow: auto;
+    color: white;
 
     background-color: rgba(0,0,0,0.4);
   }
@@ -378,11 +379,12 @@
 .modal-content {
     position: relative;
     background-color: #444774;
-    margin: 15% auto;
+    margin: 5% auto;
     padding: 20px;
     border: 1px solid #33365E;
     border-radius: 10px;
     width: 50%;
+    height: auto;
 }
   
 .close {
@@ -416,6 +418,41 @@
     font-weight: 700;
     color: white;
     text-align: center;
+}
+
+/* EDIT BUSINESS */
+.modal--content--items{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.toEdit{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin: 10px;
+}
+.toEdit div{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+.editPanel{
+    display: flex;
+    width: 100%;
+    margin: 10px;
+}
+.editPanel form{
+    display: flex;
+    width: 100%;
+    justify-content: space-between; 
+}
+.text--header{
+    font-size: 18px;
+    font-weight: 700;
+}
+.text--header{
+    font-size: 18px;
+    font-weight: 700;
 }
 
 
