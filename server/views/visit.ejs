@@ -141,7 +141,10 @@
           href="/visits/book/<%= service.id %>/worker/<%= worker.id %>/day/8/month/3/year/2023/hour/10/minute/20"
           ><%= worker.name %></a
         >
-        <% }) %>
+        <% }) %> <% if(availableHours) { %> <%
+        availableHours.forEach((availableHour) => { %>
+        <p><%= availableHour %></p>
+        <% }) %> <% } %>
       </div>
 
       <form method="POST">

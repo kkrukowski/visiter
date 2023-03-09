@@ -6,6 +6,7 @@ const {
   getAllWorkerVisits,
   getAllServiceDates,
   getServicesDatesForWorker,
+  getAvailableHoursForWorker,
   createVisit,
 } = require("../controller/visitController");
 
@@ -15,6 +16,10 @@ router.get("/book/:serviceId/worker/:workerId", getAllServiceDates);
 router.get(
   "/book/:serviceId/worker/:workerId/day/:day/month/:month/year/:year/hour/:hour/minute/:minute",
   getAllServiceDates
+);
+router.get(
+  "/book/:serviceId/worker/:workerId/day/:day/month/:month/year/:year",
+  getAvailableHoursForWorker
 );
 router.post(
   "/book/:serviceId/worker/:workerId/day/:day/month/:month/year/:year/hour/:hour/minute/:minute",
