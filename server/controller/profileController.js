@@ -3,49 +3,48 @@ const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
 
 const editProfile = (req, res) => {
+    let update;
     if (req.body.name && req.body.surname) {
-        User.findByIdAndUpdate(req.params.id, { name: req.body.name, surname: req.body.surname }, { new: true }, (err, user) => {
-            if (err) {
-                return res.redirect("/")
-            }
-            else {
-                const opinionsIds = user.opinions;
-                Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
-                    if (err) return res.redirect("/")
-                    return res.render("profile", {
-                        currentUser: req.user,
-                        user: user,
-                        opinions,
-                        message: "Edycja pomyślna",
-                        isSameUser: req.params.id == req.user._id ? true : false
-                    });
-                });
-            }
-        });
+        update = { name: req.body.name, surname: req.body.surname };
     } else if (req.body.email) {
-        User.findByIdAndUpdate(req.params.id, { email: req.body.email }, { new: true }, (err, user) => {
-            if (err) {
-                return res.redirect("/")
-            }
-            else {
-                const opinionsIds = user.opinions;
-                Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
-                    if (err) return res.redirect("/")
-                    return res.render("profile", {
-                        currentUser: req.user,
-                        user: user,
-                        opinions,
-                        message: "Edycja pomyślna",
-                        isSameUser: req.params.id == req.user._id ? true : false
-                    });
-                });
-            }
-        });
+        update = { email: req.body.email };
     } else if (req.body.phone) {
         var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{3})$/; //validation of phone
         if (!re.test(req.body.phone)) {
             const message = "Podaj prawidłowy numer telefonu.";
-            const user = req.user;
+            const opinionsIds = user.opinions;
+            Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
+                if (err) return res.redirect("/")
+                return res.render("profile", {
+                    currentUser: req.user,
+                    user: req.user,
+                    opinions,
+                    message: message,
+                    isSameUser: req.params.id == req.user._id ? true : false
+                });
+            });
+        }
+        update = { phone: req.body.phone };
+    } else if (req.body.country) {
+        update = { country: req.body.country };
+    } else if (req.body.city) {
+        update = { city: req.body.city };
+    }
+    User.findByIdAndUpdate(req.params.id, update, { new: true }, (err, user) => {
+        if (err) {
+            const opinionsIds = user.opinions;
+            Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
+                if (err) return res.redirect("/")
+                return res.render("profile", {
+                    currentUser: req.user,
+                    user: user,
+                    opinions,
+                    message: "Edycja niepomyślna",
+                    isSameUser: req.params.id == req.user._id ? true : false
+                });
+            });
+        }
+        else {
             const opinionsIds = user.opinions;
             Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
                 if (err) return res.redirect("/")
@@ -58,63 +57,7 @@ const editProfile = (req, res) => {
                 });
             });
         }
-        User.findByIdAndUpdate(req.params.id, { phone: req.body.phone }, { new: true }, (err, user) => {
-            if (err) {
-                return res.redirect("/")
-            }
-            else {
-                const opinionsIds = user.opinions;
-                Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
-                    if (err) return res.redirect("/")
-                    return res.render("profile", {
-                        currentUser: req.user,
-                        user: user,
-                        opinions,
-                        message: "Edycja pomyślna",
-                        isSameUser: req.params.id == req.user._id ? true : false
-                    });
-                });
-            }
-        });
-    } else if (req.body.country) {
-        User.findByIdAndUpdate(req.params.id, { country: req.body.country }, { new: true }, (err, user) => {
-            if (err) {
-                return res.redirect("/")
-            }
-            else {
-                const opinionsIds = user.opinions;
-                Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
-                    if (err) return res.redirect("/")
-                    return res.render("profile", {
-                        currentUser: req.user,
-                        user: user,
-                        opinions,
-                        message: "Edycja pomyślna",
-                        isSameUser: req.params.id == req.user._id ? true : false
-                    });
-                });
-            }
-        });
-    } else if (req.body.city) {
-        User.findByIdAndUpdate(req.params.id, { city: req.body.city }, { new: true }, (err, user) => {
-            if (err) {
-                return res.redirect("/")
-            }
-            else {
-                const opinionsIds = user.opinions;
-                Opinion.find({ "_id": { $in: opinionsIds } }).populate(["ownerId", "businessId"]).exec(function (err, opinions) {
-                    if (err) return res.redirect("/")
-                    return res.render("profile", {
-                        currentUser: req.user,
-                        user: user,
-                        opinions,
-                        message: "",
-                        isSameUser: req.params.id == req.user._id ? true : false
-                    });
-                });
-            }
-        });
-    }
+    });
 };
 
 const getUser = (req, res) => {

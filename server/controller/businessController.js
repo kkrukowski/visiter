@@ -58,7 +58,7 @@ const homeView = (req, res, next = "", message = "") => {
   if (req.user.role == "Owner") {
     Business.findOne({ ownerId: req.user._id }).populate(["ownerId", "workers", "opinions", "services"]).exec((err, business) => {
       const opinionsIds = business.opinions;
-      Opinion.find({ "_id": { $in: opinionsIds }}).populate("ownerId").exec(function (err, opinions) {
+      Opinion.find({ "_id": { $in: opinionsIds } }).populate("ownerId").exec(function (err, opinions) {
         return res.render("business", { currentUser: req.user, user: req.user, business, message: message, opinions: opinions })
       });
     });
@@ -157,8 +157,8 @@ const getBusiness = (req, res) => {
 
   Business.findById(req.params.id).populate(["ownerId", "workers", "opinions", "services"]).exec((err, business) => {
     const opinionsIds = business.opinions;
-    Opinion.find({ "_id": { $in: opinionsIds }}).populate("ownerId").exec(function (err, opinions) {
-      const message="";
+    Opinion.find({ "_id": { $in: opinionsIds } }).populate("ownerId").exec(function (err, opinions) {
+      const message = "";
       return res.render("specificBusiness", { currentUser: req.user, user: req.user, business, message: message, opinions: opinions })
     });
   });
@@ -329,6 +329,32 @@ const editService = (req, res) => {
   });
 };
 
+const editProfile = (req, res) => {
+  let update;
+  if (req.body.name) {
+    update = { name: req.body.name };
+  } else if (req.body.description) {
+    update = { description: req.body.description };
+  } else if (req.body.phone) {
+    var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{3})$/; // validation of phone
+    if (!re.test(req.body.phone)) {
+      const message = "Podaj prawidłowy numer telefonu.";
+      return homeView(req, res, "", message);
+    }
+    update = { phone: req.body.phone };
+  } else if (req.body.address) {
+    update = { address: req.body.address };
+  } else {
+    const message = "Nie podano parametrów do edycji.";
+    return homeView(req, res, "", message);
+  }
+
+  Business.findByIdAndUpdate(req.params.id, update , { new: true }, (err, business) => {
+    if (err) return homeView(req, res, "", "Błąd podczas edycji.")
+    return homeView(req, res, "", "Edycja pomyślna.")
+  });
+}
+
 module.exports = {
   registerView,
   registerBusiness,
@@ -340,5 +366,6 @@ module.exports = {
   removeWorker,
   addService,
   removeService,
-  editService
+  editService,
+  editProfile
 };

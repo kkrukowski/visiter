@@ -346,21 +346,21 @@
       <p class="modal--content--header--text">Edytuj firmę</p>
     </div>
     <div class="modal--content--items">
-      <div class="toEdit" id="name_surname">
+      <div class="toEdit" id="name">
         <div>
           <label class="text--header">Nazwa</label>
           <p>
             <%= business.name %>
           </p>
         </div>
-        <button onclick="editPanel(this)" value="name_surname">Edytuj</button>
+        <button onclick="editPanel(this)" value="name">Edytuj</button>
       </div>
-      <div class="editPanel" id="name_surname" style="display: none;">
-        <form action="/profile/<%= business._id %>/edit" method="POST">
+      <div class="editPanel" id="name" style="display: none;">
+        <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
           <div>
             <input type="text" name="name" placeholder="<%= business.name %>" required>
           </div>
-          <button>Zapisz zmiany</button>
+          <button type="submit">Zapisz zmiany</button>
         </form>
       </div>
       <div class="toEdit" id="address">
@@ -373,11 +373,11 @@
         <button onclick="editPanel(this)" value="address">Edytuj</button>
       </div>
       <div class="editPanel" id="address" style="display: none;">
-        <form action="/profile/<%= business._id %>/edit" method="POST">
+        <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
           <div>
             <input type="text" name="address" placeholder="<%= business.address %>" required>
           </div>
-          <button>Zapisz zmiany</button>
+          <button type="submit">Zapisz zmiany</button>
         </form>
       </div>
       <div class="toEdit" id="description">
@@ -390,11 +390,11 @@
         <button onclick="editPanel(this)" value="description">Edytuj</button>
       </div>
       <div class="editPanel" id="description" style="display: none;">
-        <form action="/profile/<%= business._id %>/edit" method="POST">
+        <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
           <div>
             <input type="text" name="description" placeholder="<%= business.description %>" required> <!-- ZMIENIC NA TEXTBOX -->
           </div>
-          <button>Zapisz zmiany</button>
+          <button type="submit">Zapisz zmiany</button>
         </form>
       </div>
       <div class="toEdit" id="phone">
@@ -407,17 +407,17 @@
         <button onclick="editPanel(this)" value="phone">Edytuj</button>
       </div>
       <div class="editPanel" id="phone" style="display: none;">
-        <form action="/profile/<%= business._id %>/edit" method="POST">
+        <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
           <div>
             <input type="text" name="phone" placeholder="<%= business.phone %>" required>
           </div>
-          <button>Zapisz zmiany</button>
+          <button type="submit">Zapisz zmiany</button>
         </form>
       </div>
 
       <div id="delAcc">
-        <form action="/profile/<%= business._id %>/edit/removeProfile" method="POST">
-          <button type="submit">Usuń firme</button>
+        <form action="/business/mybusiness/<%= business._id %>/removeBusiness" method="POST">
+          <button style="background-color: red;"type=submit">Usuń firme</button>
         </form>
       </div>
     </div>
