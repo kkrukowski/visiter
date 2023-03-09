@@ -2,12 +2,12 @@ const moment = require("moment");
 
 const getAvailableHours = (busyHours, startHour, endHour) => {
   let availableHours = [];
-  for (let hour = startHour; hour <= endHour; hour++) {
+  console.log(busyHours);
+  for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += 20) {
-      const time = hour + ":" + (minute < 10 ? "0" : "") + minute;
-      console.log(time);
-
-      if (!busyHours.includes(time)) {
+      const checkedTime = hour + ":" + (minute < 10 ? "0" : "") + minute;
+      if (!busyHours.includes(checkedTime)) {
+        const time = [hour, (minute < 10 ? "0" : "") + minute];
         availableHours.push(time);
       }
     }
@@ -16,4 +16,13 @@ const getAvailableHours = (busyHours, startHour, endHour) => {
   return availableHours;
 };
 
-module.exports = { getAvailableHours };
+const isAbleToBook = (workerBusyAvailabilityDates, serviceDuration, time) => {
+  const bookStartTime = moment(time, "HH:mm");
+  const bookEndTime = moment(bookStartTime, "HH:mm").add(
+    serviceDuration,
+    "minutes"
+  );
+  console.log(bookStartTime, bookEndTime);
+};
+
+module.exports = { getAvailableHours, isAbleToBook };

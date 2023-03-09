@@ -6,7 +6,10 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 const moment = require("moment");
 
-const { getAvailableHours } = require("../middlewares/visitHandler");
+const {
+  getAvailableHours,
+  isAbleToBook,
+} = require("../middlewares/visitHandler");
 
 // test id - 63bd2f8b35c597866c9fe176
 // test business id - 63b7015741e1b4cc6ecc9b62
@@ -85,6 +88,8 @@ const createVisit = (req, res) => {
           status: "waiting",
         });
 
+        const serviceDuration = serviceInfo.duration;
+
         newVisit.save((err, visit) => {
           if (err) return handleError(err);
           // Add to client's visits list
@@ -106,38 +111,50 @@ const createVisit = (req, res) => {
                   // Edit worker's availability
                   const date = new Date(year, month, day, 0, 0, 0);
                   const time = hour + ":" + minute;
-                  const updateAvailability = User.updateOne(
-                    {
-                      _id: ObjectId(workerId),
-                      "workerBusyAvailability.date": date,
-                    },
-                    {
-                      $addToSet: {
-                        "workerBusyAvailability.$.hours": time,
+                  User.findById(workerId, (err, worker) => {
+                    if (err) res.send(err);
+                    const workerBusyAvailabilityDates =
+                      getWorkerAvailabilityDates(worker, date);
+                    console.log(
+                      isAbleToBook(
+                        workerBusyAvailabilityDates,
+                        serviceDuration,
+                        time
+                      )
+                    );
+                    const updateAvailability = User.updateOne(
+                      {
+                        _id: ObjectId(workerId),
+                        "workerBusyAvailability.date": date,
                       },
-                    },
-                    (err, availability) => {
-                      if (err) return res.send(err);
-                      if (availability.modifiedCount === 0) {
-                        User.updateOne(
-                          {
-                            _id: ObjectId(workerId),
-                          },
-                          {
-                            $addToSet: {
-                              workerBusyAvailability: {
-                                date: date,
-                                hours: [time],
+                      {
+                        $addToSet: {
+                          "workerBusyAvailability.$.hours": time,
+                        },
+                      },
+                      (err, availability) => {
+                        if (err) return res.send(err);
+                        if (availability.modifiedCount === 0) {
+                          User.updateOne(
+                            {
+                              _id: ObjectId(workerId),
+                            },
+                            {
+                              $addToSet: {
+                                workerBusyAvailability: {
+                                  date: date,
+                                  hours: [time],
+                                },
                               },
                             },
-                          },
-                          (err, availability) => {
-                            if (err) return res.send(err);
-                          }
-                        );
+                            (err, availability) => {
+                              if (err) return res.send(err);
+                            }
+                          );
+                        }
                       }
-                    }
-                  );
+                    );
+                  });
                 }
               );
             }
@@ -151,6 +168,59 @@ const createVisit = (req, res) => {
   } else {
     return res.status(404).send({ err: "ID is not valid!" });
   }
+};
+
+const getAvailableHoursForWorker = (req, res) => {
+  const workerId = req.params.workerId;
+  const serviceId = req.params.serviceId;
+  const { year, month, day } = req.params;
+  const searchingDate = new Date(year, month, day, 0, 0, 0);
+  const currentUser = req.user;
+  if (ObjectId.isValid(workerId) && ObjectId.isValid(serviceId)) {
+    User.findById(workerId, (err, worker) => {
+      if (err) res.send(err);
+      const searchingDateObject = getWorkerAvailabilityDates(
+        worker,
+        searchingDate
+      );
+      if (searchingDateObject) {
+        console.log(searchingDateObject);
+        // Get only available hours for this worker
+        const busyHours = searchingDateObject[0].hours;
+        console.log(busyHours);
+        const availableHours = getAvailableHours(busyHours, 9, 17);
+        Service.findById(serviceId, (err, service) => {
+          if (err) return res.send(err);
+          const businessId = service.businessId;
+          Business.findById(businessId, (err, business) => {
+            if (err) return res.send(err);
+            const workersIds = business.workers;
+            User.find({ _id: workersIds }).then((workers) => {
+              const currentUser = req.user;
+              return res.render("visit", {
+                user: currentUser,
+                business,
+                workers,
+                selectedWorker: workerId,
+                service,
+                availableHours,
+              });
+            });
+          });
+        });
+      }
+    });
+  }
+};
+
+const getWorkerAvailabilityDates = (worker, searchingDate) => {
+  const workerBusyAvailabilityDates = worker.workerBusyAvailability;
+  console.log(workerBusyAvailabilityDates, searchingDate);
+  const searchingDateObject = workerBusyAvailabilityDates.filter(
+    (elem) => elem.date.getTime() == searchingDate.getTime()
+  );
+
+  return searchingDateObject;
 };
 
 const getAllServiceDates = (req, res) => {
@@ -169,6 +239,7 @@ const getAllServiceDates = (req, res) => {
             user: currentUser,
             business,
             workers,
+            selectedWorker: null,
             service,
             availableHours: null,
           });
@@ -181,47 +252,6 @@ const getAllServiceDates = (req, res) => {
           // });
         });
       });
-    });
-  }
-};
-
-const getAvailableHoursForWorker = (req, res) => {
-  const workerId = req.params.workerId;
-  const serviceId = req.params.serviceId;
-  const { year, month, day } = req.params;
-  const searchingDate = new Date(year, month, day, 0, 0, 0);
-  const currentUser = req.user;
-  if (ObjectId.isValid(workerId) && ObjectId.isValid(serviceId)) {
-    User.findById(workerId, (err, worker) => {
-      if (err) res.send(err);
-      const workerBusyAvailabilityDates = worker.workerBusyAvailability;
-      console.log(workerBusyAvailabilityDates, searchingDate);
-      const searchingDateObject = workerBusyAvailabilityDates.filter(
-        (elem) => elem.date.getTime() == searchingDate.getTime()
-      );
-      if (searchingDateObject) {
-        // Get only available hours for this worker
-        const busyHours = searchingDateObject[0].hours;
-        const availableHours = getAvailableHours(busyHours, 9, 17);
-        Service.findById(serviceId, (err, service) => {
-          if (err) return res.send(err);
-          const businessId = service.businessId;
-          Business.findById(businessId, (err, business) => {
-            if (err) return res.send(err);
-            const workersIds = business.workers;
-            User.find({ _id: workersIds }).then((workers) => {
-              const currentUser = req.user;
-              return res.render("visit", {
-                user: currentUser,
-                business,
-                workers,
-                service,
-                availableHours,
-              });
-            });
-          });
-        });
-      }
     });
   }
 };

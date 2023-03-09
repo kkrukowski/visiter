@@ -138,12 +138,15 @@
       <div>
         <% workers.forEach((worker) => { %>
         <a
-          href="/visits/book/<%= service.id %>/worker/<%= worker.id %>/day/8/month/3/year/2023/hour/10/minute/20"
+          href="/visits/book/<%= service.id %>/worker/<%= worker.id %>/day/8/month/3/year/2023"
           ><%= worker.name %></a
         >
         <% }) %> <% if(availableHours) { %> <%
         availableHours.forEach((availableHour) => { %>
-        <p><%= availableHour %></p>
+        <a
+          href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/8/month/3/year/2023/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
+          ><%= availableHour[0] %>:<%= availableHour[1] %></a
+        >
         <% }) %> <% } %>
       </div>
 
