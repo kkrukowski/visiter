@@ -259,9 +259,9 @@
         <span class="opinion--quotes">”</span>
         <div class="opinion__content--wrapper">
           <p class="opinion--content"><%= opinion.comment %></p>
-          <p class="opinion--author">
+          <a href="/profile/<%= opinion.ownerId._id %>" style="text-decoration: none;"><p class="opinion--author">
             <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
-          </p>
+          </p></a>
           <div class="opinion--stars">
             <% stars=opinion.rating %> <% for (let i = 0; i < stars; i++){
             %>
@@ -327,7 +327,7 @@
   <div class="modal-content">
       <span class="close">&times;</span>
     <div class="modal--content--header">
-      <p class="modal--content--header--text" id="editServiceNameHeader">Edytuj serwis:</p>
+      <p class="modal--content--header--text" id="editServiceNameHeader">Edytuj serwis</p>
     </div>
     <div class="modal--content--form">
           <form id="formEditService" action="" method="POST">

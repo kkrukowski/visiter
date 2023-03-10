@@ -182,7 +182,9 @@
                         <%= opinion.comment %>
                       </p>
                       <p class="opinion--author">
-                        <%= opinion.ownerId.name %> z <%= opinion.businessId.name %>
+                        <a href="/profile/<%= opinion.ownerId._id %>" style="text-decoration: none; color: black"><%= opinion.ownerId.name %></a>
+                        z 
+                        <a href="/business/<%= opinion.businessId._id %>" style="text-decoration: none; color: black"><%= opinion.businessId.name %></a>
                       </p>
                       <div class="opinion--stars">
                         <% stars=opinion.rating %>
