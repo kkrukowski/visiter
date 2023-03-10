@@ -110,7 +110,8 @@
             <div class="user__role--wrapper">
               <% role="" %>
                 <% if(user.role=="User" ) role="Klient" %>
-                  <% if(user.role=="Owner" ) role="Właściciel" %>
+                <% if(user.role=="Owner" ) role="Właściciel" %>
+                <% if(user.role=="Worker" ) role="Pracownik" %>
                     <p class="user__role--text">
                       <%= role %>
                     </p>
@@ -122,12 +123,34 @@
                   <%= user.email %>
                 </p>
               </div>
+              <% if (isSameUser) { %>
+              <div class="user__info--item">
+                <p class="info--label">Telefon</p>
+                <p class="info--content">
+                  <%= user.phone %>
+                </p>
+              </div>
+              <% } %>
+              <div class="user__info--item">
+                <p class="info--label">Kraj</p>
+                <p class="info--content">
+                  <%= user.country %>
+                </p>
+              </div>
+              <div class="user__info--item">
+                <p class="info--label">Miasto</p>
+                <p class="info--content">
+                  <%= user.city %>
+                </p>
+              </div>
+              <% if (isSameUser) { %>
               <div class="user__info--item">
                 <p class="info--label">Kod zaproszeniowy</p>
                 <p class="info--content">
                   <%= user.invCode %>
                 </p>
               </div>
+              <% } %>
             </div>
             <% if (isSameUser) { %>
               <% if (user.role=="User" ) { %>
