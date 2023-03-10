@@ -11,7 +11,6 @@ Visiter is an application designed for customer to make an appointmentto book a 
 
  - [Authors](#authors)
  - [Technologies](#technologies)
- - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
 
 
 ## Authors
