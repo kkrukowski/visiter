@@ -56,6 +56,40 @@ const getAllWorkerVisits = (req, res) => {
 
 // const getWorkerSchedule = () => {};
 
+const updateAvailability = (workerId, date, time) => {User.updateOne(
+  {
+    _id: ObjectId(workerId),
+    "workerBusyAvailability.date": date,
+  },
+  {
+    $addToSet: {
+      "workerBusyAvailability.$.hours": time,
+    },
+  },
+  (err, availability) => {
+    if (err) return res.send(err);
+    if (availability.modifiedCount === 0) {
+      User.updateOne(
+        {
+          _id: ObjectId(workerId),
+        },
+        {
+          $addToSet: {
+            workerBusyAvailability: {
+              date: date,
+              hours: [time],
+            },
+          },
+        },
+        (err, availability) => {
+          if (err) return res.send(err);
+        }
+      );
+    }
+  }
+);
+}
+
 const createVisit = (req, res) => {
   // Create new Visit
   const workerId = req.params.workerId;
@@ -115,45 +149,18 @@ const createVisit = (req, res) => {
                     if (err) res.send(err);
                     const workerBusyAvailabilityDates =
                       getWorkerAvailabilityDates(worker, date);
-                    console.log(
+                    console.log(workerBusyAvailabilityDates)
+                    if (workerBusyAvailabilityDates.length == 0 ||
                       isAbleToBook(
-                        workerBusyAvailabilityDates,
+                        workerBusyAvailabilityDates[0].hours,
                         serviceDuration,
                         time
                       )
-                    );
-                    const updateAvailability = User.updateOne(
-                      {
-                        _id: ObjectId(workerId),
-                        "workerBusyAvailability.date": date,
-                      },
-                      {
-                        $addToSet: {
-                          "workerBusyAvailability.$.hours": time,
-                        },
-                      },
-                      (err, availability) => {
-                        if (err) return res.send(err);
-                        if (availability.modifiedCount === 0) {
-                          User.updateOne(
-                            {
-                              _id: ObjectId(workerId),
-                            },
-                            {
-                              $addToSet: {
-                                workerBusyAvailability: {
-                                  date: date,
-                                  hours: [time],
-                                },
-                              },
-                            },
-                            (err, availability) => {
-                              if (err) return res.send(err);
-                            }
-                          );
-                        }
-                      }
-                    );
+                    ){
+                      updateAvailability(workerId, date, time)
+                    } else {
+                      console.log("Date not available")
+                    }
                   });
                 }
               );
@@ -184,12 +191,17 @@ const getAvailableHoursForWorker = (req, res) => {
         searchingDate
       );
       if (searchingDateObject) {
-        console.log(searchingDateObject);
-        // Get only available hours for this worker
-        const busyHours = searchingDateObject[0].hours;
-        console.log(busyHours);
-        const availableHours = getAvailableHours(busyHours, 9, 17);
+        
         Service.findById(serviceId, (err, service) => {
+          const serviceDuration = service.duration;
+          console.log("dates " + searchingDateObject);
+          // Get only available hours for this worker
+          let busyHours = []
+          if (searchingDateObject.length > 0) {
+            busyHours = searchingDateObject[0].hours
+          }
+          console.log("hours " + busyHours);
+          const availableHours = getAvailableHours(serviceDuration, busyHours, 9, 17);
           if (err) return res.send(err);
           const businessId = service.businessId;
           Business.findById(businessId, (err, business) => {
