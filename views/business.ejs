@@ -1,521 +1,393 @@
 <!DOCTYPE html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Twoja Firma | Visiter</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="manifest" href="/site.webmanifest" />
-    <link rel="stylesheet" href="/styles/styles.css" />
-    <link rel="stylesheet" href="/styles/normalize.css" />
-    <link rel="stylesheet" href="/styles/business.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
-    />
-  </head>
-  <body>
-    <!-- Nav -->
-    <nav class="nav">
-      <div class="nav__wrapper">
-        <a href="/" class="nav__img--link"
-          ><img
-            src="/assets/imgs/visiter-inline.png"
-            alt="Visiter"
-            title="Visiter"
-            class="nav--img"
-        /></a>
-        <section class="menu__list">
-          <li class="menu__list--item">
-            <a href="/" class="item--link">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="item--icon"
-              >
-                <path
-                  d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"
-                />
-                <path
-                  d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"
-                />
-              </svg>
-              <p class="list__item--name">Strona Główna</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/profile/<%= user._id %>" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="item--icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                />
-              </svg>
-              <p class="list__item--name">Mój profil</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/business/search" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="item--icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-              </svg>
-              <p class="list__item--name">Szukaj</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/visits/<%= user._id %>" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="item--icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
-                />
-              </svg>
-              <p class="list__item--name">Moje wizyty</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/chat" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="item--icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
-                />
-              </svg>
-              <p class="list__item--name">Wiadomości</p>
-            </a>
-          </li>
-        </section>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Twoja Firma | Visiter</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/site.webmanifest" />
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/normalize.css" />
+  <link rel="stylesheet" href="/styles/business.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" />
+</head>
+
+<body>
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav__wrapper">
+      <a href="/" class="nav__img--link"><img src="/assets/imgs/visiter-inline.png" alt="Visiter" title="Visiter"
+          class="nav--img" /></a>
+      <section class="menu__list">
+        <li class="menu__list--item">
+          <a href="/" class="item--link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="item--icon">
+              <path
+                d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+              <path
+                d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
+            </svg>
+            <p class="list__item--name">Strona Główna</p>
+          </a>
+        </li>
+        <li class="menu__list--item">
+          <a href="/profile/<%= user._id %>" class="item--link"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="item--icon">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            <p class="list__item--name">Mój profil</p>
+          </a>
+        </li>
+        <li class="menu__list--item">
+          <a href="/business/search" class="item--link"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="item--icon">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <p class="list__item--name">Szukaj</p>
+          </a>
+        </li>
+        <li class="menu__list--item">
+          <a href="/visits/<%= user._id %>" class="item--link"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="item--icon">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+            </svg>
+            <p class="list__item--name">Moje wizyty</p>
+          </a>
+        </li>
+        <li class="menu__list--item">
+          <a href="/chat" class="item--link"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke-width="1.5" stroke="currentColor" class="item--icon">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+            </svg>
+            <p class="list__item--name">Wiadomości</p>
+          </a>
+        </li>
+      </section>
+    </div>
+  </nav>
+  <!-- Main block -->
+  <main class="main">
+    <section class="main__workers main--item">
+      <div class="workers--header">
+        <p class="workers--header--text">Twoi pracownicy</p>
+        <button id="addWorker" class="addingBtn">+</button>
       </div>
-    </nav>
-    <!-- Main block -->
-<main class="main">
-<section class="main__workers main--item">
-  <div class="workers--header">
-    <p class="workers--header--text">Twoi pracownicy</p>
-    <button id="addWorker" class="addingBtn">+</button>
-  </div>
-  <% if(business.workers != null){ %>
-    <div class="workers--wraper">
-      <% business.workers.forEach(function(worker) { %>
-      <div class="workers--item">
-        <div class="worker--avatar">
-          <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          class="avatar--img"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
-            clip-rule="evenodd"
-          />
-        </svg>
-        </div>
-        <div class="worker--content">
-          <p class="user-info--text">
-            <a class="user--link" href="/profile/<%= worker._id %>">
-              <%= worker.name %>
-              <br>
-                  <%= worker.surname%>
-            </a>
-          </p>
-        </div>
-        <div class="worker--btns">
-          <form action="/business/myBusiness/<%= business._id%>/<%= worker._id %>/removeWorker" method="POST">
-            <button class="btn--removeWorker" type="submit">Usuń </button>
-        </form>
-        </div>
-      </div>
-      <% }); %>
-    </div>
-      <% } %>
-</section>
-<section class="main__profile main--item">
-  <div class="business__edit">
-      <svg 
-        class="business__edit--img" 
-        xmlns="http://www.w3.org/2000/svg" 
-        viewBox="0 0 20 20"
-      >
-        <g transform="translate(-607.63544,-694.58531)">
-          <path fill="none" stroke-linejoin="bevel" style="enable-background:accumulate;color:#000000;" d="m617.64,695.59c-0.46627,0-0.93351,0.0595-1.3807,0.12784-0.0711,1.1464-0.25115,2.2654-1.2017,2.6591-0.95268,0.39462-1.8476-0.28586-2.7102-1.0483-0.7542,0.55049-1.4432,1.215-1.9943,1.9688,0.76546,0.86506,1.4698,1.7545,1.0739,2.7102-0.39543,0.95468-1.5331,1.1311-2.6847,1.2017-0.07,0.45231-0.10227,0.90878-0.10227,1.3807,0,0.47795,0.0306,0.94843,0.10227,1.4062,1.1516,0.0705,2.2892,0.19589,2.6847,1.1506,0.3959,0.95577-0.3084,1.8963-1.0739,2.7614,0.54837,0.74809,1.2455,1.3957,1.9943,1.9432,0.85987-0.75912,1.7609-1.416,2.7102-1.0227,0.95468,0.39543,1.1311,1.5075,1.2017,2.6591,0.44717,0.0684,0.91441,0.10227,1.3807,0.10227,0.46628,0,0.90795-0.034,1.3551-0.10227,0.0705-1.1516,0.24703-2.2637,1.2017-2.6591,0.94933-0.39323,1.8504,0.2636,2.7102,1.0227,0.74877-0.54748,1.4459-1.1951,1.9943-1.9432-0.76545-0.86507-1.4698-1.8056-1.0739-2.7614,0.39544-0.95468,1.5586-1.08,2.7102-1.1506,0.0717-0.45782,0.10227-0.9283,0.10227-1.4062,0-0.4719-0.0324-0.92837-0.10227-1.3807-1.1516-0.0705-2.3148-0.24703-2.7102-1.2017-0.39589-0.95576,0.30841-1.8452,1.0739-2.7102-0.5511-0.75374-1.2401-1.4183-1.9943-1.9688-0.86258,0.76243-1.7576,1.4429-2.7102,1.0483-0.95056-0.39373-1.1306-1.5127-1.2017-2.6591-0.44716-0.0684-0.88883-0.12784-1.3551-0.12784zm0,6.0597c1.6261,0,2.9403,1.3142,2.9403,2.9403s-1.3142,2.9403-2.9403,2.9403-2.9659-1.3142-2.9659-2.9403,1.3398-2.9403,2.9659-2.9403z" stroke="#fff" stroke-linecap="square" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1" fill="#333"/>
-        </g>
-      </svg>
-    </a>      
-  </div>
-  <div class="profile--header">
-    <p class="profile--header--text"><%= business.name %></p>
-  </div>
-  <div class="profile--desc">
-    <p class="profile--desc--text"><%= business.description %></p>
-  </div>
-  <div class="profile--info">
-    <div class="profile--info--item">
-      <p class="profile--info--label">Adres </p>
-      <p class="profile--info--text"><%= business.address %></p>
-    </div>
-    <div class="profile--info--item">
-      <p class="profile--info--label">Telefon </p>
-      <p class="profile--info--text"><%= business.phone %></p>
-    </div>
-    <div class="profile--info--item">
-      <p class="profile--info--label">Właściciel </p>
-      <a class="user--link" href="/profile/<%= business.ownerId._id%>"><p class="profile--info--text"><%= business.ownerId.name %> <%= business.ownerId.surname %></p></a>
-    </div>
-  </div>
-</section>
-<section class="main__services main--item">
-  <div class="services--header">
-    <p class="services--header--text">Twoje serwisy</p>
-    <button id="addService" class="addingBtn">+</button>
-  </div>
-      <div class="services--wraper">
-        <% business.services.forEach(function(service) { %>
-        <div class="services--item">
-          <div class="service--name">
-            <p class="service--name--text"><%= service.name %></p>
-          </div>
-          <div class="service--desc">
-            <p class="service--desc--text"><%= service.description %></p>
-          </div>
-          <div class="service--price">
-            <p class="service--price--text"><%= service.price %>zł</p>
-          </div>
-          <div class="service--btns">
-            <div class="service--btn">
-              <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService" method="POST">
-                <button type="input">Usuń</button>
-              </form>
+      <% if(business.workers !=null){ %>
+        <div class="workers--wraper">
+          <% business.workers.forEach(function(worker) { %>
+            <div class="workers--item">
+              <div class="worker--avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="avatar--img">
+                  <path fill-rule="evenodd"
+                    d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="worker--content">
+                <p class="user-info--text">
+                  <a class="user--link" href="/profile/<%= worker._id %>">
+                    <%= worker.name %>
+                      <br>
+                      <%= worker.surname%>
+                  </a>
+                </p>
+              </div>
+              <div class="worker--btns">
+                <form action="/business/myBusiness/<%= business._id%>/<%= worker._id %>/removeWorker" method="POST">
+                  <button class="btn--removeWorker" type="submit">Usuń </button>
+                </form>
+              </div>
             </div>
-            <div class="service--btn">
-                <button type="input" id="btnServiceEdit" onclick="setInfo('<%= business._id %>','<%= service._id %>','<%= service.name %>','<%= service.description %>','<%= service.price %>')">Edytuj</button>
-            </div>
-          </div>
-        </div>
-        <% }); %>
-      </div>
-</section>
-<section class="main__opinions main--item">
-  <div class="opinions--header">
-    <p class="opinions--header--text">Twoje opinie</p>
-  </div>
-  <div class="opinions__list--wrapper">
-    <div class="opinions--list">
-      <% if(opinions != null){ %> <%
-        opinions.forEach(function(opinion){ %>
-      <div class="opinion--item">
-        <% if(opinion.ownerId == currentUser.id){ %>
-        <div>                
-          <form action="/profile/<%= user._id %>/<%= opinion._id %>/removeOpinion" method="POST">
-            <input type="submit" value="X">
-          </form>
+            <% }); %>
         </div>
         <% } %>
-        <span class="opinion--quotes">”</span>
-        <div class="opinion__content--wrapper">
-          <p class="opinion--content"><%= opinion.comment %></p>
-          <a href="/profile/<%= opinion.ownerId._id %>" style="text-decoration: none;"><p class="opinion--author">
-            <%= opinion.ownerId.name %> <%= opinion.ownerId.surname %>
-          </p></a>
-          <div class="opinion--stars">
-            <% stars=opinion.rating %> <% for (let i = 0; i < stars; i++){
-            %>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="#F1511B"
-              class="opinion--star"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
-                clip-rule="evenodd"
-              />
-            </svg>
-            <% } %>
-          </div>
-        </div>
+    </section>
+    <section class="main__profile main--item">
+      <div class="business__edit">
+        <svg class="business__edit--img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+          <g transform="translate(-607.63544,-694.58531)">
+            <path fill="none" stroke-linejoin="bevel" style="enable-background:accumulate;color:#000000;"
+              d="m617.64,695.59c-0.46627,0-0.93351,0.0595-1.3807,0.12784-0.0711,1.1464-0.25115,2.2654-1.2017,2.6591-0.95268,0.39462-1.8476-0.28586-2.7102-1.0483-0.7542,0.55049-1.4432,1.215-1.9943,1.9688,0.76546,0.86506,1.4698,1.7545,1.0739,2.7102-0.39543,0.95468-1.5331,1.1311-2.6847,1.2017-0.07,0.45231-0.10227,0.90878-0.10227,1.3807,0,0.47795,0.0306,0.94843,0.10227,1.4062,1.1516,0.0705,2.2892,0.19589,2.6847,1.1506,0.3959,0.95577-0.3084,1.8963-1.0739,2.7614,0.54837,0.74809,1.2455,1.3957,1.9943,1.9432,0.85987-0.75912,1.7609-1.416,2.7102-1.0227,0.95468,0.39543,1.1311,1.5075,1.2017,2.6591,0.44717,0.0684,0.91441,0.10227,1.3807,0.10227,0.46628,0,0.90795-0.034,1.3551-0.10227,0.0705-1.1516,0.24703-2.2637,1.2017-2.6591,0.94933-0.39323,1.8504,0.2636,2.7102,1.0227,0.74877-0.54748,1.4459-1.1951,1.9943-1.9432-0.76545-0.86507-1.4698-1.8056-1.0739-2.7614,0.39544-0.95468,1.5586-1.08,2.7102-1.1506,0.0717-0.45782,0.10227-0.9283,0.10227-1.4062,0-0.4719-0.0324-0.92837-0.10227-1.3807-1.1516-0.0705-2.3148-0.24703-2.7102-1.2017-0.39589-0.95576,0.30841-1.8452,1.0739-2.7102-0.5511-0.75374-1.2401-1.4183-1.9943-1.9688-0.86258,0.76243-1.7576,1.4429-2.7102,1.0483-0.95056-0.39373-1.1306-1.5127-1.2017-2.6591-0.44716-0.0684-0.88883-0.12784-1.3551-0.12784zm0,6.0597c1.6261,0,2.9403,1.3142,2.9403,2.9403s-1.3142,2.9403-2.9403,2.9403-2.9659-1.3142-2.9659-2.9403,1.3398-2.9403,2.9659-2.9403z"
+              stroke="#fff" stroke-linecap="square" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1"
+              fill="#333" />
+          </g>
+        </svg>
+        </a>
       </div>
-      <% }); %> <% } %>
-    </div>
-  </div>
-</section>
-<section class="main__messages main--item">
-  <div class="messages--header">
-    <p class="messages--header--text">Wiadomości</p>
-  </div>
-</section>
-</main>
-<div class="modal">
-  <div class="modal-content">
-      <span class="close">&times;</span>
-    <div class="modal--content--header">
-      <p class="modal--content--header--text">Dodaj uzytkownika</p>
-    </div>
-    <div class="modal--content--form">
-      <form action="/business/myBusiness/<%=business._id%>/addWorker" method="POST">
-        <label for="code"></label>
-        <input type="text" name="code" placeholder="Kod użytkownika">
-        <input id="submit" type="submit" value="Dodaj">
-    </form>
-    </div>
-  </div>
-</div>
-<div class="modal">
-  <div class="modal-content">
-      <span class="close">&times;</span>
-    <div class="modal--content--header">
-      <p class="modal--content--header--text">Dodaj serwis</p>
-    </div>
-    <div class="modal--content--form">
-          <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
-              <input type="text" name="name" placeholder="Nazwa" required><br>
-              <input type="text" name="description" placeholder="Opis"><br>
-              <input type="number" step="0.01" name="price" placeholder="Cena" required><br>
-              <input type="number" step="0.01" name="duration" placeholder="Czas (h)"><br>
-              <input id="submit" type="submit" value="Dodaj">
-          </form>
-    </div>
-  </div>
-</div>
-<div class="modal">
-  <div class="modal-content">
-      <span class="close">&times;</span>
-    <div class="modal--content--header">
-      <p class="modal--content--header--text" id="editServiceNameHeader">Edytuj serwis</p>
-    </div>
-    <div class="modal--content--form">
-          <form id="formEditService" action="" method="POST">
-              <input type="text" name="name" id="editServiceName" value="" required><br>
-              <input type="text" name="description" id="editServiceDesc" value=""><br>
-              <input type="number" step="0.01" name="price" id="editServicePrice" value="" required><br>
-              <input id="submit" type="submit" value="Edytuj">
-          </form>
-    </div>
-  </div>
-</div>
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <div class="modal--content--header">
-      <p class="modal--content--header--text">Edytuj firmę</p>
-    </div>
-    <div class="modal--content--items">
-      <div class="toEdit" id="name">
-        <div>
-          <label class="text--header">Nazwa</label>
-          <p>
-            <%= business.name %>
-          </p>
-        </div>
-        <button onclick="editPanel(this)" value="name">Edytuj</button>
+      <div class="profile--header">
+        <p class="profile--header--text">
+          <%= business.name %>
+        </p>
       </div>
-      <div class="editPanel" id="name" style="display: none;">
-        <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
-          <div>
-            <input type="text" name="name" placeholder="<%= business.name %>" required>
-          </div>
-          <button type="submit">Zapisz zmiany</button>
-        </form>
+      <div class="profile--desc">
+        <p class="profile--desc--text">
+          <%= business.description %>
+        </p>
       </div>
-      <div class="toEdit" id="address">
-        <div>
-          <label class="text--header">Adres</label>
-          <p>
+      <div class="profile--info">
+        <div class="profile--info--item">
+          <p class="profile--info--label">Adres </p>
+          <p class="profile--info--text">
             <%= business.address %>
           </p>
         </div>
-        <button onclick="editPanel(this)" value="address">Edytuj</button>
-      </div>
-      <div class="editPanel" id="address" style="display: none;">
-        <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
-          <div>
-            <input type="text" name="address" placeholder="<%= business.address %>" required>
-          </div>
-          <button type="submit">Zapisz zmiany</button>
-        </form>
-      </div>
-      <div class="toEdit" id="description">
-        <div>
-          <label class="text--header">Opis</label> 
-          <p>
-            <%= business.description %>
-          </p>
-        </div>
-        <button onclick="editPanel(this)" value="description">Edytuj</button>
-      </div>
-      <div class="editPanel" id="description" style="display: none;">
-        <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
-          <div>
-            <input type="text" name="description" placeholder="<%= business.description %>" required> <!-- ZMIENIC NA TEXTBOX -->
-          </div>
-          <button type="submit">Zapisz zmiany</button>
-        </form>
-      </div>
-      <div class="toEdit" id="phone">
-        <div>
-          <label class="text--header">Telefon</label>
-          <p>
+        <div class="profile--info--item">
+          <p class="profile--info--label">Telefon </p>
+          <p class="profile--info--text">
             <%= business.phone %>
           </p>
         </div>
-        <button onclick="editPanel(this)" value="phone">Edytuj</button>
+        <div class="profile--info--item">
+          <p class="profile--info--label">Właściciel </p>
+          <a class="user--link" href="/profile/<%= business.ownerId._id%>">
+            <p class="profile--info--text">
+              <%= business.ownerId.name %>
+                <%= business.ownerId.surname %>
+            </p>
+          </a>
+        </div>
       </div>
-      <div class="editPanel" id="phone" style="display: none;">
-        <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
-          <div>
-            <input type="text" name="phone" placeholder="<%= business.phone %>" required>
+    </section>
+    <section class="main__services main--item">
+      <div class="services--header">
+        <p class="services--header--text">Twoje serwisy</p>
+        <button id="addService" class="addingBtn">+</button>
+      </div>
+      <div class="services--wraper">
+        <% business.services.forEach(function(service) { %>
+          <div class="services--item">
+            <div class="service--name">
+              <p class="service--name--text">
+                <%= service.name %>
+              </p>
+            </div>
+            <div class="service--desc">
+              <p class="service--desc--text">
+                <%= service.description %>
+              </p>
+            </div>
+            <div class="service--price">
+              <p class="service--price--text">
+                <%= service.price %>zł
+              </p>
+            </div>
+            <div class="service--btns">
+              <div class="service--btn">
+                <form action="/business/myBusiness/<%= business._id%>/<%= service._id %>/removeService" method="POST">
+                  <button type="input">Usuń</button>
+                </form>
+              </div>
+              <div class="service--btn">
+                <button type="input" id="btnServiceEdit"
+                  onclick="setInfo('<%= business._id %>','<%= service._id %>','<%= service.name %>','<%= service.description %>','<%= service.price %>')">Edytuj</button>
+              </div>
+            </div>
           </div>
-          <button type="submit">Zapisz zmiany</button>
-        </form>
+          <% }); %>
       </div>
-
-      <div id="delAcc">
-        <form action="/business/mybusiness/<%= business._id %>/removeBusiness" method="POST">
-          <button style="background-color: red;"type=submit">Usuń firme</button>
+    </section>
+    <section class="main__opinions main--item">
+      <div class="opinions--header">
+        <p class="opinions--header--text">Twoje opinie</p>
+      </div>
+      <div class="opinions__list--wrapper">
+        <div class="opinions--list">
+          <% if(opinions !=null){ %>
+            <% opinions.forEach(function(opinion){ %>
+              <div class="opinion--item">
+                <% if(opinion.ownerId==currentUser.id){ %>
+                  <div>
+                    <form action="/profile/<%= user._id %>/<%= opinion._id %>/removeOpinion" method="POST">
+                      <input type="submit" value="X">
+                    </form>
+                  </div>
+                  <% } %>
+                    <span class="opinion--quotes">”</span>
+                    <div class="opinion__content--wrapper">
+                      <p class="opinion--content">
+                        <%= opinion.comment %>
+                      </p>
+                      <a href="/profile/<%= opinion.ownerId._id %>" style="text-decoration: none;">
+                        <p class="opinion--author">
+                          <%= opinion.ownerId.name %>
+                            <%= opinion.ownerId.surname %>
+                        </p>
+                      </a>
+                      <div class="opinion--stars">
+                        <% stars=opinion.rating %>
+                          <% for (let i=0; i < stars; i++){ %>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#F1511B"
+                              class="opinion--star">
+                              <path fill-rule="evenodd"
+                                d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                                clip-rule="evenodd" />
+                            </svg>
+                            <% } %>
+                      </div>
+                    </div>
+              </div>
+              <% }); %>
+                <% } %>
+        </div>
+      </div>
+    </section>
+    <section class="main__messages main--item">
+      <div class="messages--header">
+        <p class="messages--header--text">Wiadomości</p>
+      </div>
+    </section>
+  </main>
+  <div class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="modal--content--header">
+        <p class="modal--content--header--text">Dodaj uzytkownika</p>
+      </div>
+      <div class="modal--content--form">
+        <form action="/business/myBusiness/<%=business._id%>/addWorker" method="POST">
+          <label for="code"></label>
+          <input type="text" name="code" placeholder="Kod użytkownika">
+          <input id="submit" type="submit" value="Dodaj">
         </form>
       </div>
     </div>
   </div>
-</div>
-<% if(message) {%>
-  <div class="error--popup">
-    <p class="error--message"><%= message %></p>
+  <div class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="modal--content--header">
+        <p class="modal--content--header--text">Dodaj serwis</p>
+      </div>
+      <div class="modal--content--form">
+        <form action="/business/myBusiness/<%=business._id%>/addService" method="POST">
+          <input type="text" name="name" placeholder="Nazwa" required><br>
+          <input type="text" name="description" placeholder="Opis"><br>
+          <input type="number" step="0.01" name="price" placeholder="Cena" required><br>
+          <input type="number" step="0.01" name="duration" placeholder="Czas (h)"><br>
+          <input id="submit" type="submit" value="Dodaj">
+        </form>
+      </div>
+    </div>
   </div>
-<% }%>
-<script>
-var modal = document.getElementsByClassName("modal");
-var btnWorkerAdd = document.getElementById("addWorker");
-var btnServiceAdd = document.getElementById("addService");
-var span = document.getElementsByClassName("close");
-var btnEdit = document.getElementsByClassName("business__edit")[0];
+  <div class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="modal--content--header">
+        <p class="modal--content--header--text" id="editServiceNameHeader">Edytuj serwis</p>
+      </div>
+      <div class="modal--content--form">
+        <form id="formEditService" action="" method="POST">
+          <input type="text" name="name" id="editServiceName" value="" required><br>
+          <input type="text" name="description" id="editServiceDesc" value=""><br>
+          <input type="number" step="0.01" name="price" id="editServicePrice" value="" required><br>
+          <input id="submit" type="submit" value="Edytuj">
+        </form>
+      </div>
+    </div>
+  </div>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div class="modal--content--header">
+        <p class="modal--content--header--text">Edytuj firmę</p>
+      </div>
+      <div class="modal--content--items">
+        <div class="toEdit" id="name">
+          <div>
+            <label class="text--header">Nazwa</label>
+            <p>
+              <%= business.name %>
+            </p>
+          </div>
+          <button onclick="editPanel(this)" value="name">Edytuj</button>
+        </div>
+        <div class="editPanel" id="name" style="display: none;">
+          <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
+            <div>
+              <input type="text" name="name" placeholder="<%= business.name %>" required>
+            </div>
+            <button type="submit">Zapisz zmiany</button>
+          </form>
+        </div>
+        <div class="toEdit" id="address">
+          <div>
+            <label class="text--header">Adres</label>
+            <p>
+              <%= business.address %>
+            </p>
+          </div>
+          <button onclick="editPanel(this)" value="address">Edytuj</button>
+        </div>
+        <div class="editPanel" id="address" style="display: none;">
+          <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
+            <div>
+              <input type="text" name="address" placeholder="<%= business.address %>" required>
+            </div>
+            <button type="submit">Zapisz zmiany</button>
+          </form>
+        </div>
+        <div class="toEdit" id="description">
+          <div>
+            <label class="text--header">Opis</label>
+            <p>
+              <%= business.description %>
+            </p>
+          </div>
+          <button onclick="editPanel(this)" value="description">Edytuj</button>
+        </div>
+        <div class="editPanel" id="description" style="display: none;">
+          <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
+            <div>
+              <input type="text" name="description" placeholder="<%= business.description %>" required>
+              <!-- ZMIENIC NA TEXTBOX -->
+            </div>
+            <button type="submit">Zapisz zmiany</button>
+          </form>
+        </div>
+        <div class="toEdit" id="phone">
+          <div>
+            <label class="text--header">Telefon</label>
+            <p>
+              <%= business.phone %>
+            </p>
+          </div>
+          <button onclick="editPanel(this)" value="phone">Edytuj</button>
+        </div>
+        <div class="editPanel" id="phone" style="display: none;">
+          <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
+            <div>
+              <input type="text" name="phone" placeholder="<%= business.phone %>" required>
+            </div>
+            <button type="submit">Zapisz zmiany</button>
+          </form>
+        </div>
 
-function setInfo(businessId,serviceId,name,description,price){
-  console.log(businessId,serviceId,name,description,price);
-  let form = document.getElementById('formEditService');
-  form.setAttribute('action', '/business/myBusiness/' + businessId + '/editService/' + serviceId);
-  let nameInput = document.getElementById('editServiceName');
-  let descInput = document.getElementById('editServiceDesc');
-  let priceInput = document.getElementById('editServicePrice');
-
-  console.log(nameInput);
-  nameInput.value = name;
-  descInput.value = description;
-  priceInput.value = price;
-
-  modal[2].style.display = "block";
-  document.body.style.backgroundColor = "rgba(0,0,0,0.4)"; // wyszarzenie strony
-
-}
-
-btnWorkerAdd.onclick = function(event) {
-  modal[0].style.display = "block";
-  document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
-}
-
-btnServiceAdd.onclick = function() {
-  modal[1].style.display = "block";
-  document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
-}
-btnEdit.onclick = function(){
-  modal[3].style.display = "flex";
-  document.body.style.backgroundColor = "rgba(0,0,0,0.4)";
-}
-
-span[0].onclick = function() {
-  modal[0].style.display = "none";
-  document.body.style.backgroundColor = "initial"; // przywrócenie koloru tła strony
-}
-
-span[1].onclick = function() {
-  modal[1].style.display = "none";
-  document.body.style.backgroundColor = "initial"; 
-}
-span[2].onclick = function() {
-  modal[2].style.display = "none";
-  document.body.style.backgroundColor = "initial";
-}
-span[3].onclick = function() {
-  modal[3].style.display = "none";
-  document.body.style.backgroundColor = "initial";
-}
-
-window.onclick = function(event) {
-  if (event.target == modal[0] || event.target == modal[1] || event.target == modal[2] || event.target == modal[3]) {
-    modal[0].style.display = "none";
-    modal[1].style.display = "none";
-    modal[2].style.display = "none";
-    modal[3].style.display = "none";
-    document.body.style.backgroundColor = "initial";
-  }
-}
-
-function editPanel(btn) {
-    console.log(btn.value)
-    var divsToEdit = document.getElementsByClassName('toEdit');
-    var divsEditPanel = document.getElementsByClassName('editPanel');
-
-    for (var i = 0; i < divsToEdit.length; i++) {
-      if (divsToEdit[i].id == btn.value) {
-        divsToEdit[i].style.display = 'none';
-        divsEditPanel[i].style.display = 'none';
-      }
-      else {
-        divsToEdit[i].style.display = 'flex';
-      }
-    }
-    for (var i = 0; i < divsEditPanel.length; i++) {
-      if (divsEditPanel[i].id == btn.value) {
-        divsEditPanel[i].style.display = 'flex';
-      }
-      else {
-        divsEditPanel[i].style.display = 'none';
-      }
-    }
-  }
-</script>
+        <div id="delAcc">
+          <form action="/business/mybusiness/<%= business._id %>/removeBusiness" method="POST">
+            <button style="background-color: red;" type=submit">Usuń firme</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <% if(message) {%>
+    <div class="error--popup">
+      <p class="error--message">
+        <%= message %>
+      </p>
+    </div>
+    <% }%>
+<script src="/js/businessScript.js"></script>
+</body>
+</html>
