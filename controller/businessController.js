@@ -25,6 +25,11 @@ const registerBusiness = async (req, res) => {
     return registerView(req, res, "", message);
   }
 
+  if(req.body.tags){ // dodawanie tagów
+    listOfTags = req.body.tags.split(";");
+  } else {
+    listOfTags = [];
+  }
   User.findOneAndUpdate(
     { _id: req.user._id },
     { role: "Owner" },
@@ -45,7 +50,8 @@ const registerBusiness = async (req, res) => {
       adress: req.body.adress,
       phone: req.body.phone,
       address: req.body.address,
-      ownerId: req.user
+      ownerId: req.user,
+      tags: listOfTags
     });
     createBusiness.save();
     res.redirect("/");

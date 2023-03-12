@@ -64,6 +64,12 @@
           placeholder="Telefon"
           required
         />
+        <input
+          id="tagInput"
+          type="hidden"
+          name="tags"
+        />
+
         <div style="color:grey;" contentEditable=false id="selectedOptions" class="tags" data-text="Tagi" onclick="showOptions()"></div>
         <select id="listbox" name="listbox" style="display: none;" size="4" multiple>
         </select>
@@ -83,20 +89,21 @@
     var selectedOptions = document.getElementById("selectedOptions");
     var spans = document.getElementsByTagName("span");
     var listOfTags = ['Fryzjerstwo', 'Sprzątanie', 'Kurs', 'Nauka', 'Turystyka', 'Pomoc'].sort();
+    var tagInput = document.getElementById("tagInput");
     
     for(var i = 0; i < listOfTags.length; i++){
-      console.log("heheh")
       var element = document.createElement("option");
       element.textContent = listOfTags[i];
       element.setAttribute("value", listOfTags[i]);
-
       listBox.appendChild(element);
     }
 
-    $('div').on('click', 'span', function() {
+    $('div').on('click', 'span', function() { //usuwanie tagów
       var spanValue = $(this).attr("value");
       var tagToDelete = selectedOptions.querySelector(`tag[value='${spanValue}']`);
       selectedOptions.removeChild(tagToDelete);
+      
+      tagInput.value = tagInput.value.replace(new RegExp(spanValue + ';?\s*', 'g'), ''); // usuwanie tagów z hidden inputa
 
       var option = document.createElement("option");
       option.setAttribute("value", spanValue);
@@ -109,9 +116,6 @@
       selectedOptions.style.borderRadius = "20px 20px 0px 0px";
       selectedOptions.style.marginBottom = "0px";
     }
-
-
-
     listBox.addEventListener("click", function() {
       var option = listBox.options[listBox.selectedIndex];
       if (option) {
@@ -127,6 +131,14 @@
         close.textContent = "x";
         tag.appendChild(p);
         tag.appendChild(close);
+
+        if(tagInput.value == ""){ // dodawanie tagów do hidden inputa
+          tagInput.value = text;
+        } else {
+          tagInput.value = tagInput.value + ";" + text;
+        }
+
+        console.log(tagInput.value);
         selectedOptions.appendChild(tag);
         spans = document.getElementsByTagName("span");
       }
