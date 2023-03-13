@@ -361,6 +361,13 @@ const editProfile = (req, res) => {
   });
 }
 
+const removeBusiness = (req, res) => {
+
+
+  // usuwanie workerów, opinii, oraz wizyt wszystkich workerów
+};
+
+
 module.exports = {
   registerView,
   registerBusiness,
@@ -373,5 +380,6 @@ module.exports = {
   addService,
   removeService,
   editService,
-  editProfile
+  editProfile,
+  removeBusiness
 };

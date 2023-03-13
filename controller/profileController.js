@@ -151,7 +151,7 @@ const removeProfile = (req, res) => {
             });
         }
         else {
-            Business.findOneAndUpdate({ workers: req.params.id }, { $pull: { workers: req.params.id } }, (err, business) => {
+            Business.findOneAndUpdate({ workers: req.params.id }, { $pull: { workers: req.params.id } }, (err, business) => { // dodac usuniecie wizyt
                 if (err) res.render("home", { business, user, message: "Coś poszło nie tak." })
                 User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
                     if (err) return res.render("home", { business, user, message: "Coś poszło nie tak." });
