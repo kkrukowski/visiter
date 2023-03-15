@@ -31,4 +31,19 @@ const getAvailableHours = (serviceDuration, busyHours, startHour, endHour) => {
   return availableHours;
 };
 
-module.exports = { getAvailableHours, isAbleToBook };
+const getTimesToUpdate = (time, serviceDuration) => {
+  let timesToUpdate = []
+  let bookTime = moment.utc(time, "HH:mm");
+  const bookEndTime = moment.utc(bookTime, "HH:mm").add(
+    serviceDuration,
+    "minutes"
+  );
+  while(bookTime <= bookEndTime){
+    timesToUpdate.push(bookTime.format("HH:mm"))
+    bookTime.add(20, "minutes")
+  }
+  console.log(timesToUpdate)
+  return timesToUpdate
+}
+
+module.exports = { getAvailableHours, isAbleToBook, getTimesToUpdate };

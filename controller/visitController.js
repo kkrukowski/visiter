@@ -9,6 +9,7 @@ const moment = require("moment");
 const {
   getAvailableHours,
   isAbleToBook,
+  getTimesToUpdate
 } = require("../middlewares/visitHandler");
 
 // test id - 63bd2f8b35c597866c9fe176
@@ -56,17 +57,20 @@ const getAllWorkerVisits = (req, res) => {
 
 // const getWorkerSchedule = () => {};
 
-const updateAvailability = (workerId, date, time) => {User.updateOne(
+const updateAvailability = (res, workerId, date, time, serviceDuration) => {
+  const timesToUpdate = getTimesToUpdate(time, serviceDuration);
+  const updateWorker = User.updateOne(
   {
     _id: ObjectId(workerId),
     "workerBusyAvailability.date": date,
   },
   {
     $addToSet: {
-      "workerBusyAvailability.$.hours": time,
+      "workerBusyAvailability.$.hours": {$each: timesToUpdate},
     },
   },
   (err, availability) => {
+    console.log(timesToUpdate)
     if (err) return res.send(err);
     if (availability.modifiedCount === 0) {
       User.updateOne(
@@ -77,7 +81,7 @@ const updateAvailability = (workerId, date, time) => {User.updateOne(
           $addToSet: {
             workerBusyAvailability: {
               date: date,
-              hours: [time],
+              hours: {$each: timesToUpdate},
             },
           },
         },
@@ -149,7 +153,6 @@ const createVisit = (req, res) => {
                     if (err) res.send(err);
                     const workerBusyAvailabilityDates =
                       getWorkerAvailabilityDates(worker, date);
-                    console.log(workerBusyAvailabilityDates)
                     if (workerBusyAvailabilityDates.length == 0 ||
                       isAbleToBook(
                         workerBusyAvailabilityDates[0].hours,
@@ -157,7 +160,7 @@ const createVisit = (req, res) => {
                         time
                       )
                     ){
-                      updateAvailability(workerId, date, time)
+                      updateAvailability(res, workerId, date, time, serviceDuration)
                     } else {
                       console.log("Date not available")
                     }
