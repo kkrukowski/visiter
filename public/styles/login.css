@@ -43,3 +43,50 @@
 .register--info{
     color: white;
 }
+
+.tags{
+    padding: 10px 15px;
+    border-radius: 20px;
+    background-color: #EFEDFF;
+    border: 2px solid transparent;
+    outline: none;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 43px;
+    height: auto;
+    cursor: pointer;
+}
+#listbox{
+    margin-bottom: 10px;
+    border: 0px;
+    
+}
+#selectedOptions{
+    margin-bottom: 10px;
+}
+[contentEditable=false]:empty:not(:focus):before {
+    content: attr(data-text)
+}
+tag{
+    background-color: #444774;
+    border-radius: 33px;
+    width: 50%;
+    display: flex;
+    margin: 2px;
+    min-width: 0px;
+    box-sizing: border-box;
+    padding: 3px 12px;
+    -webkit-box-align: center;
+    justify-content: space-around;
+}
+tag p{
+    margin: 5px;
+    color: white;
+}
+span{
+    color: white;
+    margin: auto;
+    margin-right: 0px;
+    margin-left: 0px;
+    text-align: center;
+}

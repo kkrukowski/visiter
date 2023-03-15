@@ -13,6 +13,7 @@ let businessSchema = new Schema({
   ownerId: { type: Schema.Types.ObjectId, ref: "User"},
   address: String,
   phone: String,
+  tags: [{type: String}],
 
   workers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   opinions: [{ type: Schema.Types.ObjectId, ref: "OpinionForBusiness" }],

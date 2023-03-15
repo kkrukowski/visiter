@@ -126,12 +126,12 @@
     width: 100%;
     text-align: center;
 }
-.user-info--text a{
+.user--link{
     color: white;
     font-weight: 700;
     text-decoration: none;
 }
-.user-info--text a:hover{
+.user--link:hover{
     -webkit-transition: color 0.1s ease-out;
     -moz-transition: color 0.1s ease-out;
     -o-transition: color 1s ease-out;
@@ -401,9 +401,15 @@
     font-weight: bold;
     color: #F1511B;
 }
-  
-  .close:hover,
-  .close:focus {
+.business__edit:hover,
+.business__edit:focus {
+    background-color: #555995;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: 10px;
+}
+.close:hover,
+.close:focus {
     background-color: #555995;
     text-decoration: none;
     cursor: pointer;

@@ -157,7 +157,7 @@
         </div>
         <div class="worker--content">
           <p class="user-info--text">
-            <a href="/profile/<%= worker._id %>">
+            <a class="user--link" href="/profile/<%= worker._id %>">
               <%= worker.name %>
               <br>
                   <%= worker.surname%>
@@ -187,7 +187,9 @@
     </div>
     <div class="profile--info--item">
       <p class="profile--info--label">Właściciel </p>
-      <p class="profile--info--text"><%= business.ownerId.name %> <%= business.ownerId.surname %></p>
+      <a class="user--link" href="/profile/<%= business.ownerId._id%>">
+        <p class="profile--info--text"><%= business.ownerId.name %> <%= business.ownerId.surname %></p>
+      </a>
     </div>
   </div>
 </section>
@@ -261,6 +263,13 @@
       </div>
       <% }); %> <% } %>
     </div>
+    <!--<div>
+    <form action="business/<%= business._id %>/opinion" method="POST">
+      <input type="number" name="rating" required>
+      <input type="text" name="comment" required>
+      <input type="submit">; 
+    </form>
+    </div>-->
   </div>
 </section>
 <section class="main__messages main--item">

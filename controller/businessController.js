@@ -25,6 +25,11 @@ const registerBusiness = async (req, res) => {
     return registerView(req, res, "", message);
   }
 
+  if (req.body.tags) { // dodawanie tagów
+    listOfTags = req.body.tags.split(";");
+  } else {
+    listOfTags = [];
+  }
   User.findOneAndUpdate(
     { _id: req.user._id },
     { role: "Owner" },
@@ -45,7 +50,8 @@ const registerBusiness = async (req, res) => {
       adress: req.body.adress,
       phone: req.body.phone,
       address: req.body.address,
-      ownerId: req.user
+      ownerId: req.user,
+      tags: listOfTags
     });
     createBusiness.save();
     res.redirect("/");
@@ -165,14 +171,13 @@ const getBusiness = (req, res) => {
 };
 
 const addOpinion = (req, res) => {
-  correctName = req.user.name + " " + req.user.surname;
   const newOpinion = new Opinion({
     rating: req.body.rating,
     comment: req.body.comment,
     ownerId: req.user._id,
   });
 
-  newOpinion.save((err, service) => {
+  newOpinion.save((err, service) => { // DODAC OPINIE DO RENDERU !!!
     if (err) {
       const business = Business.findById(req.params.id);
       const message = "Błąd w trakcie dodawania opinii.";
@@ -217,13 +222,23 @@ const addWorker = (req, res) => {
             { $set: { role: "Worker" } },
             { new: true },
             (err, updateUser) => {
-              console.log(updateUser);
+              console.log("ZMIENIAM ROLE");
             }
           );
           if (business.workers != null) {
             Business.findOneAndUpdate(
-              { "owner._id": req.user._id },
+              { "ownerId": req.user._id },
               { $push: { workers: user.id } },
+              { new: true },
+              (err, business) => {
+                const message = "Pracownik dodany do firmy.";
+                return homeView(req, res, "", message);
+              }
+            );
+          } else {
+            Business.findOneAndUpdate(
+              { "ownerId": req.user._id },
+              { $set: { workers: user.id } },
               { new: true },
               (err, business) => {
                 const message = "Pracownik dodany do firmy.";
@@ -349,11 +364,37 @@ const editProfile = (req, res) => {
     return homeView(req, res, "", message);
   }
 
-  Business.findByIdAndUpdate(req.params.id, update , { new: true }, (err, business) => {
+  Business.findByIdAndUpdate(req.params.id, update, { new: true }, (err, business) => {
     if (err) return homeView(req, res, "", "Błąd podczas edycji.")
     return homeView(req, res, "", "Edycja pomyślna.")
   });
 }
+
+const removeBusiness = (req, res) => {
+  Business.findById(req.params.id, (err, business) => {
+    if (err) return homeView(req, res, "", "Coś poszło nie tak");
+    const workersIds = business.workers;
+    User.findByIdAndUpdate(req.user._id, { role: "User" }, (err, userOwner) => {
+      if (err) return homeView(req, res, "", "Coś poszło nie tak");
+      User.updateMany({ _id: { $in: workersIds } }, { role: "User" }, { multi: true }, (err, users) => {
+        if (err) return homeView(req, res, "", "Coś poszło nie tak");
+        const opinionsIds = business.opinions;
+        Opinion.deleteMany({ _id: { $in: opinionsIds } }, (err, opinions) => {
+          if (err) return homeView(req, res, "", "Coś poszło nie tak");
+          const servicesIds = business.services;
+          Service.deleteMany({ _id: { $in: servicesIds } }, (err, services) => {
+            if (err) return homeView(req, res, "", "Coś poszło nie tak");
+            Business.findByIdAndRemove(req.params.id, { new: true }, (err, business) => {
+              return res.render("home", { user: req.user, business: false, message: "Poprawnie usunięto firme." });
+            });
+          });
+        });
+      });
+    });
+  });
+  // usuwanie wizyt
+};
+
 
 module.exports = {
   registerView,
@@ -367,5 +408,6 @@ module.exports = {
   addService,
   removeService,
   editService,
-  editProfile
+  editProfile,
+  removeBusiness
 };
