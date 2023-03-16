@@ -8,7 +8,6 @@ const isAbleToBook = (busyHours, serviceDuration, time) => {
   );
   if (busyHours.some(hour => {
     const momentHour = moment.utc(hour, "HH:mm");
-    console.log(bookStartTime, momentHour, bookEndTime)
     return bookStartTime <= momentHour && momentHour <= bookEndTime;
   })) {
     return false;

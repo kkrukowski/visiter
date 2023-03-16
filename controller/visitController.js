@@ -81,7 +81,7 @@ const updateAvailability = (res, workerId, date, time, serviceDuration) => {
           $addToSet: {
             workerBusyAvailability: {
               date: date,
-              hours: {$each: timesToUpdate},
+              hours: timesToUpdate,
             },
           },
         },
@@ -152,7 +152,7 @@ const createVisit = (req, res) => {
                   User.findById(workerId, (err, worker) => {
                     if (err) res.send(err);
                     const workerBusyAvailabilityDates =
-                      getWorkerAvailabilityDates(worker, date);
+                    getWorkerBusyAvailabilityHours(worker, date);
                     if (workerBusyAvailabilityDates.length == 0 ||
                       isAbleToBook(
                         workerBusyAvailabilityDates[0].hours,
@@ -181,37 +181,41 @@ const createVisit = (req, res) => {
 };
 
 const getAvailableHoursForWorker = (req, res) => {
+  // Get params data
   const workerId = req.params.workerId;
   const serviceId = req.params.serviceId;
-  const { year, month, day } = req.params;
+  let { year, month, day } = req.params;
+  // If date not provided set today's date as default
+  if (year == null && month == null && day == null){
+    year = moment().utc().year();
+    month = moment().utc().month();
+    day = moment().utc().date()
+  }
   const searchingDate = new Date(year, month, day, 0, 0, 0);
   const currentUser = req.user;
   if (ObjectId.isValid(workerId) && ObjectId.isValid(serviceId)) {
+    // Get worker data
     User.findById(workerId, (err, worker) => {
       if (err) res.send(err);
-      const searchingDateObject = getWorkerAvailabilityDates(
-        worker,
-        searchingDate
-      );
-      if (searchingDateObject) {
-        
+        // Get worker busy hours array for searching date
+        const busyHours = getWorkerBusyAvailabilityHours(
+          worker,
+          searchingDate
+        );
+        const workerAvailabilityInfo = getWorkerBusyAvailabilityDates(worker,
+          searchingDate)
+        console.log("DATES: ", workerAvailabilityInfo)
         Service.findById(serviceId, (err, service) => {
-          const serviceDuration = service.duration;
-          console.log("dates " + searchingDateObject);
-          // Get only available hours for this worker
-          let busyHours = []
-          if (searchingDateObject.length > 0) {
-            busyHours = searchingDateObject[0].hours
-          }
-          console.log("hours " + busyHours);
-          const availableHours = getAvailableHours(serviceDuration, busyHours, 9, 17);
           if (err) return res.send(err);
+          const serviceDuration = service.duration;
+          // Get available hours for searching date based on busy hours
+          const availableHours = getAvailableHours(serviceDuration, busyHours, 9, 17);
           const businessId = service.businessId;
           Business.findById(businessId, (err, business) => {
             if (err) return res.send(err);
+            // Get workers IDs
             const workersIds = business.workers;
             User.find({ _id: workersIds }).then((workers) => {
-              const currentUser = req.user;
               return res.render("visit", {
                 user: currentUser,
                 business,
@@ -223,19 +227,34 @@ const getAvailableHoursForWorker = (req, res) => {
             });
           });
         });
-      }
     });
   }
 };
 
-const getWorkerAvailabilityDates = (worker, searchingDate) => {
+const getWorkerBusyAvailabilityHours = (worker, searchingDate) => {
   const workerBusyAvailabilityDates = worker.workerBusyAvailability;
-  console.log(workerBusyAvailabilityDates, searchingDate);
-  const searchingDateObject = workerBusyAvailabilityDates.filter(
+  const workerBusyHours = workerBusyAvailabilityDates.filter(
     (elem) => elem.date.getTime() == searchingDate.getTime()
   );
 
-  return searchingDateObject;
+  if (workerBusyHours.length > 0) {
+    return workerBusyHours[0].hours
+  }
+
+  return [];
+};
+
+const getWorkerBusyAvailabilityDates = (worker, searchingDate) => {
+  const workerBusyAvailabilityDates = worker.workerBusyAvailability;
+  const startMonth = moment(searchingDate).utc().startOf("month")
+  const endMonth = moment(searchingDate).utc().endOf("month")
+  // Get worker availability array elements in current month
+  console.log("MOMENT: ", startMonth, endMonth)
+  const workerAvailabilityInfo = workerBusyAvailabilityDates.filter(
+    (elem) => moment(elem.date) >= startMonth && moment(elem.date) <= endMonth
+  );
+
+  return workerAvailabilityInfo;
 };
 
 const getAllServiceDates = (req, res) => {

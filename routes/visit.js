@@ -15,7 +15,7 @@ router.get("/book/:serviceId", getAllServiceDates);
 router.get("/book/:serviceId/worker/:workerId", getAllServiceDates);
 router.get(
   "/book/:serviceId/worker/:workerId/day/:day/month/:month/year/:year/hour/:hour/minute/:minute",
-  getAllServiceDates
+  getAvailableHoursForWorker
 );
 router.get(
   "/book/:serviceId/worker/:workerId/day/:day/month/:month/year/:year",

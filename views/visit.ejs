@@ -141,15 +141,21 @@
           href="/visits/book/<%= service.id %>/worker/<%= worker.id %>/day/8/month/3/year/2023"
           ><%= worker.name %></a
         >
-        <% }) %> <% if(availableHours) { %> <%
-        availableHours.forEach((availableHour) => { %>
+        <% }) %>
+      </div>
+      <div>
+        <h3>Dni</h3>
+      </div>
+      <div>
+        <h3>Dostępne godziny</h3>
+        <% if(availableHours) { %> <% availableHours.forEach((availableHour) =>
+        { %>
         <a
           href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/8/month/3/year/2023/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
           ><%= availableHour[0] %>:<%= availableHour[1] %></a
         >
         <% }) %> <% } %>
       </div>
-
       <form method="POST">
         <button class="submit--btn">Potwierdź</button>
       </form>
