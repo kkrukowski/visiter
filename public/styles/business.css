@@ -61,7 +61,7 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 7; /* start showing ellipsis when 3rd line is reached */
-    white-space: pre-wrap; /* let the text wrap preserving spaces */
+    white-space: wrap; /* let the text wrap preserving spaces */
     text-align: justify;
 }
 .profile--info{
@@ -86,7 +86,10 @@
     position: relative;
 }
 .addingBtn{
-    margin-right: 20px;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(-50%, -50%)
 }
 .main__opinions, .main__my-business{
     display: flex;
@@ -139,9 +142,8 @@
     color: #F1511B;
 }
 .workers--header{
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
+    position: relative;
+    text-align: center;
     width: 100%;
 }
 .avatar--img{
@@ -152,13 +154,11 @@
     font-size: 24px;
     font-weight: 700;
     color: white;
-    text-align: center; /* wycentrowanie tekstu */
 }
 /* SERVICES */
 .services--header{
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
+    position: relative;
+    text-align: center;
     width: 100%;
 }
 .services--item{
@@ -247,7 +247,7 @@
     overflow: hidden;
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3; /* start showing ellipsis when 3rd line is reached */
-    white-space: pre-wrap; /* let the text wrap preserving spaces */
+    white-space: wrap; /* let the text wrap preserving spaces */
     text-align: center;
 }
 .service--btns{
@@ -262,16 +262,14 @@
 }
 /* OPINIONS */
 .opinions--header{
-    display: grid;
-    grid-template-columns: 1fr auto;
-    align-items: center;
+    position: relative;
+    text-align: center;
     width: 100%;
 }
 .opinions--header--text{
     font-size: 24px;
     font-weight: 700;
     color: white;
-    text-align: center;
 }
 
 
