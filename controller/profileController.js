@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
+const OpinionForBusiness = require("../models/OpinionForBusiness");
 
 const editProfile = (req, res) => {
     let update;
@@ -153,14 +154,24 @@ const removeProfile = (req, res) => {
         else {
             Business.findOneAndUpdate({ workers: req.params.id }, { $pull: { workers: req.params.id } }, (err, business) => { // dodac usuniecie wizyt
                 if (err) res.render("home", { business, user, message: "Coś poszło nie tak." })
-                User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
-                    if (err) return res.render("home", { business, user, message: "Coś poszło nie tak." });
-                    const opinions = user.opinions;
-                    Opinion.findByIdAndDelete(opinions, (err, opinions) => {
-                        req.logOut(err => {
-                            if (err) return next(err);
-                            const message = "Konto usunięte.";
-                            return res.render("login", { message: message });
+                OpinionForBusiness.find({ownerId: req.params.id}).select("_id").exec((err, opinionIds) =>{ // znalezienie wystawionych komentarzy przez uzytkownika
+                    if(err) return res.render("home", { business, user, message: "Coś poszło nie tak." });
+                    let listOfIds = [];
+                    opinionIds.forEach(opinionId => {
+                        listOfIds.push(opinionId._id);
+                    });
+                    Business.updateMany({opinions: {$in: listOfIds}}, {$pull: {opinions: {$in: listOfIds}}}, (err, businesses) => { // usuniecie z firmy komentarzy wystawionych przez uzytkownika
+                        if(err) return res.render("home", { business, user, message: "Coś poszło nie tak." });
+                        User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
+                            if (err) return res.render("home", { business, user, message: "Coś poszło nie tak." });
+                            const opinions = user.opinions;
+                            OpinionForBusiness.findByIdAndDelete(opinions, (err, opinions) => {
+                                req.logOut(err => {
+                                    if (err) return next(err);
+                                    const message = "Konto usunięte.";
+                                    return res.render("login", { message: message });
+                                });
+                            });
                         });
                     });
                 });
