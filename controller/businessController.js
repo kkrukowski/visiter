@@ -177,32 +177,34 @@ const addOpinion = (req, res) => {
     ownerId: req.user._id,
   });
 
-  newOpinion.save((err, service) => { // DODAC OPINIE DO RENDERU !!!
+  newOpinion.save((err, opinion) => { // DODAC OPINIE DO RENDERU !!!
     if (err) {
-      const business = Business.findById(req.params.id);
-      const message = "Błąd w trakcie dodawania opinii.";
-      return res.render("specificBusiness", {
-        user: req.user,
-        business: business,
-        Users: User,
-        message,
+      Business.findById(req.params.id).populate(["workers", "opinions"]).exec((err, business) => {
+        const message = "Wystąpił błąd podczas dodawania opinii.";
+        return res.render("specificBusiness", {
+          user: req.user,
+          business: business,
+          opinions: business.opinions,
+          workers: business.workers,
+          message,
+        });
       });
     } else {
       Business.findByIdAndUpdate(
         req.params.id,
-        { $push: { opinions: service.id } },
-        { new: true },
-        (err, business) => {
-          const message = "Dodano opinie.";
-          return res.render("specificBusiness", {
-            user: req.user,
-            business: business,
-            Users: User,
-            message,
-          });
-        }
-      );
-    }
+        { $push: { opinions: opinion.id } },
+        { new: true }
+      ).populate(["workers", "opinions"]).exec((err, business) => {
+        const message = "Dodano opinie.";
+        return res.render("specificBusiness", {
+          user: req.user,
+          business: business,
+          opinions: business.opinions,
+          workers: business.workers,
+          message,
+        });
+      });
+    };
   });
 };
 
