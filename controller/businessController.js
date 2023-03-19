@@ -187,6 +187,7 @@ const addOpinion = (req, res) => {
           business: business,
           opinions: business.opinions,
           workers: business.workers,
+          currentUser: req.user,
           message,
         });
       });
@@ -201,6 +202,7 @@ const addOpinion = (req, res) => {
           user: req.user,
           business: business,
           opinions: business.opinions,
+          currentUser: req.user,
           workers: business.workers,
           message,
         });
