@@ -5,11 +5,12 @@ const Service = require("../models/Service");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 const moment = require("moment");
+const mongoose = require("mongoose");
 
 const {
   getAvailableHours,
   isAbleToBook,
-  getTimesToUpdate
+  getTimesToUpdate,
 } = require("../middlewares/visitHandler");
 
 // test id - 63bd2f8b35c597866c9fe176
@@ -57,44 +58,50 @@ const getAllWorkerVisits = (req, res) => {
 
 // const getWorkerSchedule = () => {};
 
-const updateAvailability = (res, workerId, date, time, serviceDuration) => {
+const updateAvailability = async (
+  res,
+  workerId,
+  date,
+  time,
+  serviceDuration
+) => {
   const timesToUpdate = getTimesToUpdate(time, serviceDuration);
   const updateWorker = User.updateOne(
-  {
-    _id: ObjectId(workerId),
-    "workerBusyAvailability.date": date,
-  },
-  {
-    $addToSet: {
-      "workerBusyAvailability.$.hours": {$each: timesToUpdate},
+    {
+      _id: ObjectId(workerId),
+      "workerBusyAvailability.date": date,
     },
-  },
-  (err, availability) => {
-    console.log(timesToUpdate)
-    if (err) return res.send(err);
-    if (availability.modifiedCount === 0) {
-      User.updateOne(
-        {
-          _id: ObjectId(workerId),
-        },
-        {
-          $addToSet: {
-            workerBusyAvailability: {
-              date: date,
-              hours: timesToUpdate,
+    {
+      $addToSet: {
+        "workerBusyAvailability.$.hours": { $each: timesToUpdate },
+      },
+    },
+    (err, availability) => {
+      console.log(timesToUpdate);
+      if (err) return res.send(err);
+      if (availability.modifiedCount === 0) {
+        User.updateOne(
+          {
+            _id: ObjectId(workerId),
+          },
+          {
+            $addToSet: {
+              workerBusyAvailability: {
+                date: date,
+                hours: timesToUpdate,
+              },
             },
           },
-        },
-        (err, availability) => {
-          if (err) return res.send(err);
-        }
-      );
+          (err, availability) => {
+            if (err) return res.send(err);
+          }
+        );
+      }
     }
-  }
-);
-}
+  );
+};
 
-const createVisit = (req, res) => {
+const createVisit = async (req, res) => {
   // Create new Visit
   const workerId = req.params.workerId;
   const clientId = req.user.id;
@@ -103,153 +110,163 @@ const createVisit = (req, res) => {
   const day = req.params.day;
   const month = req.params.month;
 
-  if (ObjectId.isValid(workerId) && ObjectId.isValid(serviceId)) {
-    Service.findById(serviceId)
-      .then((serviceInfo) => {
-        const visitDate = moment().set({
-          year: year,
-          month: month,
-          date: day,
-          hour: hour,
-          minute: minute,
-          second: 0,
-        });
+  const visitDate = moment().set({
+    year: year,
+    month: month,
+    date: day,
+    hour: hour,
+    minute: minute,
+    second: 0,
+  });
 
-        // Create new Visit
-        const newVisit = new Visit({
-          createdAt: moment(),
-          visitDate: visitDate,
-          businessId: serviceInfo.businessId,
-          workerId: workerId,
-          clientId: clientId,
-          serviceId: serviceId,
-          status: "waiting",
-        });
+  // Start transaction's session
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-        const serviceDuration = serviceInfo.duration;
+  try {
+    const serviceInfo = await Service.findById(serviceId).session(session);
+    if (!serviceInfo) throw new Error("Service not found!");
+    // Create new Visit
+    const newVisit = new Visit({
+      createdAt: moment(),
+      visitDate: visitDate,
+      businessId: serviceInfo.businessId,
+      workerId: workerId,
+      clientId: clientId,
+      serviceId: serviceId,
+      status: "waiting",
+    });
+    const serviceDuration = serviceInfo.duration;
 
-        newVisit.save((err, visit) => {
-          if (err) return handleError(err);
-          // Add to client's visits list
-          const clientUpdate = { $push: { clientVisits: visit.id } };
-          // Update visits for user
-          const updatedClient = User.findByIdAndUpdate(
-            clientId,
-            clientUpdate,
-            (err, client) => {
-              if (err) return res.send(err);
-              // Add to worker's visits list
-              const workerUpdate = { $push: { workerVisits: visit.id } };
-              // Update visits for user
-              const updatedWorker = User.findByIdAndUpdate(
-                workerId,
-                workerUpdate,
-                (err, client) => {
-                  if (err) return res.send(err);
-                  // Edit worker's availability
-                  const date = new Date(year, month, day, 0, 0, 0);
-                  const time = hour + ":" + minute;
-                  User.findById(workerId, (err, worker) => {
-                    if (err) res.send(err);
-                    const workerBusyAvailabilityDates =
-                    getWorkerBusyAvailabilityHours(worker, date);
-                    if (workerBusyAvailabilityDates.length == 0 ||
-                      isAbleToBook(
-                        workerBusyAvailabilityDates[0].hours,
-                        serviceDuration,
-                        time
-                      )
-                    ){
-                      updateAvailability(res, workerId, date, time, serviceDuration)
-                    } else {
-                      console.log("Date not available")
-                    }
-                  });
-                }
-              );
-            }
-          );
-          return res.send("Visit successfully added!");
-        });
-      })
-      .catch((err) => {
-        if (err) return res.status(404).send({ err });
-      });
-  } else {
-    return res.status(404).send({ err: "ID is not valid!" });
+    const visit = await newVisit.save({ session });
+    if (!visit) throw new Error("Visit not saved!");
+
+    // Add to client's visits list
+    const clientUpdate = { $push: { clientVisits: visit.id } };
+    // Update visits for user
+    const updatedClient = await User.findByIdAndUpdate(clientId, clientUpdate, {
+      session,
+    });
+    if (!updatedClient) throw new Error("Client not updated!");
+
+    // Edit worker's availability
+    const date = new Date(year, month, day, 0, 0, 0);
+    const time = hour + ":" + minute;
+
+    const worker = await User.findById(workerId).session(session);
+    if (!worker) throw new Error("Worker no found!");
+
+    const workerBusyAvailabilityDates = await getWorkerBusyAvailabilityHours(
+      worker,
+      date
+    );
+
+    if (
+      workerBusyAvailabilityDates.length == 0 ||
+      (await isAbleToBook(workerBusyAvailabilityDates, serviceDuration, time))
+    ) {
+      const updatedAvailability = await updateAvailability(
+        res,
+        workerId,
+        date,
+        time,
+        serviceDuration
+      );
+    } else {
+      throw new Error("Date is not available!");
+    }
+
+    await session.commitTransaction();
+  } catch (err) {
+    await session.abortTransaction();
+    console.error(err);
+  } finally {
+    session.endSession();
+    console.log("Visit successfuly created!");
   }
 };
 
-const getAvailableHoursForWorker = (req, res) => {
+const getAvailableHoursForWorker = async (req, res) => {
   // Get params data
   const workerId = req.params.workerId;
   const serviceId = req.params.serviceId;
   let { year, month, day } = req.params;
   // If date not provided set today's date as default
-  if (year == null && month == null && day == null){
+  if (year == null && month == null && day == null) {
     year = moment().utc().year();
     month = moment().utc().month();
-    day = moment().utc().date()
+    day = moment().utc().date();
   }
   const searchingDate = new Date(year, month, day, 0, 0, 0);
   const currentUser = req.user;
-  if (ObjectId.isValid(workerId) && ObjectId.isValid(serviceId)) {
-    // Get worker data
-    User.findById(workerId, (err, worker) => {
-      if (err) res.send(err);
-        // Get worker busy hours array for searching date
-        const busyHours = getWorkerBusyAvailabilityHours(
-          worker,
-          searchingDate
-        );
-        const workerAvailabilityInfo = getWorkerBusyAvailabilityDates(worker,
-          searchingDate)
-        console.log("DATES: ", workerAvailabilityInfo)
-        Service.findById(serviceId, (err, service) => {
-          if (err) return res.send(err);
-          const serviceDuration = service.duration;
-          // Get available hours for searching date based on busy hours
-          const availableHours = getAvailableHours(serviceDuration, busyHours, 9, 17);
-          const businessId = service.businessId;
-          Business.findById(businessId, (err, business) => {
-            if (err) return res.send(err);
-            // Get workers IDs
-            const workersIds = business.workers;
-            User.find({ _id: workersIds }).then((workers) => {
-              return res.render("visit", {
-                user: currentUser,
-                business,
-                workers,
-                selectedWorker: workerId,
-                service,
-                availableHours,
-              });
-            });
-          });
-        });
+  try {
+    // Search worker
+    const worker = await User.findById(workerId);
+    if (!worker) throw new Error("Worker not found!");
+
+    // Get worker busy hours array for searching date
+    const busyHours = await getWorkerBusyAvailabilityHours(
+      worker,
+      searchingDate
+    );
+    const workerAvailabilityInfo = await getWorkerBusyAvailabilityDates(
+      worker,
+      searchingDate
+    );
+
+    // Get service
+    const service = await Service.findById(serviceId);
+    if (!service) throw new Error("Service not found!");
+
+    const serviceDuration = service.duration;
+    // Get available hours for searching date based on busy hours
+    const availableHours = await getAvailableHours(
+      serviceDuration,
+      busyHours,
+      9,
+      17
+    );
+
+    const businessId = service.businessId;
+
+    // Get business
+    const business = await Business.findById(businessId);
+    if (!business) throw new Error("Business not found");
+
+    const workersIds = business.workers;
+
+    // Get workers
+    const workers = await User.find({ _id: workersIds });
+
+    return res.render("visit", {
+      user: currentUser,
+      business,
+      workers,
+      selectedWorker: workerId,
+      service,
+      availableHours,
     });
+  } catch (err) {
+    console.error(err);
   }
 };
 
-const getWorkerBusyAvailabilityHours = (worker, searchingDate) => {
+const getWorkerBusyAvailabilityHours = async (worker, searchingDate) => {
   const workerBusyAvailabilityDates = worker.workerBusyAvailability;
-  const workerBusyHours = workerBusyAvailabilityDates.filter(
+  const workerBusyHours = await workerBusyAvailabilityDates.filter(
     (elem) => elem.date.getTime() == searchingDate.getTime()
   );
 
-  if (workerBusyHours.length > 0) {
-    return workerBusyHours[0].hours
-  }
+  if (workerBusyHours.length > 0) return workerBusyHours[0].hours;
 
   return [];
 };
 
 const getWorkerBusyAvailabilityDates = (worker, searchingDate) => {
   const workerBusyAvailabilityDates = worker.workerBusyAvailability;
-  const startMonth = moment(searchingDate).utc().startOf("month")
-  const endMonth = moment(searchingDate).utc().endOf("month")
+  const startMonth = moment(searchingDate).utc().startOf("month");
+  const endMonth = moment(searchingDate).utc().endOf("month");
   // Get worker availability array elements in current month
-  console.log("MOMENT: ", startMonth, endMonth)
   const workerAvailabilityInfo = workerBusyAvailabilityDates.filter(
     (elem) => moment(elem.date) >= startMonth && moment(elem.date) <= endMonth
   );
@@ -266,7 +283,6 @@ const getAllServiceDates = (req, res) => {
       Business.findById(businessId, (err, business) => {
         if (err) return res.send(err);
         const workersIds = business.workers;
-        console.log("IDS: ", workersIds);
         User.find({ _id: workersIds }).then((workers) => {
           const currentUser = req.user;
           return res.render("visit", {
