@@ -39,12 +39,11 @@ const getAllWorkerVisits = (req, res) => {
       if (err) return res.send(err);
       // Get worker visits
       const visitsIds = user.workerVisits;
-      const dateNow = moment();
+      const dateNow = moment().utc();
       Visit.find(
         { id: visitsIds, visitDate: { $gt: dateNow } },
         (err, visits) => {
           if (err) return res.send(err);
-          console.log(visits);
           return res.send(visits);
           // return res.render("clientVisits", {
           //   user: user,
@@ -55,8 +54,6 @@ const getAllWorkerVisits = (req, res) => {
     });
   }
 };
-
-// const getWorkerSchedule = () => {};
 
 const updateAvailability = async (
   res,
@@ -77,7 +74,6 @@ const updateAvailability = async (
       },
     },
     (err, availability) => {
-      console.log(timesToUpdate);
       if (err) return res.send(err);
       if (availability.modifiedCount === 0) {
         User.updateOne(
@@ -87,7 +83,7 @@ const updateAvailability = async (
           {
             $addToSet: {
               workerBusyAvailability: {
-                date: date,
+                date: new Date(date),
                 hours: timesToUpdate,
               },
             },
@@ -108,16 +104,19 @@ const createVisit = async (req, res) => {
   const serviceId = req.params.serviceId;
   const { year, hour, minute } = req.params;
   const day = req.params.day;
-  const month = req.params.month;
+  const month = parseInt(req.params.month) - 1;
 
-  const visitDate = moment().set({
-    year: year,
-    month: month,
-    date: day,
-    hour: hour,
-    minute: minute,
-    second: 0,
-  });
+  let visitDate = moment()
+    .set({
+      year: year,
+      month: month,
+      date: day,
+      hour: hour,
+      minute: minute,
+      second: 0,
+      millisecond: 0,
+    })
+    .utc();
 
   // Start transaction's session
   const session = await mongoose.startSession();
@@ -128,7 +127,7 @@ const createVisit = async (req, res) => {
     if (!serviceInfo) throw new Error("Service not found!");
     // Create new Visit
     const newVisit = new Visit({
-      createdAt: moment(),
+      createdAt: moment().utc(),
       visitDate: visitDate,
       businessId: serviceInfo.businessId,
       workerId: workerId,
@@ -150,15 +149,21 @@ const createVisit = async (req, res) => {
     if (!updatedClient) throw new Error("Client not updated!");
 
     // Edit worker's availability
-    const date = new Date(year, month, day, 0, 0, 0);
     const time = hour + ":" + minute;
 
     const worker = await User.findById(workerId).session(session);
     if (!worker) throw new Error("Worker no found!");
 
+    visitDate = visitDate
+      .set({
+        hour: 0,
+        minute: 0,
+      })
+      .utc();
+
     const workerBusyAvailabilityDates = await getWorkerBusyAvailabilityHours(
       worker,
-      date
+      visitDate
     );
 
     if (
@@ -168,7 +173,7 @@ const createVisit = async (req, res) => {
       const updatedAvailability = await updateAvailability(
         res,
         workerId,
-        date,
+        visitDate,
         time,
         serviceDuration
       );
@@ -190,14 +195,26 @@ const getAvailableHoursForWorker = async (req, res) => {
   // Get params data
   const workerId = req.params.workerId;
   const serviceId = req.params.serviceId;
-  let { year, month, day } = req.params;
+  let year = req.params.year;
+  const day = req.params.day;
+  const month = parseInt(req.params.month) - 1;
   // If date not provided set today's date as default
   if (year == null && month == null && day == null) {
     year = moment().utc().year();
     month = moment().utc().month();
     day = moment().utc().date();
   }
-  const searchingDate = new Date(year, month, day, 0, 0, 0);
+  const searchingDate = moment()
+    .set({
+      year: year,
+      month: month,
+      date: day,
+      hour: 1,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    })
+    .utc();
   const currentUser = req.user;
   try {
     // Search worker
@@ -209,10 +226,13 @@ const getAvailableHoursForWorker = async (req, res) => {
       worker,
       searchingDate
     );
+
     const workerAvailabilityInfo = await getWorkerBusyAvailabilityDates(
       worker,
       searchingDate
     );
+
+    console.log(workerAvailabilityInfo);
 
     // Get service
     const service = await Service.findById(serviceId);
@@ -253,8 +273,8 @@ const getAvailableHoursForWorker = async (req, res) => {
 
 const getWorkerBusyAvailabilityHours = async (worker, searchingDate) => {
   const workerBusyAvailabilityDates = worker.workerBusyAvailability;
-  const workerBusyHours = await workerBusyAvailabilityDates.filter(
-    (elem) => elem.date.getTime() == searchingDate.getTime()
+  const workerBusyHours = await workerBusyAvailabilityDates.filter((elem) =>
+    moment(elem.date).utc().isSame(searchingDate)
   );
 
   if (workerBusyHours.length > 0) return workerBusyHours[0].hours;
@@ -262,14 +282,37 @@ const getWorkerBusyAvailabilityHours = async (worker, searchingDate) => {
   return [];
 };
 
-const getWorkerBusyAvailabilityDates = (worker, searchingDate) => {
+const getWorkerBusyAvailabilityDates = async (worker, searchingDate) => {
   const workerBusyAvailabilityDates = worker.workerBusyAvailability;
-  const startMonth = moment(searchingDate).utc().startOf("month");
-  const endMonth = moment(searchingDate).utc().endOf("month");
+  const startMonth = searchingDate.utc().startOf("month");
+  const endMonth = searchingDate.utc().endOf("month");
   // Get worker availability array elements in current month
   const workerAvailabilityInfo = workerBusyAvailabilityDates.filter(
-    (elem) => moment(elem.date) >= startMonth && moment(elem.date) <= endMonth
+    (elem) =>
+      moment(elem.date).utc() >= startMonth &&
+      moment(elem.date).utc() <= endMonth
   );
+
+  let currentDate = moment(startMonth).utc();
+  let workerDatesAvailabilityInfo = [];
+  while (currentDate <= endMonth) {
+    if (workerAvailabilityInfo.some((e) => e.date == currentDate)) {
+      const availabilityObject = {
+        date: currentDate,
+        isAvailable: false,
+      };
+      workerDatesAvailabilityInfo.push(availabilityObject);
+    } else {
+      const availabilityObject = {
+        date: currentDate,
+        isAvailable: true,
+      };
+      workerDatesAvailabilityInfo.push(availabilityObject);
+    }
+    currentDate = currentDate.add(1, "day");
+  }
+
+  //console.log(workerDatesAvailabilityInfo);
 
   return workerAvailabilityInfo;
 };

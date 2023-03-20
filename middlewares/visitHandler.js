@@ -1,7 +1,6 @@
 const moment = require("moment");
 
 const isAbleToBook = async (busyHours, serviceDuration, time) => {
-  console.log("BUSY: ", busyHours);
   const bookStartTime = moment.utc(time, "HH:mm");
   const bookEndTime = moment
     .utc(bookStartTime, "HH:mm")
@@ -23,8 +22,8 @@ const getAvailableHours = async (
   startHour,
   endHour
 ) => {
-  console.log("godizny" ,busyHours);
   let availableHours = [];
+  console.log("BUSY: ", busyHours);
   for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += 20) {
       const checkedTime = hour + ":" + (minute < 10 ? "0" : "") + minute;
@@ -48,10 +47,9 @@ const getTimesToUpdate = (time, serviceDuration) => {
     .utc(bookTime, "HH:mm")
     .add(serviceDuration, "minutes");
   while (bookTime <= bookEndTime) {
-    timesToUpdate.push(bookTime.format("HH:mm"));
-    bookTime.add(20, "minutes");
+    timesToUpdate.push(bookTime.utc().format("HH:mm"));
+    bookTime.add(20, "minutes").utc();
   }
-  console.log(timesToUpdate);
   return timesToUpdate;
 };
 

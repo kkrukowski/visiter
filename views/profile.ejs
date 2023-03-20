@@ -216,15 +216,6 @@
       </section>
       <% } %>
   </main>
-  <% if(message){%>
-    <div class="error--popup">
-      <p class="error--message">
-        <%= message %>
-      </p>
-    </div>
-    <% }%>
-
-
       <div id="modal" class="modal">
         <div class="modal-content">
           <span class="close">&times;</span>
@@ -314,13 +305,20 @@
               </form>
             </div>
             <div id="delAcc">
-              <form action="/profile/<%= user._id %>/edit/removeProfile" method="POST">
-                <button style="background-color: red;" type="submit">Usun konto</button>
+              <form onsubmit="return confirm('Czy na pewno chcesz to zrobić?')" action="/profile/<%= user._id %>/edit/removeProfile" method="POST"">
+                <button style="background-color: red;" type="submit">Usuń konto </button>
               </form>
             </div>
           </div>
         </div>
       </div>
+<% if(message){%>
+  <div class="error--popup">
+    <p class="error--message">
+    <%= message %>
+    </p>
+  </div>
+<% }%>
 <script src="../js/script.js"></script>
 <script src="/js/profileScript.js"></script>
 </body>
