@@ -1,6 +1,7 @@
 const Business = require("../models/Business");
 const User = require("../models/User");
 const Opinion = require("../models/OpinionForBusiness");
+const OpinionForUser = require("../models/OpinionForUser");
 const Service = require("../models/Service");
 const ObjectId = require("mongoose").Types.ObjectId;
 
@@ -186,6 +187,7 @@ const addOpinion = (req, res) => {
           business: business,
           opinions: business.opinions,
           workers: business.workers,
+          currentUser: req.user,
           message,
         });
       });
@@ -200,6 +202,7 @@ const addOpinion = (req, res) => {
           user: req.user,
           business: business,
           opinions: business.opinions,
+          currentUser: req.user,
           workers: business.workers,
           message,
         });
@@ -375,6 +378,8 @@ const editProfile = (req, res) => {
 const removeBusiness = (req, res) => {
   Business.findById(req.params.id, (err, business) => {
     if (err) return homeView(req, res, "", "Coś poszło nie tak");
+
+
     const workersIds = business.workers;
     User.findByIdAndUpdate(req.user._id, { role: "User" }, (err, userOwner) => {
       if (err) return homeView(req, res, "", "Coś poszło nie tak");
@@ -386,8 +391,19 @@ const removeBusiness = (req, res) => {
           const servicesIds = business.services;
           Service.deleteMany({ _id: { $in: servicesIds } }, (err, services) => {
             if (err) return homeView(req, res, "", "Coś poszło nie tak");
-            Business.findByIdAndRemove(req.params.id, { new: true }, (err, business) => {
-              return res.render("home", { user: req.user, business: false, message: "Poprawnie usunięto firme." });
+            OpinionForUser.find({ businessId: business._id }).select("_id").exec((err, ids) => { // wyszukanie id opinii do usuniecia
+              if (err) return homeView(req, res, "", "Coś poszło nie tak");
+              let listOfIds = [];
+              ids.forEach(opinion => { listOfIds.push(opinion._id) }); // lista z id opinii
+              User.updateMany({ opinions: { $in: listOfIds } }, { $pull: { opinions: { $in: listOfIds } } }, { new: true }, (err, foreignUsers) => { //usuniecie opinii u uzytkownikow
+                if (err) return homeView(req, res, "", "Coś poszło nie tak");
+                OpinionForUser.deleteMany({ businessId: business._id }, (err, foreignOpinions => { // usuniecie obcych opinii
+                  if (err) return homeView(req, res, "", "Coś poszło nie tak");
+                  Business.findByIdAndRemove(req.params.id, { new: true }, (err, business) => {
+                    return res.render("home", { user: req.user, business: false, message: "Poprawnie usunięto firme." });
+                  });
+                }));
+              });
             });
           });
         });

@@ -350,7 +350,6 @@
           <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
             <div>
               <input type="text" name="description" placeholder="<%= business.description %>" required>
-              <!-- ZMIENIC NA TEXTBOX -->
             </div>
             <button type="submit">Zapisz zmiany</button>
           </form>
@@ -374,7 +373,7 @@
         </div>
 
         <div id="delAcc">
-          <form action="/business/mybusiness/<%= business._id %>/removeBusiness" method="POST">
+          <form onsubmit="return confirm('Czy na pewno chcesz to zrobić?')" action="/business/mybusiness/<%= business._id %>/removeBusiness" method="POST">
             <button style="background-color: red;" type=submit">Usuń firme</button>
           </form>
         </div>
