@@ -2,8 +2,11 @@ const User = require("../models/User");
 const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
 const OpinionForBusiness = require("../models/OpinionForBusiness");
+const mongoose = require("mongoose");
 
 const editProfile = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         if (req.user._id == req.params.id) {
             if (req.body.name && req.body.surname)
@@ -29,8 +32,9 @@ const editProfile = async (req, res) => {
             else if (req.body.city)
                 update = { city: req.body.city };
 
-            const user = await User.findByIdAndUpdate(req.params.id, update, { new: true }).exec();
+            const user = await User.findByIdAndUpdate(req.params.id, update, { new: true, session }).exec();
             const opinions = await Opinion.find({ "_id": { $in: user.opinions } }).populate(["ownerId", "businessId"]).exec();
+            await session.commitTransaction();
             return res.render("profile", {
                 currentUser: req.user,
                 user,
@@ -40,9 +44,11 @@ const editProfile = async (req, res) => {
             });
         }
     } catch (err) {
+        console.log(err);
         const user = await User.findById(req.params.id).exec();
-        const opinions = await Opinion.find({ ownerId: req.params.id }, { new: true }).populate(["ownerId", "businessId"]).exec();
+        const opinions = await Opinion.find({ "_id": { $in: user.opinions } }, { new: true }).populate(["ownerId", "businessId"]).exec();
         const message = "Edycja niepomyślna.";
+        await session.abortTransaction();
         return res.render("profile", {
             currentUser: req.user,
             user,
@@ -50,6 +56,8 @@ const editProfile = async (req, res) => {
             message,
             isSameUser: req.params.id == req.user._id ? true : false
         });
+    } finally {
+        session.endSession();
     }
 };
 
@@ -77,6 +85,8 @@ const getUser = async (req, res) => {
 };
 
 const addOpinion = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         correctName = req.user.name + " " + req.user.surname;
         let business = undefined;
@@ -86,7 +96,7 @@ const addOpinion = async (req, res) => {
             business = await Business.findOne({ ownerId: req.user._id }).exec();
         } else { // uzytkownik jest klientem, klient klientowi nie moze wystawic opinii
             const user = await User.findById(req.params.id).exec();
-            const opinions = await Opinion.find({ ownerId: req.params.id }, { new: true }).populate(["ownerId", "businessId"]).exec();
+            const opinions = await Opinion.find({ "_id": { $in: user.opinions } }, { new: true }).populate(["ownerId", "businessId"]).exec();
             const message = "Nie jesteś pracownikiem lub właścicielem aby wystawić opinie.";
             return res.render("profile", {
                 currentUser: req.user,
@@ -103,12 +113,14 @@ const addOpinion = async (req, res) => {
             businessId: business._id
         });
         newOpinion.save();
-        await User.findByIdAndUpdate(req.params.id, { $push: { opinions: newOpinion } }, { new: true }).exec();
+        await User.findByIdAndUpdate(req.params.id, { $push: { opinions: newOpinion } }, { new: true, session }).exec();
+        await session.commitTransaction();
         return getUser(req, res);
     } catch (err) {
         const user = await User.findById(req.params.id).exec();
-        const opinions = await Opinion.find({ ownerId: req.params.id }, { new: true }).populate(["ownerId", "businessId"]).exec();
+        const opinions = await Opinion.find({ "_id": { $in: user.opinions } }, { new: true }).populate(["ownerId", "businessId"]).exec();
         const message = "Opinia nie została dodana.";
+        await session.abortTransaction();
         return res.render("profile", {
             currentUser: req.user,
             user,
@@ -116,18 +128,24 @@ const addOpinion = async (req, res) => {
             message,
             isSameUser: req.params.id == req.user._id ? true : false
         });
+    } finally {
+        await session.endSession();
     }
 };
 
 const removeOpinion = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
-        await User.findByIdAndUpdate(req.params.id, { $pull: { opinions: req.params.idOpinion } }, { new: true }).exec();
-        await Opinion.findByIdAndDelete(req.params.idOpinion, { new: true }).exec();
+        await User.findByIdAndUpdate(req.params.id, { $pull: { opinions: req.params.idOpinion } }, { new: true, session }).exec();
+        await Opinion.findByIdAndDelete(req.params.idOpinion, { new: true, session }).exec();
+        await session.commitTransaction();
         return getUser(req, res);
     } catch (err) {
         const user = await User.findById(req.params.id).exec();
-        const opinions = await Opinion.find({ ownerId: req.params.id }, { new: true }).populate(["ownerId", "businessId"]).exec();
+        const opinions = await Opinion.find({ "_id": { $in: user.opinions } }, { new: true }).populate(["ownerId", "businessId"]).exec();
         const message = "Opinia nie została usunięta.";
+        await session.abortTransaction();
         return res.render("profile", {
             currentUser: req.user,
             user,
@@ -135,10 +153,14 @@ const removeOpinion = async (req, res) => {
             message,
             isSameUser: req.params.id == req.user._id ? true : false
         });
+    } finally {
+        await session.endSession();
     }
 };
 
 const removeProfile = async (req, res) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
     try {
         if (req.params.id == req.user._id) {
             if (req.user.role == "User") { // dla uzytkownika
@@ -154,12 +176,13 @@ const removeProfile = async (req, res) => {
                 });
                 const user = await User.findById(req.params.id).exec();
                 const opinions = user.opinions;
-                await Business.updateMany({ opinions: { $in: listOfIds } }, { $pull: { opinions: { $in: listOfIds } } }).exec();
-                await User.findByIdAndDelete(req.params.id, { new: true }).exec();
-                await User.updateMany({ opinions: { $in: listOfUserIds } }, { $pull: { opinions: { $in: listOfUserIds } } }).exec()
-                await OpinionForBusiness.deleteMany({ ownerId: req.params.id }).exec();
-                await Opinion.deleteMany({ ownerId: req.params.id }).exec();
-                await Opinion.deleteMany({ _id: { $in: opinions } }).exec();
+                await Business.updateMany({ opinions: { $in: listOfIds } }, { $pull: { opinions: { $in: listOfIds } } }, { session }).exec();
+                await User.findByIdAndDelete(req.params.id, { session }).exec();
+                await User.updateMany({ opinions: { $in: listOfUserIds } }, { $pull: { opinions: { $in: listOfUserIds } } }, { session }).exec()
+                await OpinionForBusiness.deleteMany({ ownerId: req.params.id }, { session }).exec();
+                await Opinion.deleteMany({ ownerId: req.params.id }, { session }).exec();
+                await Opinion.deleteMany({ _id: { $in: opinions } }, { session }).exec();
+                await session.commitTransaction();
                 req.logOut(err => {
                     if (err) return next(err);
                     const message = "Konto usunięte.";
@@ -167,7 +190,7 @@ const removeProfile = async (req, res) => {
                 });
             }
             else if (req.user.role == "Owner") { // dla wlasciciela
-                Business.findOne({ owner: req.user._id }, (err, business) => {
+                Business.findOne({ ownerId: req.user._id }, (err, business) => {
                     if (err) return res.render("home", { user: req.user, message: "Coś poszło nie tak." });
                     const message = "Aby usunąć konto, usuń najpierw firmę."
                     return res.render("home", { user: req.user, business, message: message });
@@ -187,13 +210,14 @@ const removeProfile = async (req, res) => {
                 const user = await User.findById(req.params.id).exec();
                 const opinions = user.opinions;
                 console.log(opinions);
-                await Business.findOneAndUpdate({ workers: req.params.id }, { $pull: { workers: req.params.id } }).exec()
-                await Business.updateMany({ opinions: { $in: listOfIds } }, { $pull: { opinions: { $in: listOfIds } } }).exec();
-                await User.findByIdAndDelete(req.params.id, { new: true }).exec();
-                await User.updateMany({ opinions: { $in: listOfUserIds } }, { $pull: { opinions: { $in: listOfUserIds } } }).exec()
-                await OpinionForBusiness.deleteMany({ ownerId: req.params.id }).exec();
-                await Opinion.deleteMany({ ownerId: req.params.id }).exec();
-                await Opinion.deleteMany({ _id: { $in: opinions } }).exec();
+                await Business.findOneAndUpdate({ workers: req.params.id }, { $pull: { workers: req.params.id } }, { session }).exec()
+                await Business.updateMany({ opinions: { $in: listOfIds } }, { $pull: { opinions: { $in: listOfIds } } }, { session }).exec();
+                await User.findByIdAndDelete(req.params.id, { session }).exec();
+                await User.updateMany({ opinions: { $in: listOfUserIds } }, { $pull: { opinions: { $in: listOfUserIds } } }, { session }).exec()
+                await OpinionForBusiness.deleteMany({ ownerId: req.params.id }, { session }).exec();
+                await Opinion.deleteMany({ ownerId: req.params.id }, { session }).exec();
+                await Opinion.deleteMany({ _id: { $in: opinions } }, { session }).exec();
+                await session.commitTransaction();
                 req.logOut(err => {
                     if (err) return next(err);
                     const message = "Konto usunięte.";
@@ -202,9 +226,18 @@ const removeProfile = async (req, res) => {
             }
         };
     } catch (err) {
-        console.log("ERROR: ", err)
-        const business = await Business.findById(req.params.id).exec();
-        return res.render("home", { business, user: req.user, message: "Coś poszło nie tak." });
+        console.log(err)
+        const user = await User.findById(req.user._id).exec();
+        const message = "Coś poszło nie tak.";
+        await session.abortTransaction();
+        return res.render("home", {
+            user,
+            business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+            //^ wyszukaj dla ownera, jesli nie to dla pracownika, jesli klient nie jest pracownikiem zwroci false.
+            message: message
+        });
+    } finally {
+        await session.endSession();
     }
 };
 
