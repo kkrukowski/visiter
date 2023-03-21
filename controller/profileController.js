@@ -2,7 +2,6 @@ const User = require("../models/User");
 const Opinion = require("../models/OpinionForUser");
 const Business = require("../models/Business");
 const OpinionForBusiness = require("../models/OpinionForBusiness");
-const { findById } = require("../models/OpinionForUser");
 
 const editProfile = (req, res) => {
     let update;
@@ -131,29 +130,41 @@ const removeOpinion = (req, res) => {
 };
 
 const removeProfile = async (req, res) => {
-    if (req.params.id == req.user._id) {
-        if (req.user.role == "User") {
-            User.findByIdAndDelete(req.params.id, { new: true }, (err, user) => {
-                if (err) return res.render("home"); //dodac message o bledzie
-                const opinions = user.opinions;
-                Opinion.findByIdAndDelete(opinions, (err, opinions) => {
-                    req.logOut(err => {
-                        if (err) return next(err);
-                        const message = "Konto usunięte.";
-                        return res.render("login", { message: message });
-                    });
+    try{
+        if (req.params.id == req.user._id) {
+            if (req.user.role == "User") {
+                const opinionIds = await OpinionForBusiness.find({ ownerId: req.params.id }).select("_id").exec();
+                let listOfIds = [];
+                opinionIds.forEach(opinionId => {
+                    listOfIds.push(opinionId._id);
                 });
-            });
-        }
-        else if (req.user.role == "Owner") {
-            Business.findOne({ owner: req.user._id }, (err, business) => {
-                if (err) return res.render("home", { user: req.user, message: "Coś poszło nie tak." });
-                const message = "Aby usunąć konto, usuń najpierw firmę."
-                return res.render("home", { user: req.user, business, message: message });
-            });
-        }
-        else {
-            try {
+                const opinionIdsInUsers = await Opinion.find({ ownerId: req.params.id }).select("_id").exec();
+                let listOfUserIds = [];
+                opinionIdsInUsers.forEach(opinionId => {
+                    listOfUserIds.push(opinionId._id);
+                });
+                const user = await User.findById(req.params.id).exec();
+                const opinions = user.opinions;
+                await Business.updateMany({ opinions: { $in: listOfIds } }, { $pull: { opinions: { $in: listOfIds } } }).exec();
+                await User.findByIdAndDelete(req.params.id, { new: true }).exec();
+                await User.updateMany({ opinions: { $in: listOfUserIds } }, { $pull: { opinions: { $in: listOfUserIds } } }).exec()
+                await OpinionForBusiness.deleteMany({ ownerId: req.params.id }).exec();
+                await Opinion.deleteMany({ ownerId: req.params.id }).exec();
+                await Opinion.deleteMany({ _id: { $in: opinions } }).exec();       
+                req.logOut(err => {
+                    if (err) return next(err);
+                    const message = "Konto usunięte.";
+                    return res.render("login", { message: message });
+                });     
+            }
+            else if (req.user.role == "Owner") {
+                Business.findOne({ owner: req.user._id }, (err, business) => {
+                    if (err) return res.render("home", { user: req.user, message: "Coś poszło nie tak." });
+                    const message = "Aby usunąć konto, usuń najpierw firmę."
+                    return res.render("home", { user: req.user, business, message: message });
+                });
+            }
+            else {
                 const opinionIds = await OpinionForBusiness.find({ ownerId: req.params.id }).select("_id").exec();
                 let listOfIds = [];
                 opinionIds.forEach(opinionId => {
@@ -173,21 +184,19 @@ const removeProfile = async (req, res) => {
                 await User.updateMany({ opinions: { $in: listOfUserIds } }, { $pull: { opinions: { $in: listOfUserIds } } }).exec()
                 await OpinionForBusiness.deleteMany({ ownerId: req.params.id }).exec();
                 await Opinion.deleteMany({ ownerId: req.params.id }).exec();
-                const xd = await Opinion.deleteMany({ _id: { $in: opinions } }).exec();
-                console.log(xd);
+                await Opinion.deleteMany({ _id: { $in: opinions } }).exec();
+                req.logOut(err => {
+                    if (err) return next(err);
+                    const message = "Konto usunięte.";
+                    return res.render("login", { message: message });
+                });
             }
-            catch (err) {
-                console.log("ERROR: ", err)
-                const business = await Business.findById(req.params.id).exec();
-                return res.render("home", { business, user: req.user, message: "Coś poszło nie tak." });
-            }
-            req.logOut(err => {
-                if (err) return next(err);
-                const message = "Konto usunięte.";
-                return res.render("login", { message: message });
-            });
-        }
-    };
+        };
+    } catch (err) {
+        console.log("ERROR: ", err)
+        const business = await Business.findById(req.params.id).exec();
+        return res.render("home", { business, user: req.user, message: "Coś poszło nie tak." });
+    }
 };
 
 module.exports = {
