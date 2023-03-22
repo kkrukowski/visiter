@@ -145,13 +145,23 @@
       </div>
       <div>
         <h3>Dni</h3>
+        <% if(workerDatesAvailabilityInfo) { %> <%
+        workerDatesAvailabilityInfo.forEach((dateInfo) => { %> <% if
+        (dateInfo.isAvailable) { %>
+        <a
+          href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
+          ><%= dateInfo.day %></a
+        >
+        <% } else { %>
+        <span><%= dateInfo.day %></span>
+        <% } %> <% }) %> <% } %>
       </div>
       <div>
         <h3>Dostępne godziny</h3>
         <% if(availableHours) { %> <% availableHours.forEach((availableHour) =>
         { %>
         <a
-          href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/8/month/3/year/2023/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
+          href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
           ><%= availableHour[0] %>:<%= availableHour[1] %></a
         >
         <% }) %> <% } %>

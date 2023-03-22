@@ -32,26 +32,40 @@ const getAllClientVisits = (req, res) => {
   });
 };
 
-const getAllWorkerVisits = (req, res) => {
+const getAllWorkerVisits = async (req, res) => {
   const workerId = req.params.workerId;
-  if (ObjectId.isValid(workerId)) {
-    User.findById(workerId, (err, user) => {
-      if (err) return res.send(err);
-      // Get worker visits
-      const visitsIds = user.workerVisits;
-      const dateNow = moment().utc();
-      Visit.find(
-        { id: visitsIds, visitDate: { $gt: dateNow } },
-        (err, visits) => {
-          if (err) return res.send(err);
-          return res.send(visits);
-          // return res.render("clientVisits", {
-          //   user: user,
-          //   workerVisits: visits,
-          // });
-        }
-      );
-    });
+
+  // Session
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // Get worker data
+    const worker = await User.findById(workerId).session(session);
+    if (!worker) throw new Error("Worker not found!");
+
+    const visitsIds = worker.workerVisits;
+    const dateNow = moment().utc();
+
+    const visitsDate = await Visit.find({
+      id: visitsIds,
+      visitDate: { $gt: dateNow },
+    }).session(session);
+    if (!visitsDate) throw new Error("Visits not found!");
+
+    await session.commitTransaction();
+
+    // Return visits
+    return res.send(visits);
+    // return res.render("clientVisits", {
+    //   user: user,
+    //   workerVisits: visits,
+    // });
+  } catch (err) {
+    await session.abortTransaction();
+    res.send(err);
+  } finally {
+    session.endSession();
   }
 };
 
@@ -62,39 +76,57 @@ const updateAvailability = async (
   time,
   serviceDuration
 ) => {
-  const timesToUpdate = getTimesToUpdate(time, serviceDuration);
-  const updateWorker = User.updateOne(
-    {
+  // Start transaction's session
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const timesToUpdate = await getTimesToUpdate(time, serviceDuration);
+
+    // Update worker availability
+    const worker = await User.findOne({
       _id: ObjectId(workerId),
-      "workerBusyAvailability.date": date,
-    },
-    {
-      $addToSet: {
-        "workerBusyAvailability.$.hours": { $each: timesToUpdate },
+      "workerBusyAvailability.date": new Date(date),
+    }).session(session);
+    const updateWorker = await User.updateOne(
+      {
+        _id: ObjectId(workerId),
+        "workerBusyAvailability.date": new Date(date),
       },
-    },
-    (err, availability) => {
-      if (err) return res.send(err);
-      if (availability.modifiedCount === 0) {
-        User.updateOne(
-          {
-            _id: ObjectId(workerId),
-          },
-          {
-            $addToSet: {
-              workerBusyAvailability: {
-                date: new Date(date),
-                hours: timesToUpdate,
-              },
+      {
+        $addToSet: {
+          "workerBusyAvailability.$.hours": { $each: timesToUpdate },
+        },
+      }
+    ).session(session);
+    if (!updateWorker)
+      throw new Error("Worker not found or wrong data provided!");
+
+    // Add new item if not found
+    if (updateWorker.modifiedCount === 0) {
+      const updateWorker = await User.updateOne(
+        {
+          _id: ObjectId(workerId),
+        },
+        {
+          $addToSet: {
+            workerBusyAvailability: {
+              date: new Date(date),
+              hours: timesToUpdate,
             },
           },
-          (err, availability) => {
-            if (err) return res.send(err);
-          }
-        );
-      }
+        }
+      ).session(session);
+      if (!updateWorker) throw new Error("Updating worker failed!");
     }
-  );
+
+    await session.commitTransaction();
+    res.send("Success");
+  } catch (err) {
+    await session.abortTransaction();
+    res.send(err);
+  } finally {
+    session.endSession();
+  }
 };
 
 const createVisit = async (req, res) => {
@@ -227,12 +259,11 @@ const getAvailableHoursForWorker = async (req, res) => {
       searchingDate
     );
 
-    const workerAvailabilityInfo = await getWorkerBusyAvailabilityDates(
+    // Get worker availability dates info
+    const workerDatesAvailabilityInfo = await getWorkerBusyAvailabilityDates(
       worker,
       searchingDate
     );
-
-    console.log(workerAvailabilityInfo);
 
     // Get service
     const service = await Service.findById(serviceId);
@@ -264,10 +295,12 @@ const getAvailableHoursForWorker = async (req, res) => {
       workers,
       selectedWorker: workerId,
       service,
+      date: { year, month: req.params.month, day },
       availableHours,
+      workerDatesAvailabilityInfo,
     });
   } catch (err) {
-    console.error(err);
+    return res.send(err);
   }
 };
 
@@ -284,8 +317,10 @@ const getWorkerBusyAvailabilityHours = async (worker, searchingDate) => {
 
 const getWorkerBusyAvailabilityDates = async (worker, searchingDate) => {
   const workerBusyAvailabilityDates = worker.workerBusyAvailability;
-  const startMonth = searchingDate.utc().startOf("month");
-  const endMonth = searchingDate.utc().endOf("month");
+  const startMonth = moment(searchingDate).utc().startOf("month");
+  const endMonth = moment(searchingDate).utc().endOf("month");
+  console.log(searchingDate);
+  console.log(startMonth, endMonth);
   // Get worker availability array elements in current month
   const workerAvailabilityInfo = workerBusyAvailabilityDates.filter(
     (elem) =>
@@ -296,56 +331,63 @@ const getWorkerBusyAvailabilityDates = async (worker, searchingDate) => {
   let currentDate = moment(startMonth).utc();
   let workerDatesAvailabilityInfo = [];
   while (currentDate <= endMonth) {
-    if (workerAvailabilityInfo.some((e) => e.date == currentDate)) {
-      const availabilityObject = {
-        date: currentDate,
-        isAvailable: false,
-      };
-      workerDatesAvailabilityInfo.push(availabilityObject);
+    let availabilityObject = {
+      day: currentDate.date(),
+      isAvailable: null,
+    };
+    if (
+      workerAvailabilityInfo.some((e) =>
+        moment(e.date).utc().isSame(currentDate)
+      )
+    ) {
+      availabilityObject.isAvailable = false;
     } else {
-      const availabilityObject = {
-        date: currentDate,
-        isAvailable: true,
-      };
-      workerDatesAvailabilityInfo.push(availabilityObject);
+      availabilityObject.isAvailable = true;
     }
+    workerDatesAvailabilityInfo.push(availabilityObject);
     currentDate = currentDate.add(1, "day");
   }
 
-  //console.log(workerDatesAvailabilityInfo);
+  console.log(workerDatesAvailabilityInfo);
 
-  return workerAvailabilityInfo;
+  return workerDatesAvailabilityInfo;
 };
 
-const getAllServiceDates = (req, res) => {
+const getAllServiceDates = async (req, res) => {
   const serviceId = req.params.serviceId;
-  if (ObjectId.isValid(serviceId)) {
-    Service.findById(serviceId, (err, service) => {
-      if (err) return res.send(err);
-      const businessId = service.businessId;
-      Business.findById(businessId, (err, business) => {
-        if (err) return res.send(err);
-        const workersIds = business.workers;
-        User.find({ _id: workersIds }).then((workers) => {
-          const currentUser = req.user;
-          return res.render("visit", {
-            user: currentUser,
-            business,
-            workers,
-            selectedWorker: null,
-            service,
-            availableHours: null,
-          });
-          // Visit.find({ workerId: workersIds }).then((visits) => {
-          //   console.log(visits);
-          //   const currentUser = req.user;
-          //   const serviceDuration = service.duration;
-          //   const datesInfo = getAvailableHours(visits, serviceDuration);
+  const currentUser = req.user;
 
-          // });
-        });
-      });
+  // Start new transaction's session
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const service = await Service.findById(serviceId).session(session);
+    if (!service) throw new Error("Service not found");
+
+    const businessId = service.businessId;
+
+    const business = await Business.findById(businessId).session(session);
+    if (!business) throw new Error("Business not found");
+    const workersIds = business.workers;
+
+    const workers = await User.find({ _id: workersIds }).session(session);
+    if (!workers) throw new Error("Workers not found");
+
+    await session.commitTransaction();
+    return res.render("visit", {
+      user: currentUser,
+      business,
+      workers,
+      selectedWorker: null,
+      service,
+      availableHours: null,
+      workerDatesAvailabilityInfo: null,
     });
+  } catch (err) {
+    session.abortTransaction();
+  } finally {
+    session.endSession();
   }
 };
 

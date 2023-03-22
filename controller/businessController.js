@@ -103,7 +103,7 @@ const getAllBusiness = async (req, res) => {
     )
       .then((businesses) => {
         Business.find({}).populate("services", "ownerId").exec((err, businessesWithServices) => {
-          console.log(businessesWithServices);
+          //console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,
@@ -125,7 +125,7 @@ const getAllBusiness = async (req, res) => {
     Business.paginate({}, { offset, limit })
       .then((businesses) => {
         Business.find({}).populate("services").exec((err, businessesWithServices) => {
-          console.log(businessesWithServices);
+          //console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,

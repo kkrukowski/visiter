@@ -16,6 +16,10 @@ const isAbleToBook = async (busyHours, serviceDuration, time) => {
   return true;
 };
 
+const isAbleToBookSomeHour = async (busyHours, serviceDuration) => {
+  
+}
+
 const getAvailableHours = async (
   serviceDuration,
   busyHours,
