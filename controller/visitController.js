@@ -10,11 +10,10 @@ const mongoose = require("mongoose");
 const {
   getAvailableHours,
   isAbleToBook,
+  isAbleToBookSomeHour,
   getTimesToUpdate,
 } = require("../middlewares/visitHandler");
 
-// test id - 63bd2f8b35c597866c9fe176
-// test business id - 63b7015741e1b4cc6ecc9b62
 const getAllClientVisits = (req, res) => {
   // Get array of visits ids
   const clientId = req.params.id;
@@ -190,6 +189,8 @@ const createVisit = async (req, res) => {
       .set({
         hour: 0,
         minute: 0,
+        second: 0,
+        millisecond: 0,
       })
       .utc();
 
@@ -259,17 +260,19 @@ const getAvailableHoursForWorker = async (req, res) => {
       searchingDate
     );
 
-    // Get worker availability dates info
-    const workerDatesAvailabilityInfo = await getWorkerBusyAvailabilityDates(
-      worker,
-      searchingDate
-    );
-
     // Get service
     const service = await Service.findById(serviceId);
     if (!service) throw new Error("Service not found!");
 
     const serviceDuration = service.duration;
+
+    // Get worker availability dates info
+    const workerDatesAvailabilityInfo = await getWorkerBusyAvailabilityDates(
+      worker,
+      searchingDate,
+      serviceDuration
+    );
+
     // Get available hours for searching date based on busy hours
     const availableHours = await getAvailableHours(
       serviceDuration,
@@ -315,12 +318,14 @@ const getWorkerBusyAvailabilityHours = async (worker, searchingDate) => {
   return [];
 };
 
-const getWorkerBusyAvailabilityDates = async (worker, searchingDate) => {
+const getWorkerBusyAvailabilityDates = async (
+  worker,
+  searchingDate,
+  serviceDuration
+) => {
   const workerBusyAvailabilityDates = worker.workerBusyAvailability;
   const startMonth = moment(searchingDate).utc().startOf("month");
   const endMonth = moment(searchingDate).utc().endOf("month");
-  console.log(searchingDate);
-  console.log(startMonth, endMonth);
   // Get worker availability array elements in current month
   const workerAvailabilityInfo = workerBusyAvailabilityDates.filter(
     (elem) =>
@@ -336,10 +341,15 @@ const getWorkerBusyAvailabilityDates = async (worker, searchingDate) => {
       isAvailable: null,
     };
     if (
-      workerAvailabilityInfo.some((e) =>
+      workerAvailabilityInfo.some((e, index) =>
         moment(e.date).utc().isSame(currentDate)
       )
     ) {
+      const index = workerAvailabilityInfo.findIndex((e) =>
+        moment(e.date).utc().isSame(currentDate)
+      );
+      const busyHours = workerAvailabilityInfo[index].hours;
+      isAbleToBookSomeHour(busyHours, serviceDuration, currentDate);
       availabilityObject.isAvailable = false;
     } else {
       availabilityObject.isAvailable = true;

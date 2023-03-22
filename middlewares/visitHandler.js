@@ -16,9 +16,21 @@ const isAbleToBook = async (busyHours, serviceDuration, time) => {
   return true;
 };
 
-const isAbleToBookSomeHour = async (busyHours, serviceDuration) => {
-  
-}
+const isAbleToBookSomeHour = async (
+  busyHours,
+  serviceDuration,
+  currentDate
+) => {
+  const startTime = moment(currentDate)
+    .utc("HH:mm")
+    .set({ hour: 8, minute: 0, second: 0, millisecond: 0 });
+  const endTime = moment(currentDate)
+    .utc("HH:mm")
+    .set({ hour: 17, minute: 0, second: 0, millisecond: 0 });
+  console.log(busyHours);
+  console.log(serviceDuration);
+  console.log(startTime, endTime);
+};
 
 const getAvailableHours = async (
   serviceDuration,
@@ -27,7 +39,6 @@ const getAvailableHours = async (
   endHour
 ) => {
   let availableHours = [];
-  console.log("BUSY: ", busyHours);
   for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += 20) {
       const checkedTime = hour + ":" + (minute < 10 ? "0" : "") + minute;
@@ -57,4 +68,9 @@ const getTimesToUpdate = (time, serviceDuration) => {
   return timesToUpdate;
 };
 
-module.exports = { getAvailableHours, isAbleToBook, getTimesToUpdate };
+module.exports = {
+  getAvailableHours,
+  isAbleToBook,
+  isAbleToBookSomeHour,
+  getTimesToUpdate,
+};
