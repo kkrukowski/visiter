@@ -33,14 +33,14 @@ router.post("/:id/opinion", isLoggedIn, addOpinion);
 //workers
 router.post("/myBusiness/:id/addWorker", [isLoggedIn, isOwner], addWorker);
 router.post(
-  "/myBusiness/:idBusiness/:id/removeWorker",
+  "/myBusiness/:id/:idWorker/removeWorker",
   [isLoggedIn, isOwner],
   removeWorker
 );
 
 //services
 router.post(
-  "/myBusiness/:idBusiness/:id/removeService",
+  "/myBusiness/:id/:idService/removeService",
   [isLoggedIn, isOwner],
   removeService
 );
