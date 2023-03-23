@@ -5,31 +5,15 @@ const isAbleToBook = async (busyHours, serviceDuration, time) => {
   const bookEndTime = moment
     .utc(bookStartTime, "HH:mm")
     .add(serviceDuration, "minutes");
-  if (
-    busyHours.some((hour) => {
-      const momentHour = moment.utc(hour, "HH:mm");
-      return bookStartTime <= momentHour && momentHour <= bookEndTime;
-    })
-  ) {
+  // Check if any hour conflicts with this book time
+  const areAnyHoursConflicts = busyHours.some((hour) => {
+    const momentHour = moment.utc(hour, "HH:mm");
+    return bookStartTime <= momentHour && momentHour <= bookEndTime;
+  });
+  if (areAnyHoursConflicts) {
     return false;
   }
   return true;
-};
-
-const isAbleToBookSomeHour = async (
-  busyHours,
-  serviceDuration,
-  currentDate
-) => {
-  const startTime = moment(currentDate)
-    .utc("HH:mm")
-    .set({ hour: 8, minute: 0, second: 0, millisecond: 0 });
-  const endTime = moment(currentDate)
-    .utc("HH:mm")
-    .set({ hour: 17, minute: 0, second: 0, millisecond: 0 });
-  console.log(busyHours);
-  console.log(serviceDuration);
-  console.log(startTime, endTime);
 };
 
 const getAvailableHours = async (
@@ -39,12 +23,14 @@ const getAvailableHours = async (
   endHour
 ) => {
   let availableHours = [];
+  console.log(busyHours);
   for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += 20) {
-      const checkedTime = hour + ":" + (minute < 10 ? "0" : "") + minute;
+      const checkedTime =
+        (hour < 10 ? "0" : "") + hour + ":" + (minute < 10 ? "0" : "") + minute;
       if (
         !busyHours.includes(checkedTime) &&
-        isAbleToBook(busyHours, serviceDuration, checkedTime)
+        (await isAbleToBook(busyHours, serviceDuration, checkedTime)) === true
       ) {
         const time = [hour, (minute < 10 ? "0" : "") + minute];
         availableHours.push(time);
@@ -71,6 +57,5 @@ const getTimesToUpdate = (time, serviceDuration) => {
 module.exports = {
   getAvailableHours,
   isAbleToBook,
-  isAbleToBookSomeHour,
   getTimesToUpdate,
 };

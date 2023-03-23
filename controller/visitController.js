@@ -10,7 +10,6 @@ const mongoose = require("mongoose");
 const {
   getAvailableHours,
   isAbleToBook,
-  isAbleToBookSomeHour,
   getTimesToUpdate,
 } = require("../middlewares/visitHandler");
 
@@ -349,8 +348,14 @@ const getWorkerBusyAvailabilityDates = async (
         moment(e.date).utc().isSame(currentDate)
       );
       const busyHours = workerAvailabilityInfo[index].hours;
-      isAbleToBookSomeHour(busyHours, serviceDuration, currentDate);
-      availabilityObject.isAvailable = false;
+      const availableHours = await getAvailableHours(
+        serviceDuration,
+        busyHours,
+        9,
+        17
+      );
+      if (availableHours.length > 0) availabilityObject.isAvailable = true;
+      else availabilityObject.isAvailable = false;
     } else {
       availabilityObject.isAvailable = true;
     }
