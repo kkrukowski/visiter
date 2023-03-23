@@ -13,7 +13,8 @@ const {
   removeService,
   editService,
   editProfile,
-  removeBusiness
+  removeBusiness,
+  removeOpinion
 } = require("../controller/businessController");
 
 const { isLoggedIn, isLoggedOut, isOwner } = require("../middlewares/authHandler");
@@ -29,7 +30,7 @@ router.get("/myBusiness/:id", [isLoggedIn, isOwner], homeView);
 
 //opinions
 router.post("/:id/opinion", isLoggedIn, addOpinion);
-
+router.post("/:id/:idOpinion/removeOpinion", isLoggedIn, removeOpinion);
 //workers
 router.post("/myBusiness/:id/addWorker", [isLoggedIn, isOwner], addWorker);
 router.post(
