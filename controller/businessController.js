@@ -3,7 +3,7 @@ const User = require("../models/User");
 const Opinion = require("../models/OpinionForBusiness");
 const OpinionForUser = require("../models/OpinionForUser");
 const Service = require("../models/Service");
-const ObjectId = require("mongoose").Types.ObjectId;
+const mongoose = require("mongoose");
 
 const registerView = (req, res, err, message = "") => {
   if (req.user.role == "Owner") {
@@ -211,206 +211,296 @@ const addOpinion = (req, res) => {
   });
 };
 
-const addWorker = (req, res) => {
-  User.findOne({ invCode: req.body.code }, (err, user) => {
-    if (user == null) {
-      Business.findById(req.params.id, (err, business) => {
-        const message = "Brak takiego uzytkownika.";
-        const currentUser = req.user;
-        return homeView(req, res);;
+const addWorker = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const user = await User.findOne({ invCode: req.body.code }).exec();
+    if (user == null) throw new Error("Brak takiego użytkownika!");
+    if (user.role != "Owner" && user.role != "Worker") {
+      const business = await Business.findOneAndUpdate({ ownerId: req.user._id }, { $push: { workers: user._id } }, { new: true, session })
+        .populate(["ownerId", "workers", "opinions", "services"]).exec();
+      console.log(business);
+      await User.findOneAndUpdate({ _id: user._id }, { role: "Worker" }, { session });
+      const opinionIds = business.opinions;
+      const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+      await session.commitTransaction();
+      return res.render("business", {
+        currentUser: req.user,
+        user: req.user,
+        business,
+        message: "Pracownik dodany.",
+        opinions: opinions
       });
     } else {
-      if (user.role != "Owner" && user.role != "Worker") {
-        Business.findOne({ "owner._id": req.user._id }, (err, business) => {
-          User.findByIdAndUpdate(
-            user._id,
-            { $set: { role: "Worker" } },
-            { new: true },
-            (err, updateUser) => {
-              console.log("ZMIENIAM ROLE");
-            }
-          );
-          if (business.workers != null) {
-            Business.findOneAndUpdate(
-              { "ownerId": req.user._id },
-              { $push: { workers: user.id } },
-              { new: true },
-              (err, business) => {
-                const message = "Pracownik dodany do firmy.";
-                return homeView(req, res, "", message);
-              }
-            );
-          } else {
-            Business.findOneAndUpdate(
-              { "ownerId": req.user._id },
-              { $set: { workers: user.id } },
-              { new: true },
-              (err, business) => {
-                const message = "Pracownik dodany do firmy.";
-                return homeView(req, res, "", message);
-              }
-            );
-          }
-        });
-      } else {
-        const message = "Podany użytkownik jest już pracownikiem lub właścielem.";
-        Business.findById(req.params.id, (err, business) => {
-          return homeView(req, res, "", message);
-        });
-      }
+      throw new Error("Użytkownik jest właścicielem lub pracownikiem.");
     }
-  });
-};
-const removeWorker = (req, res) => {
-  User.findOneAndUpdate(
-    { _id: req.params.id },
-    { role: "User" },
-    { new: true },
-    (err, user) => {
-      if (err) {
-        const message = "Brak uzytkownika.";
-        return res.render("business", { user: req.user, business, message });
-      }
-      Business.findByIdAndUpdate(
-        req.params.idBusiness,
-        { $pull: { workers: user._id } },
-        { new: true },
-        (err, business) => {
-          if (err) {
-            const message = "Brak uzytkownika do usuniecia.";
-            return homeView(req, res, "", message);
-          }
-          console.log(business.workers);
-          const message = "Uzytkownik usunięty.";
-          return homeView(req, res, "", message);
-        }
-      );
-    }
-  );
-};
-
-const addService = (req, res) => {
-  const businessId = req.params.id;
-  const newService = new Service({
-    name: req.body.name,
-    price: req.body.price,
-    description: req.body.description,
-    duration: req.body.duration,
-    businessId: businessId,
-  });
-
-  newService.save((err, service) => {
-    if (err) {
-      const business = Business.findById(businessId);
-      const message = "Błąd w trakcie dodawania serwisu.";
-      return homeView(req, res, "", message);
-    }
-    const update = {
-      $push: { services: service.id },
-    };
-    Business.findByIdAndUpdate(businessId, update, { new: true }, (err, business) => {
-      if (err) {
-        const message = "Błąd podczas dodawania serwisu do firmy!";
-        return homeView(req, res, "", message);
-      }
-      const message = "Serwis dodany.";
-      return homeView(req, res, "", message);
+  } catch (err) {
+    console.log("ERR: ", err);
+    const business = await Business.findById(req.params.id)
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.abortTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: err.message,
+      opinions: opinions
     });
-  });
-};
-
-const removeService = (req, res) => {
-  Business.findOneAndUpdate(
-    { _id: req.params.idBusiness },
-    { $pull: { services: req.params.id } },
-    { new: true },
-    (err, business) => {
-      if (err) {
-        const message = "Błąd w trakcie usuwania serwisu.";
-        return homeView(req, res, "", message);
-      }
-      Service.findOneAndDelete({ _id: req.params.id }, { new: true }, (err, service) => {
-        const message = "Serwis usuniety.";
-        return homeView(req, res, "", message);
-      });
-    }
-  );
-};
-
-const editService = (req, res) => {
-  console.log(req.params.idService, req.body.name, req.body.description);
-  Service.findByIdAndUpdate(req.params.idService, { name: req.body.name, description: req.body.description, price: req.body.price }, { new: true }, (err, service) => {
-    if (err) {
-      const message = "Błąd w trakcie edytowania serwisu.";
-      return homeView(req, res, "", message);
-    }
-    const message = "Serwis edytowany."
-    return homeView(req, res, "", message);
-  });
-};
-
-const editProfile = (req, res) => {
-  let update;
-  if (req.body.name) {
-    update = { name: req.body.name };
-  } else if (req.body.description) {
-    update = { description: req.body.description };
-  } else if (req.body.phone) {
-    var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{3})$/; // validation of phone
-    if (!re.test(req.body.phone)) {
-      const message = "Podaj prawidłowy numer telefonu.";
-      return homeView(req, res, "", message);
-    }
-    update = { phone: req.body.phone };
-  } else if (req.body.address) {
-    update = { address: req.body.address };
-  } else {
-    const message = "Nie podano parametrów do edycji.";
-    return homeView(req, res, "", message);
+  } finally {
+    await session.endSession();
   }
+};
+const removeWorker = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const user = await User.findOneAndUpdate({ _id: req.params.idWorker }, { role: "User" }, { new: true, session }).exec()
+    const business = await Business.findByIdAndUpdate(req.params.id, { $pull: { workers: user._id } }, { new: true, session })
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.commitTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Pracownik usunięty.",
+      opinions: opinions
+    });
+  } catch (err) {
+    console.log("ERR: ", err);
+    const business = await Business.findById(req.params.id)
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.abortTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Usuwanie niepomyślne.",
+      opinions: opinions
+    });
+  } finally {
+    await session.endSession();
+  }
+};
 
-  Business.findByIdAndUpdate(req.params.id, update, { new: true }, (err, business) => {
-    if (err) return homeView(req, res, "", "Błąd podczas edycji.")
-    return homeView(req, res, "", "Edycja pomyślna.")
-  });
+const addService = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const businessId = req.params.id;
+    const newService = new Service({
+      name: req.body.name,
+      price: req.body.price,
+      description: req.body.description,
+      duration: req.body.duration,
+      businessId: businessId,
+    });
+    newService.save({ session });
+    const update = {
+      $push: { services: newService.id },
+    };
+    const business = await Business.findByIdAndUpdate(businessId, update, { new: true, session })
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.commitTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Serwis dodany.",
+      opinions: opinions
+    });
+  } catch (err) {
+    console.log("ERR: ", err);
+    const business = await Business.findById(req.params.id)
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.abortTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Dodawanie niepomyślne.",
+      opinions: opinions
+    });
+  } finally {
+    await session.endSession();
+  }
+};
+
+const removeService = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    await Business.findOneAndUpdate({ _id: req.params.id }, { $pull: { services: req.params.id } }, { new: true, session }).exec();
+    await Service.findOneAndDelete({ _id: req.params.idService }, { new: true, session }).exec();
+    await session.commitTransaction();
+    const business = await Business.findById(req.params.id)
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.commitTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Serwis usunięty.",
+      opinions: opinions
+    });
+  } catch (err) {
+    console.log("ERR: ", err);
+    const business = await Business.findById(req.params.id)
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.abortTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Usuwanie niepomyślne.",
+      opinions: opinions
+    });
+  } finally {
+    await session.endSession();
+  }
+};
+
+const editService = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    await Service.findByIdAndUpdate(
+      req.params.idService,
+      { name: req.body.name, description: req.body.description, price: req.body.price },
+      { new: true, session }).exec();
+    const business = await Business.findById(req.params.id, { new: true })
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.commitTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Edycja pomyślna.",
+      opinions: opinions
+    });
+  } catch (err) {
+    console.log("ERR: ", err);
+    const business = await Business.findById(req.params.id)
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.abortTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Edycja niepomyślna.",
+      opinions: opinions
+    });
+  } finally {
+    await session.endSession();
+  }
+};
+
+const editProfile = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    let update;
+    if (req.body.name)
+      update = { name: req.body.name };
+    else if (req.body.description)
+      update = { description: req.body.description };
+    else if (req.body.phone) {
+      var re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{3})$/; // validation of phone
+      if (!re.test(req.body.phone)) {
+        throw new Error("Nieprawidłowy numer telefonu.");
+      }
+      update = { phone: req.body.phone };
+    } else if (req.body.address)
+      update = { address: req.body.address };
+    else {
+      throw new Error("Brak parametrów.");
+    }
+    const business = await Business.findByIdAndUpdate(req.params.id, update, { new: true, session })
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.commitTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Edycja pomyślna.",
+      opinions: opinions
+    });
+  } catch (err) {
+    console.log("ERR: ", err);
+    const business = await Business.findById(req.params.id)
+      .populate(["ownerId", "workers", "opinions", "services"]).exec();
+    const opinionIds = business.opinions;
+    const opinions = await Opinion.find({ _id: { $in: opinionIds } }).exec();
+    await session.abortTransaction();
+    return res.render("business", {
+      currentUser: req.user,
+      user: req.user,
+      business,
+      message: "Edycja niepomyślna.",
+      opinions: opinions
+    });
+  } finally {
+    await session.endSession();
+  }
 }
 
-const removeBusiness = (req, res) => {
-  Business.findById(req.params.id, (err, business) => {
-    if (err) return homeView(req, res, "", "Coś poszło nie tak");
-
-
+const removeBusiness = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const business = await Business.findById(req.params.id).exec();
     const workersIds = business.workers;
-    User.findByIdAndUpdate(req.user._id, { role: "User" }, (err, userOwner) => {
-      if (err) return homeView(req, res, "", "Coś poszło nie tak");
-      User.updateMany({ _id: { $in: workersIds } }, { role: "User" }, { multi: true }, (err, users) => {
-        if (err) return homeView(req, res, "", "Coś poszło nie tak");
-        const opinionsIds = business.opinions;
-        Opinion.deleteMany({ _id: { $in: opinionsIds } }, (err, opinions) => {
-          if (err) return homeView(req, res, "", "Coś poszło nie tak");
-          const servicesIds = business.services;
-          Service.deleteMany({ _id: { $in: servicesIds } }, (err, services) => {
-            if (err) return homeView(req, res, "", "Coś poszło nie tak");
-            OpinionForUser.find({ businessId: business._id }).select("_id").exec((err, ids) => { // wyszukanie id opinii do usuniecia
-              if (err) return homeView(req, res, "", "Coś poszło nie tak");
-              let listOfIds = [];
-              ids.forEach(opinion => { listOfIds.push(opinion._id) }); // lista z id opinii
-              User.updateMany({ opinions: { $in: listOfIds } }, { $pull: { opinions: { $in: listOfIds } } }, { new: true }, (err, foreignUsers) => { //usuniecie opinii u uzytkownikow
-                if (err) return homeView(req, res, "", "Coś poszło nie tak");
-                OpinionForUser.deleteMany({ businessId: business._id }, (err, foreignOpinions => { // usuniecie obcych opinii
-                  if (err) return homeView(req, res, "", "Coś poszło nie tak");
-                  Business.findByIdAndRemove(req.params.id, { new: true }, (err, business) => {
-                    return res.render("home", { user: req.user, business: false, message: "Poprawnie usunięto firme." });
-                  });
-                }));
-              });
-            });
-          });
-        });
-      });
+    const opinionsIds = business.opinions;
+    const servicesIds = business.services;
+    await User.findByIdAndUpdate(req.user._id, { role: "User" }, { session }).exec();
+    await User.updateMany({ _id: { $in: workersIds } }, { role: "User" }, { session }).exec();
+    await Opinion.deleteMany({ _id: { $in: opinionsIds } }, { session }).exec(); // usuwanie opinii usuwanej firmy
+    const opinionsToPull = await OpinionForUser.find({ businessId: business._id }).select("_id").exec();
+    await OpinionForUser.deleteMany({ businessId: business._id }, { session }).exec(); // usuwanie opinii wystawionych klientom
+    let listOfIds = [];
+    opinionsToPull.forEach(opinion => { listOfIds.push(opinion._id) }); // id usunietych opinii
+    console.log(listOfIds);
+    await User.updateMany({ opinions: { $in: listOfIds } }, { $pull: { opinions: { $in: listOfIds } } }, { session }).exec(); // usuniecie opinii z modelu uzytkownikow 
+    await Service.deleteMany({ _id: { $in: servicesIds } }, { session }).exec();
+    await Business.findByIdAndRemove(req.params.id, { session }).exec();
+    await session.commitTransaction();
+    return res.render("home", {
+      user: req.user,
+      business: false,
+      message: "Poprawnie usunięto firme."
     });
-  });
-  // usuwanie wizyt
+  } catch (err) {
+    console.log("ERROR: ", err);
+    await session.abortTransaction();
+    return res.render("home", {
+      user: req.user,
+      business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+      //^ wyszukaj dla ownera, jesli nie to dla pracownika, jesli klient nie jest pracownikiem zwroci false.
+      message: "Coś poszło nie tak."
+    });
+  } finally {
+    await session.endSession();
+  }
 };
 
 
