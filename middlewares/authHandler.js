@@ -1,27 +1,30 @@
 const Business = require('../models/Business');
 
-function isLoggedIn(req, res, next) {
+async function isLoggedIn(req, res, next) {
   if (req.isAuthenticated()) return next();
-  res.redirect("/login");
+  return res.render("login", { message: "Musisz być zalogowany." });
 }
-function isLoggedOut(req, res, next) {
+async function isLoggedOut(req, res, next) {
   if (!req.isAuthenticated()) return next();
-  res.redirect("/");
-}
-function isOwner(req, res, next) {
-  Business.findById(req.params.id, (err, business) => {
-    if (err) return res.render("home", { business, user: req.user, message: "Coś poszło nie tak." });
-
-    try{
-      if (business.ownerId.equals(req.user._id)) return next();
-    
-      const message= "Nie jesteś właścicielem tej firmy."
-      return res.render("home", { business, user: req.user, message }); //dodac wyszukanie firmy
-    }
-    catch{
-      return res.render("home", { business, user: req.user, message: "Coś poszło nie tak." }); //dodac wyszukanie firmy
-    }
+  return res.render("home", {
+    user: req.user,
+    business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+    message: "Jesteś zalogowany."
   });
+}
+async function isOwner(req, res, next) {
+  try {
+    const business = await Business.findById(req.params.id).exec();
+    if (business.ownerId.equals(req.user_id))
+      return next();
+    throw new Error("Nie jesteś właścicielem tej firmy.");
+  } catch (err) {
+    return res.render("home", {
+      user: req.user,
+      business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+      message: err
+    });
+  }
 }
 
 module.exports = {
