@@ -15,7 +15,7 @@ async function isLoggedOut(req, res, next) {
 async function isOwner(req, res, next) {
   try {
     const business = await Business.findById(req.params.id).exec();
-    if (business.ownerId.equals(req.user_id))
+    if (business.ownerId.equals(req.user._id))
       return next();
     throw new Error("Nie jesteś właścicielem tej firmy.");
   } catch (err) {
