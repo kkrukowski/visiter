@@ -23,7 +23,7 @@ const getAvailableHours = async (
   endHour
 ) => {
   let availableHours = [];
-  console.log(busyHours);
+  // console.log(busyHours);
   for (let hour = startHour; hour < endHour; hour++) {
     for (let minute = 0; minute < 60; minute += 20) {
       const checkedTime =

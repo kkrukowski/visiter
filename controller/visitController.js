@@ -236,17 +236,15 @@ const getAvailableHoursForWorker = async (req, res) => {
     month = moment().utc().month();
     day = moment().utc().date();
   }
-  const searchingDate = moment()
-    .set({
-      year: year,
-      month: month,
-      date: day,
-      hour: 1,
-      minute: 0,
-      second: 0,
-      millisecond: 0,
-    })
-    .utc();
+  const searchingDate = moment().utc().set({
+    year: year,
+    month: month,
+    date: day,
+    hour: 0,
+    minute: 0,
+    second: 0,
+    millisecond: 0,
+  });
   const currentUser = req.user;
   try {
     // Search worker
@@ -322,7 +320,10 @@ const getWorkerBusyAvailabilityDates = async (
   searchingDate,
   serviceDuration
 ) => {
-  const workerBusyAvailabilityDates = worker.workerBusyAvailability;
+  let workerBusyAvailabilityDates = [];
+  if (worker.workerBusyAvailability != null) {
+    workerBusyAvailabilityDates = worker.workerBusyAvailability;
+  }
   const startMonth = moment(searchingDate).utc().startOf("month");
   const endMonth = moment(searchingDate).utc().endOf("month");
   // Get worker availability array elements in current month
@@ -363,7 +364,7 @@ const getWorkerBusyAvailabilityDates = async (
     currentDate = currentDate.add(1, "day");
   }
 
-  console.log(workerDatesAvailabilityInfo);
+  // console.log(workerDatesAvailabilityInfo);
 
   return workerDatesAvailabilityInfo;
 };
@@ -380,6 +381,7 @@ const getAllServiceDates = async (req, res) => {
     const service = await Service.findById(serviceId).session(session);
     if (!service) throw new Error("Service not found");
 
+    const serviceDuration = service.duration;
     const businessId = service.businessId;
 
     const business = await Business.findById(businessId).session(session);
@@ -388,6 +390,11 @@ const getAllServiceDates = async (req, res) => {
 
     const workers = await User.find({ _id: workersIds }).session(session);
     if (!workers) throw new Error("Workers not found");
+
+    const allDatesAvailabilityInfo = await getServicesDatesForWorkers(
+      workers,
+      serviceDuration
+    );
 
     await session.commitTransaction();
     return res.render("visit", {
@@ -398,6 +405,7 @@ const getAllServiceDates = async (req, res) => {
       service,
       availableHours: null,
       workerDatesAvailabilityInfo: null,
+      allDatesAvailabilityInfo,
     });
   } catch (err) {
     session.abortTransaction();
@@ -406,7 +414,24 @@ const getAllServiceDates = async (req, res) => {
   }
 };
 
-const getServicesDatesForWorker = (req, res) => {};
+const getServicesDatesForWorkers = async (
+  workers,
+  serviceDuration,
+  searchingDate
+) => {
+  let allDatesAvailabilityInfo = [];
+  workers.forEach(async (worker, index) => {
+    if (searchingDate == null) {
+      searchingDate = moment();
+    }
+    const workerDatesAvailabilityInfo = await getWorkerBusyAvailabilityDates(
+      worker,
+      searchingDate,
+      serviceDuration
+    );
+    console.log(workerDatesAvailabilityInfo);
+  });
+};
 
 module.exports = {
   getAllClientVisits,
@@ -414,5 +439,4 @@ module.exports = {
   createVisit,
   getAllServiceDates,
   getAvailableHoursForWorker,
-  getServicesDatesForWorker,
 };
