@@ -10,9 +10,13 @@ const mongoose = require("mongoose");
 const {
   getAvailableHours,
   isAbleToBook,
-  getTimesToUpdate,
+  updateAvailability,
+  getWorkerBusyAvailabilityHours,
+  getWorkerBusyAvailabilityDates,
+  getServicesDatesForWorkers,
 } = require("../middlewares/visitHandler");
 
+// CLIENT VISITS
 const getAllClientVisits = (req, res) => {
   // Get array of visits ids
   const clientId = req.params.id;
@@ -30,6 +34,7 @@ const getAllClientVisits = (req, res) => {
   });
 };
 
+// WORKER VISITS
 const getAllWorkerVisits = async (req, res) => {
   const workerId = req.params.workerId;
 
@@ -59,66 +64,6 @@ const getAllWorkerVisits = async (req, res) => {
     //   user: user,
     //   workerVisits: visits,
     // });
-  } catch (err) {
-    await session.abortTransaction();
-    res.send(err);
-  } finally {
-    session.endSession();
-  }
-};
-
-const updateAvailability = async (
-  res,
-  workerId,
-  date,
-  time,
-  serviceDuration
-) => {
-  // Start transaction's session
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const timesToUpdate = await getTimesToUpdate(time, serviceDuration);
-
-    // Update worker availability
-    const worker = await User.findOne({
-      _id: ObjectId(workerId),
-      "workerBusyAvailability.date": new Date(date),
-    }).session(session);
-    const updateWorker = await User.updateOne(
-      {
-        _id: ObjectId(workerId),
-        "workerBusyAvailability.date": new Date(date),
-      },
-      {
-        $addToSet: {
-          "workerBusyAvailability.$.hours": { $each: timesToUpdate },
-        },
-      }
-    ).session(session);
-    if (!updateWorker)
-      throw new Error("Worker not found or wrong data provided!");
-
-    // Add new item if not found
-    if (updateWorker.modifiedCount === 0) {
-      const updateWorker = await User.updateOne(
-        {
-          _id: ObjectId(workerId),
-        },
-        {
-          $addToSet: {
-            workerBusyAvailability: {
-              date: new Date(date),
-              hours: timesToUpdate,
-            },
-          },
-        }
-      ).session(session);
-      if (!updateWorker) throw new Error("Updating worker failed!");
-    }
-
-    await session.commitTransaction();
-    res.send("Success");
   } catch (err) {
     await session.abortTransaction();
     res.send(err);
@@ -298,80 +243,25 @@ const getAvailableHoursForWorker = async (req, res) => {
       date: { year, month: req.params.month, day },
       availableHours,
       workerDatesAvailabilityInfo,
+      allDatesAvailabilityInfo: null,
     });
   } catch (err) {
     return res.send(err);
   }
 };
 
-const getWorkerBusyAvailabilityHours = async (worker, searchingDate) => {
-  const workerBusyAvailabilityDates = worker.workerBusyAvailability;
-  const workerBusyHours = await workerBusyAvailabilityDates.filter((elem) =>
-    moment(elem.date).utc().isSame(searchingDate)
-  );
-
-  if (workerBusyHours.length > 0) return workerBusyHours[0].hours;
-
-  return [];
-};
-
-const getWorkerBusyAvailabilityDates = async (
-  worker,
-  searchingDate,
-  serviceDuration
-) => {
-  let workerBusyAvailabilityDates = [];
-  if (worker.workerBusyAvailability != null) {
-    workerBusyAvailabilityDates = worker.workerBusyAvailability;
-  }
-  const startMonth = moment(searchingDate).utc().startOf("month");
-  const endMonth = moment(searchingDate).utc().endOf("month");
-  // Get worker availability array elements in current month
-  const workerAvailabilityInfo = workerBusyAvailabilityDates.filter(
-    (elem) =>
-      moment(elem.date).utc() >= startMonth &&
-      moment(elem.date).utc() <= endMonth
-  );
-
-  let currentDate = moment(startMonth).utc();
-  let workerDatesAvailabilityInfo = [];
-  while (currentDate <= endMonth) {
-    let availabilityObject = {
-      day: currentDate.date(),
-      isAvailable: null,
-    };
-    if (
-      workerAvailabilityInfo.some((e, index) =>
-        moment(e.date).utc().isSame(currentDate)
-      )
-    ) {
-      const index = workerAvailabilityInfo.findIndex((e) =>
-        moment(e.date).utc().isSame(currentDate)
-      );
-      const busyHours = workerAvailabilityInfo[index].hours;
-      const availableHours = await getAvailableHours(
-        serviceDuration,
-        busyHours,
-        9,
-        17
-      );
-      if (availableHours.length > 0) availabilityObject.isAvailable = true;
-      else availabilityObject.isAvailable = false;
-    } else {
-      availabilityObject.isAvailable = true;
-    }
-    workerDatesAvailabilityInfo.push(availabilityObject);
-    currentDate = currentDate.add(1, "day");
-  }
-
-  // console.log(workerDatesAvailabilityInfo);
-
-  return workerDatesAvailabilityInfo;
-};
-
 const getAllServiceDates = async (req, res) => {
   const serviceId = req.params.serviceId;
   const currentUser = req.user;
+  let year = req.params.year;
+  const day = req.params.day;
+  const month = parseInt(req.params.month) - 1;
+  // If date not provided set todays date as default
+  if (year == null && month == null && day == null) {
+    year = moment().utc().year();
+    month = moment().utc().month();
+    day = moment().utc().date();
+  }
 
   // Start new transaction's session
   const session = await mongoose.startSession();
@@ -403,6 +293,7 @@ const getAllServiceDates = async (req, res) => {
       workers,
       selectedWorker: null,
       service,
+      date: { year, month: req.params.month, day },
       availableHours: null,
       workerDatesAvailabilityInfo: null,
       allDatesAvailabilityInfo,
@@ -412,25 +303,6 @@ const getAllServiceDates = async (req, res) => {
   } finally {
     session.endSession();
   }
-};
-
-const getServicesDatesForWorkers = async (
-  workers,
-  serviceDuration,
-  searchingDate
-) => {
-  let allDatesAvailabilityInfo = [];
-  workers.forEach(async (worker, index) => {
-    if (searchingDate == null) {
-      searchingDate = moment();
-    }
-    const workerDatesAvailabilityInfo = await getWorkerBusyAvailabilityDates(
-      worker,
-      searchingDate,
-      serviceDuration
-    );
-    console.log(workerDatesAvailabilityInfo);
-  });
 };
 
 module.exports = {

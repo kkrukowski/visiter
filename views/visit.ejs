@@ -145,6 +145,19 @@
       </div>
       <div>
         <h3>Dni</h3>
+        <!-- Available dates for whole workers -->
+        <% if(allDatesAvailabilityInfo) { %> <%
+          allDatesAvailabilityInfo.forEach((dateInfo) => { %> <% if
+        (dateInfo.isAvailable) { %>
+        <a
+          href="/visits/book/<%= service.id %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
+          ><%= dateInfo.day %></a
+        >
+        <% } else { %>
+        <span><%= dateInfo.day %></span>
+        <% } %> <% }) %> <% } %>
+
+        <!-- Available dates for specific worker -->
         <% if(workerDatesAvailabilityInfo) { %> <%
         workerDatesAvailabilityInfo.forEach((dateInfo) => { %> <% if
         (dateInfo.isAvailable) { %>
