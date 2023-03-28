@@ -2,89 +2,103 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const passport = require("passport");
 const Business = require("../models/Business");
-const e = require("express");
 
 const normalize = (string) => {
-  const newString = string.charAt(0).toUpperCase() +
-  string.slice(1).toLowerCase();
+  const newString =
+    string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   return newString;
-}
+};
 
-const homeView = (req, res) => {
-  Business.findOne({ "ownerId" : req.user._id }, (err, business) => {
-    if (err) {
-      const message = "Coś poszło nie tak."
-      return res.render("home", {business, user, message}); //dodac error message
-    }
-    const user = req.user;
-    const message = "";
-    return res.render("home", { business, user, message});
+const homeView = async (req, res) => {
+  try {
+    const business = await Business.findOne({ ownerId: req.user._id }).exec();
+    return res.status(200).render("home", {
+      business,
+      user: req.user,
+      message: "",
+    });
+  } catch (err) {
+    return res.status(200).render("home", {
+      business: false,
+      user: req.user,
+      message: "Coś poszło nie tak",
+    });
+  }
+};
+
+const loginView = (req, res) => {
+  return res.render("login", {
+    message: "",
   });
 };
 
-const loginView = (req, res, err = "", message = "") => {
-  res.render("login", {
-    message: message,
-  });
-};
-
-const registerView = (req, res, err = "", message = "") => {
-  res.render("register", {
-    message: message,
+const registerView = (req, res) => {
+  return res.render("register", {
+    message: "",
   });
 };
 
 const forgetPasswordView = (req, res) => {
-  res.render("forgetPassword");
+  return res.render("forgetPassword");
 };
 
 const loginUser = (req, res, next) => {
   passport.authenticate("local", function (err, user, info) {
     // Password error
-    if (err) {
-      message = info.message;
-      return loginView(req, res, err, message);
-    }
+    if (err)
+      return res
+        .status(401)
+        .render("login", { message: "Nieprawidłowe hasło." });
     // Mail error
-    if (!user) {
-      message = info.message;
-      return loginView(req, res, err, message);
-    }
-    req.logIn(user, (err) => {
-      if (err) {
-        message = "Błąd z logowaniem.";
-        return loginView(req, res, err, message);
-      }
-      return res.redirect("/");
+    if (!user)
+      return res
+        .status(401)
+        .render("login", { message: "Nieprawidłowe dane logowania." });
+    req.logIn(user, async (err) => {
+      if (err)
+        return res
+          .status(401)
+          .render("login", { message: "Błąd podczas logowania." });
+      return res.status(200).render("home", {
+        user: req.user,
+        business:
+          req.user.role == "Owner"
+            ? await Business.findOne({ ownerId: req.user._id }).exec()
+            : await Business.findOne({ workers: req.user._id }).exec(),
+        message: "",
+      });
     });
   })(req, res, next);
 };
 
 const logOutUser = (req, res) => {
-  req.logOut(function (err) {
-    if (err) {
-      return next(err);
-    }
-    message = "Wylogowano.";
-    return loginView(req, res, "", message);
-  });
+  try {
+    req.logOut(function (err) {
+      if (err) return next(err);
+      return res.render("login", {
+        message: "Wylogowano.",
+      });
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 const generateInvCode = async () => {
   let code = "#";
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 6; i++) {
     code += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   const codeExists = await User.findOne({ invCode: code });
 
   if (codeExists) {
-    return generateInvCode()
-  }
-  else {
+    return generateInvCode();
+  } else {
     return code;
   }
-}
+};
 
 const registerUser = async (req, res) => {
   const userExists = await User.findOne({
@@ -110,9 +124,13 @@ const registerUser = async (req, res) => {
       role: "User",
     });
     newUser.save();
-    res.redirect("/login");
+    return res.render("login", {
+      message: "Konto utworzone.",
+    });
   } catch {
-    res.redirect("/register");
+    return res.render("register", {
+      message: "Błąd przy tworzeniu konta.",
+    });
   }
 };
 
@@ -123,5 +141,5 @@ module.exports = {
   forgetPasswordView,
   registerUser,
   loginUser,
-  logOutUser
+  logOutUser,
 };

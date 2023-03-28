@@ -142,6 +142,10 @@ io.on("connection", (socket) => {
   });
 });
 
-server.listen(port, () => {
-  console.log(`Server started on port ${port}!`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  server.listen(port, () => {
+    console.log(`Server started on port ${port}!`);
+  });
+}
+
+module.exports = server

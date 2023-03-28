@@ -23,7 +23,7 @@ const registerView = async (req, res) => {
   } catch (err) {
     return res.render("home", {
       user: req.user,
-      business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+      business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),
       message: "Nie można zarejestrować firmy."
     });
   }
@@ -94,7 +94,7 @@ const homeView = async (req, res) => {
     console.log("ERR:", err);
     return res.render("home", {
       user: req.user,
-      business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+      business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),
       message: "Nie można wyświetlić firmy."
     });
   }
@@ -201,7 +201,7 @@ const getBusiness = async (req, res) => {
   } catch (err) {
     return res.render("home", {
       user: req.user,
-      business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+      business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),
       message: "Błąd podczas wyszukiwania firmy."
     });
   }
@@ -566,7 +566,7 @@ const removeBusiness = async (req, res) => {
     await session.abortTransaction();
     return res.render("home", {
       user: req.user,
-      business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+      business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),
       //^ wyszukaj dla ownera, jesli nie to dla pracownika, jesli klient nie jest pracownikiem zwroci false.
       message: "Coś poszło nie tak."
     });
