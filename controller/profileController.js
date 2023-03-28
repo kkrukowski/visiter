@@ -77,7 +77,7 @@ const getUser = async (req, res) => {
         const message = "Użytkownik nie znaleziony.";
         return res.render("home", {
             user,
-            business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
+            business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),
             //^ wyszukaj dla ownera, jesli nie to dla pracownika, jesli klient nie jest pracownikiem zwroci false.
             message: message
         });
@@ -191,7 +191,7 @@ const removeProfile = async (req, res) => {
             }
             else if (req.user.role == "Owner") { // dla wlasciciela
                 Business.findOne({ ownerId: req.user._id }, (err, business) => {
-                    if (err) return res.render("home", { user: req.user, message: "Coś poszło nie tak." });
+                    if (err) return res.render("home", { user: req.user, business, message: "Coś poszło nie tak." });
                     const message = "Aby usunąć konto, usuń najpierw firmę."
                     return res.render("home", { user: req.user, business, message: message });
                 });
@@ -232,8 +232,7 @@ const removeProfile = async (req, res) => {
         await session.abortTransaction();
         return res.render("home", {
             user,
-            business: req.user.role == "Owner" ? await Business.find({ ownerId: req.user._id }).exec() : await Business.find({ workers: req.user._id }).exec(),
-            //^ wyszukaj dla ownera, jesli nie to dla pracownika, jesli klient nie jest pracownikiem zwroci false.
+            business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),            //^ wyszukaj dla ownera, jesli nie to dla pracownika, jesli klient nie jest pracownikiem zwroci false.
             message: message
         });
     } finally {

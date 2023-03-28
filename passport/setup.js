@@ -23,7 +23,6 @@ passport.use(
       }
       bcrypt.compare(password, user.password, function (err, res) {
         if (err) {
-          console.log("halop")
           return done(err);
         }
         if (res == false) {
