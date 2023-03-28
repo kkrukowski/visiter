@@ -4,37 +4,37 @@ const passport = require("passport");
 const Business = require("../models/Business");
 
 const normalize = (string) => {
-  const newString = string.charAt(0).toUpperCase() +
-    string.slice(1).toLowerCase();
+  const newString =
+    string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   return newString;
-}
+};
 
 const homeView = async (req, res) => {
   try {
-    const business = await Business.findOne({ "ownerId": req.user._id }).exec();
+    const business = await Business.findOne({ ownerId: req.user._id }).exec();
     return res.status(200).render("home", {
       business,
       user: req.user,
-      message: ""
+      message: "",
     });
   } catch (err) {
     return res.status(200).render("home", {
       business: false,
       user: req.user,
-      message: "Coś poszło nie tak"
+      message: "Coś poszło nie tak",
     });
   }
 };
 
-const loginView = (req, res,) => {
+const loginView = (req, res) => {
   return res.render("login", {
-    message: ""
+    message: "",
   });
 };
 
-const registerView = (req, res,) => {
+const registerView = (req, res) => {
   return res.render("register", {
-    message: ""
+    message: "",
   });
 };
 
@@ -43,31 +43,32 @@ const forgetPasswordView = (req, res) => {
 };
 
 const loginUser = (req, res, next) => {
-  console.log("testowanie")
-  try {
-    passport.authenticate("local", function (err, user, info) {
-      // Password error
-      //if (err) return res.render("login", { message: "Nieprawidłowe hasło." });
-      if (err) throw new Error("Nieprawidłowe hasło.")
-      // Mail error
-      //if (!user) return res.render("login", { message: "Nieprawidłowe dane." });
-      if (err) throw new Error("Nieprawidłowe dane logowania.")
-      req.logIn(user, async (err) => {
-        //if (err) return res.render("login", { message: "Błąd podczas logowania." });
-        if (err) throw new Error ("Błąd podczas logowania.")
-        console.log("testowanie")
-        return res.status(200).render("home", {
-          user: req.user,
-          business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),
-          message: ""
-        });
+  passport.authenticate("local", function (err, user, info) {
+    // Password error
+    if (err)
+      return res
+        .status(401)
+        .render("login", { message: "Nieprawidłowe hasło." });
+    // Mail error
+    if (!user)
+      return res
+        .status(401)
+        .render("login", { message: "Nieprawidłowe dane logowania." });
+    req.logIn(user, async (err) => {
+      if (err)
+        return res
+          .status(401)
+          .render("login", { message: "Błąd podczas logowania." });
+      return res.status(200).render("home", {
+        user: req.user,
+        business:
+          req.user.role == "Owner"
+            ? await Business.findOne({ ownerId: req.user._id }).exec()
+            : await Business.findOne({ workers: req.user._id }).exec(),
+        message: "",
       });
-    })(req, res, next);
-  } catch (err) {
-    return res.status(401).render("login", {
-      message: err
-    })
-  }
+    });
+  })(req, res, next);
 };
 
 const logOutUser = (req, res) => {
@@ -75,7 +76,7 @@ const logOutUser = (req, res) => {
     req.logOut(function (err) {
       if (err) return next(err);
       return res.render("login", {
-        message: "Wylogowano."
+        message: "Wylogowano.",
       });
     });
   } catch (err) {
@@ -85,19 +86,19 @@ const logOutUser = (req, res) => {
 
 const generateInvCode = async () => {
   let code = "#";
-  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < 6; i++) {
     code += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   const codeExists = await User.findOne({ invCode: code });
 
   if (codeExists) {
-    return generateInvCode()
-  }
-  else {
+    return generateInvCode();
+  } else {
     return code;
   }
-}
+};
 
 const registerUser = async (req, res) => {
   const userExists = await User.findOne({
@@ -124,11 +125,11 @@ const registerUser = async (req, res) => {
     });
     newUser.save();
     return res.render("login", {
-      message: "Konto utworzone."
+      message: "Konto utworzone.",
     });
   } catch {
     return res.render("register", {
-      message: "Błąd przy tworzeniu konta."
+      message: "Błąd przy tworzeniu konta.",
     });
   }
 };
@@ -140,5 +141,5 @@ module.exports = {
   forgetPasswordView,
   registerUser,
   loginUser,
-  logOutUser
+  logOutUser,
 };

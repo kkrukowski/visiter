@@ -2,7 +2,6 @@ var validator = require("validator");
 const { loginView, registerView } = require("../controller/loginController");
 
 const registerValidation = (req, res, next) => {
-  console.log("Sprawdzam");
   if (!validator.isEmail(req.body.email)) {
     message = "Email musi być poprawny.";
     return registerView(req, res, "", message);
@@ -23,7 +22,6 @@ const registerValidation = (req, res, next) => {
 };
 
 const loginValidation = (req, res, next) => {
-  console.log(req.body)
   if (!validator.isEmail(req.body.username)) {
     message = "Email musi być poprawny.";
     return loginView(req, res, "", message);
