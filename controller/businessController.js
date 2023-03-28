@@ -110,9 +110,10 @@ const getPagination = (page, size) => {
 
 const getAllBusiness = async (req, res) => {
   const { limit, offset } = getPagination(req.query.page - 1, 3);
+  console.log(req.query);
   const searchName = req.query.name;
   const searchLocation = req.query.location;
-  if (searchName != null && searchLocation != null) {
+  if (searchName != null || searchLocation != null) {
     Business.paginate(
       {
         $and: [
@@ -128,8 +129,12 @@ const getAllBusiness = async (req, res) => {
       { offset, limit }
     )
       .then((businesses) => {
-        Business.find({}).populate("services", "ownerId").exec((err, businessesWithServices) => {
-          //console.log(businessesWithServices);
+        const filteredBusinessesIds = [];
+        businesses.docs.forEach(bussines => {
+          filteredBusinessesIds.push(bussines._id);
+        })
+        Business.find({_id: { $in: filteredBusinessesIds }}).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
+          console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,
