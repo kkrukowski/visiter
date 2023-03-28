@@ -12,13 +12,13 @@ const normalize = (string) => {
 const homeView = async (req, res) => {
   try {
     const business = await Business.findOne({ "ownerId": req.user._id }).exec();
-    return res.render("home", {
+    return res.status(200).render("home", {
       business,
       user: req.user,
       message: ""
     });
   } catch (err) {
-    return res.render("home", {
+    return res.status(200).render("home", {
       business: false,
       user: req.user,
       message: "Coś poszło nie tak"
@@ -43,15 +43,20 @@ const forgetPasswordView = (req, res) => {
 };
 
 const loginUser = (req, res, next) => {
+  console.log("testowanie")
   try {
     passport.authenticate("local", function (err, user, info) {
       // Password error
-      if (err) return res.render("login", { message: "Nieprawidłowe hasło." });
+      //if (err) return res.render("login", { message: "Nieprawidłowe hasło." });
+      if (err) throw new Error("Nieprawidłowe hasło.")
       // Mail error
-      if (!user) return res.render("login", { message: "Nieprawidłowe dane." });
+      //if (!user) return res.render("login", { message: "Nieprawidłowe dane." });
+      if (err) throw new Error("Nieprawidłowe dane logowania.")
       req.logIn(user, async (err) => {
-        if (err) return res.render("login", { message: "Błąd podczas logowania." });
-        return res.render("home", {
+        //if (err) return res.render("login", { message: "Błąd podczas logowania." });
+        if (err) throw new Error ("Błąd podczas logowania.")
+        console.log("testowanie")
+        return res.status(200).render("home", {
           user: req.user,
           business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),
           message: ""
@@ -59,9 +64,9 @@ const loginUser = (req, res, next) => {
       });
     })(req, res, next);
   } catch (err) {
-    return res.render("login", {
+    return res.status(401).render("login", {
       message: err
-    });
+    })
   }
 };
 

@@ -28,7 +28,6 @@ const loginValidation = (req, res, next) => {
     message = "Email musi być poprawny.";
     return loginView(req, res, "", message);
   }
-
   return next();
 };
 
