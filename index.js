@@ -2,7 +2,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const port = 5000;
+const port = process.env.PORT || 5000;
 const http = require("http");
 const server = http.createServer(app);
 // Database - mongodb
@@ -142,10 +142,10 @@ io.on("connection", (socket) => {
   });
 });
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   server.listen(port, () => {
     console.log(`Server started on port ${port}!`);
   });
 }
 
-module.exports = server
+module.exports = server;
