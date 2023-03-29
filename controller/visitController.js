@@ -14,6 +14,7 @@ const {
   getWorkerBusyAvailabilityHours,
   getWorkerBusyAvailabilityDates,
   getServicesDatesForWorkers,
+  getAvailableHoursForWorkers,
 } = require("../middlewares/visitHandler");
 
 // CLIENT VISITS
@@ -103,7 +104,7 @@ const createVisit = async (req, res) => {
     // Create new Visit
     const newVisit = new Visit({
       createdAt: moment().utc(),
-      visitDate: visitDate,
+      visitDate: visitDate.utc(),
       businessId: serviceInfo.businessId,
       workerId: workerId,
       clientId: clientId,
@@ -284,6 +285,13 @@ const getAllServiceDates = async (req, res) => {
     const allDatesAvailabilityInfo = await getServicesDatesForWorkers(
       workers,
       serviceDuration
+    );
+
+    const hoursAvailabilityInfo = getAvailableHoursForWorkers(
+      workers,
+      serviceDuration,
+      9,
+      17
     );
 
     await session.commitTransaction();

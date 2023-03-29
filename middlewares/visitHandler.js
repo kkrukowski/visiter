@@ -1,4 +1,8 @@
 const moment = require("moment");
+const mongoose = require("mongoose");
+
+const User = require("../models/User");
+const ObjectId = require("mongoose").Types.ObjectId;
 
 // CLIENT VISITS
 
@@ -16,17 +20,24 @@ const updateAvailability = async (
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const timesToUpdate = await getTimesToUpdate(time, serviceDuration);
+    const timesToUpdate = getTimesToUpdate(time, serviceDuration);
 
     // Update worker availability
-    const worker = await User.findOne({
-      _id: ObjectId(workerId),
-      "workerBusyAvailability.date": new Date(date),
-    }).session(session);
+    // const worker = await User.findOne({
+    //   _id: ObjectId(workerId),
+    //   "workerBusyAvailability.date": moment(date).utc(),
+    // }).session(session);
+    // console.log("worker", worker);
+
+    // if (!worker) throw new Error("Worker not found!");
+
+    // const worker = await User.findOne(workerId);
+    // console.log(worker);
+
     const updateWorker = await User.updateOne(
       {
         _id: ObjectId(workerId),
-        "workerBusyAvailability.date": new Date(date),
+        "workerBusyAvailability.date": moment(date).utc(),
       },
       {
         $addToSet: {
@@ -34,10 +45,12 @@ const updateAvailability = async (
         },
       }
     ).session(session);
+    console.log(updateWorker);
     if (!updateWorker)
       throw new Error("Worker not found or wrong data provided!");
 
     // Add new item if not found
+    console.log("UPDATING", updateWorker, timesToUpdate);
     if (updateWorker.modifiedCount === 0) {
       const updateWorker = await User.updateOne(
         {
@@ -46,7 +59,7 @@ const updateAvailability = async (
         {
           $addToSet: {
             workerBusyAvailability: {
-              date: new Date(date),
+              date: moment(date).utc(),
               hours: timesToUpdate,
             },
           },
@@ -59,6 +72,7 @@ const updateAvailability = async (
     res.send("Success");
   } catch (err) {
     await session.abortTransaction();
+    console.log(err);
     res.send(err);
   } finally {
     session.endSession();
@@ -80,7 +94,10 @@ const getTimesToUpdate = (time, serviceDuration) => {
 
 // GETTING VISITS AVAILABILITY INFO
 const getWorkerBusyAvailabilityHours = async (worker, searchingDate) => {
-  const workerBusyAvailabilityDates = worker.workerBusyAvailability;
+  let workerBusyAvailabilityDates = [];
+  if (worker.workerBusyAvailability) {
+    workerBusyAvailabilityDates = worker.workerBusyAvailability;
+  }
   const workerBusyHours = await workerBusyAvailabilityDates.filter((elem) =>
     moment(elem.date).utc().isSame(searchingDate)
   );
@@ -190,6 +207,28 @@ const getServicesDatesForWorkers = async (
   return allDatesAvailabilityInfo;
 };
 
+const getAvailableHoursForWorkers = async (
+  workers,
+  serviceDuration,
+  startHour,
+  endHour,
+  searchingDate
+) => {
+  console.log("AVAILABLE WORKERS HOURS");
+  if (searchingDate == null) {
+    searchingDate = moment();
+  }
+
+  // Create array of available hours
+  let workersAvailableHours = [];
+  for (const worker of workers) {
+    const busyHours = await getWorkerBusyAvailabilityHours(
+      worker,
+      searchingDate
+    );
+  }
+};
+
 // VISITS UPDATING
 const isAbleToBook = async (busyHours, serviceDuration, time) => {
   const bookStartTime = moment.utc(time, "HH:mm");
@@ -236,6 +275,7 @@ module.exports = {
   getAvailableHours,
   getWorkerBusyAvailabilityHours,
   getWorkerBusyAvailabilityDates,
+  getAvailableHoursForWorkers,
   getServicesDatesForWorkers,
   isAbleToBook,
   getTimesToUpdate,

@@ -1,5 +1,6 @@
-const { isLoggedOut, isLoggedIn } = require('../middlewares/authHandler'); // importuj funkcję
+const { isLoggedOut, isLoggedIn, isOwner } = require('../middlewares/authHandler'); // importuj funkcję
 const Business = require('../models/Business');
+const { ObjectId } = require('mongodb');
 
 
 describe('isLoggedOut', () => {
@@ -40,24 +41,60 @@ describe('isLoggedOut', () => {
 });
 describe('isLoggedIn', () => {
     it('should call next() if user is authenticated', () => {
-        const req = {isAuthenticated: jest.fn().mockReturnValue(true) };
-        const res = {render: jest.fn()};
+        const req = { isAuthenticated: jest.fn().mockReturnValue(true) };
+        const res = { render: jest.fn() };
         const next = jest.fn();
-        
+
         isLoggedIn(req, res, next);
 
         expect(req.isAuthenticated).toHaveBeenCalled();
         expect(next).toHaveBeenCalled();
         expect(res.render).not.toHaveBeenCalled();
     });
-    it('should call res.render if user is not authenticated', ()=> {
-        const req = {isAuthenticated: jest.fn().mockReturnValue(false) };
-        const res = {render: jest.fn()};
+    it('should call res.render if user is not authenticated', () => {
+        const req = { isAuthenticated: jest.fn().mockReturnValue(false) };
+        const res = { render: jest.fn() };
         const next = jest.fn();
 
         isLoggedIn(req, res, next)
 
         expect(req.isAuthenticated).toHaveBeenCalled();
+        expect(next).not.toHaveBeenCalled();
+        expect(res.render).toHaveBeenCalled();
+    });
+})
+
+describe('isOwner', () => {
+    it('should call next() if user is owner of business', async () => {
+        const req = {
+            params: { id: "test-business-id" },
+            user: { _id: new ObjectId("63a6ddae1a83354d2702f933") }
+        }
+        const res = { render: jest.fn() };
+        const next = jest.fn();
+
+        const business = { _id: "test-business-id", ownerId: new ObjectId("63a6ddae1a83354d2702f933") }
+        jest.spyOn(Business, 'findOne').mockReturnValueOnce({ exec: jest.fn().mockResolvedValueOnce(business) });
+
+        await isOwner(req, res, next);
+
+        expect(next).toHaveBeenCalled();
+        expect(res.render).not.toHaveBeenCalled();
+    });
+
+    it('should call render if user is not owner of business', async () => {
+        const req = {
+            params: { id: "test-business-id" },
+            user: { _id: new ObjectId("63a6ddae1a83354d2702f955") }// other user Id
+        }
+        const res = { render: jest.fn() };
+        const next = jest.fn();
+        const business = { _id: "test-business-id", ownerId: new ObjectId("63a6ddae1a83354d2702f933") }
+        jest.spyOn(Business, 'find').mockReturnValueOnce({ exec: jest.fn().mockResolvedValueOnce(business) });
+        jest.spyOn(Business, 'findOne').mockReturnValueOnce({ exec: jest.fn().mockResolvedValueOnce(business) });
+
+        await isOwner(req, res, next);
+
         expect(next).not.toHaveBeenCalled();
         expect(res.render).toHaveBeenCalled();
     });
