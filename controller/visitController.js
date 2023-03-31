@@ -82,17 +82,15 @@ const createVisit = async (req, res) => {
   const day = req.params.day;
   const month = parseInt(req.params.month) - 1;
 
-  let visitDate = moment()
-    .set({
-      year: year,
-      month: month,
-      date: day,
-      hour: hour,
-      minute: minute,
-      second: 0,
-      millisecond: 0,
-    })
-    .utc();
+  let visitDate = moment().utc().set({
+    year: year,
+    month: month,
+    date: day,
+    hour: hour,
+    minute: minute,
+    second: 0,
+    millisecond: 0,
+  });
 
   // Start transaction's session
   const session = await mongoose.startSession();
@@ -130,14 +128,12 @@ const createVisit = async (req, res) => {
     const worker = await User.findById(workerId).session(session);
     if (!worker) throw new Error("Worker no found!");
 
-    visitDate = visitDate
-      .set({
-        hour: 0,
-        minute: 0,
-        second: 0,
-        millisecond: 0,
-      })
-      .utc();
+    visitDate = visitDate.utc().set({
+      hour: 0,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    });
 
     const workerBusyAvailabilityDates = await getWorkerBusyAvailabilityHours(
       worker,
@@ -165,7 +161,6 @@ const createVisit = async (req, res) => {
     console.error(err);
   } finally {
     session.endSession();
-    console.log("Visit successfuly created!");
   }
 };
 
@@ -255,14 +250,26 @@ const getAllServiceDates = async (req, res) => {
   const serviceId = req.params.serviceId;
   const currentUser = req.user;
   let year = req.params.year;
-  const day = req.params.day;
-  const month = parseInt(req.params.month) - 1;
+  let day = req.params.day;
+  let month = req.params.month;
   // If date not provided set todays date as default
-  if (year == null && month == null && day == null) {
+  if (year == null || month == null || day == null) {
     year = moment().utc().year();
-    month = moment().utc().month();
+    month = moment().utc().month() + 1;
     day = moment().utc().date();
   }
+
+  const visitDate = moment()
+    .utc()
+    .set({
+      year: year,
+      month: month - 1,
+      date: day,
+      hour: 0,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+    });
 
   // Start new transaction's session
   const session = await mongoose.startSession();
@@ -287,11 +294,12 @@ const getAllServiceDates = async (req, res) => {
       serviceDuration
     );
 
-    const hoursAvailabilityInfo = getAvailableHoursForWorkers(
+    const workersAvailableHours = await getAvailableHoursForWorkers(
       workers,
       serviceDuration,
       9,
-      17
+      17,
+      visitDate
     );
 
     await session.commitTransaction();
@@ -301,8 +309,8 @@ const getAllServiceDates = async (req, res) => {
       workers,
       selectedWorker: null,
       service,
-      date: { year, month: req.params.month, day },
-      availableHours: null,
+      date: { year, month, day },
+      availableHours: workersAvailableHours,
       workerDatesAvailabilityInfo: null,
       allDatesAvailabilityInfo,
     });

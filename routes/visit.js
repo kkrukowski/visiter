@@ -12,6 +12,10 @@ const {
 
 router.get("/:id", getAllClientVisits);
 router.get("/book/:serviceId", getAllServiceDates);
+router.get(
+  "/book/:serviceId/day/:day/month/:month/year/:year",
+  getAllServiceDates
+);
 router.get("/book/:serviceId/worker/:workerId", getAllServiceDates);
 router.get(
   "/book/:serviceId/worker/:workerId/day/:day/month/:month/year/:year/hour/:hour/minute/:minute",

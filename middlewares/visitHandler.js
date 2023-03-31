@@ -22,22 +22,10 @@ const updateAvailability = async (
   try {
     const timesToUpdate = getTimesToUpdate(time, serviceDuration);
 
-    // Update worker availability
-    // const worker = await User.findOne({
-    //   _id: ObjectId(workerId),
-    //   "workerBusyAvailability.date": moment(date).utc(),
-    // }).session(session);
-    // console.log("worker", worker);
-
-    // if (!worker) throw new Error("Worker not found!");
-
-    // const worker = await User.findOne(workerId);
-    // console.log(worker);
-
     const updateWorker = await User.updateOne(
       {
         _id: ObjectId(workerId),
-        "workerBusyAvailability.date": moment(date).utc(),
+        "workerBusyAvailability.date": new Date(date),
       },
       {
         $addToSet: {
@@ -45,12 +33,10 @@ const updateAvailability = async (
         },
       }
     ).session(session);
-    console.log(updateWorker);
     if (!updateWorker)
       throw new Error("Worker not found or wrong data provided!");
 
     // Add new item if not found
-    console.log("UPDATING", updateWorker, timesToUpdate);
     if (updateWorker.modifiedCount === 0) {
       const updateWorker = await User.updateOne(
         {
@@ -59,7 +45,7 @@ const updateAvailability = async (
         {
           $addToSet: {
             workerBusyAvailability: {
-              date: moment(date).utc(),
+              date: new Date(date),
               hours: timesToUpdate,
             },
           },
@@ -156,8 +142,6 @@ const getWorkerBusyAvailabilityDates = async (
     currentDate = currentDate.add(1, "day");
   }
 
-  // console.log(workerDatesAvailabilityInfo);
-
   return workerDatesAvailabilityInfo;
 };
 
@@ -214,19 +198,26 @@ const getAvailableHoursForWorkers = async (
   endHour,
   searchingDate
 ) => {
-  console.log("AVAILABLE WORKERS HOURS");
-  if (searchingDate == null) {
-    searchingDate = moment();
+  // Create array of available hours
+  let workersBusyHours = [];
+  for (const worker of workers) {
+    let busyHours = await getWorkerBusyAvailabilityHours(worker, searchingDate);
+    console.log(busyHours);
+    workersBusyHours = workersBusyHours.concat(busyHours);
   }
 
-  // Create array of available hours
-  let workersAvailableHours = [];
-  for (const worker of workers) {
-    const busyHours = await getWorkerBusyAvailabilityHours(
-      worker,
-      searchingDate
-    );
-  }
+  console.log(workersBusyHours);
+
+  const workersAvailableHours = await getAvailableHours(
+    serviceDuration,
+    workersBusyHours,
+    startHour,
+    endHour
+  );
+
+  console.log(workersAvailableHours);
+
+  return workersAvailableHours;
 };
 
 // VISITS UPDATING
