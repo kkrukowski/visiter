@@ -5,17 +5,12 @@ const OpinionForUser = require("../models/OpinionForUser");
 const Service = require("../models/Service");
 const mongoose = require("mongoose");
 
+
 const registerView = async (req, res) => {
   try {
     if (req.user.role == "User") {
-      const business = await Business.findOne({ ownerId: req.user._id }).populate(["ownerId", "workerks", "opinions", "services"]).exec();
-      const opinions = await Opinion.find({ "_id": { $in: business.opinions } }).populate("ownerId").exec();
-      return res.render("business", {
-        currentUser: req.user,
-        user: req.user,
-        business,
+      return res.render("businessRegister", {
         message: "",
-        opinions: opinions
       });
     } else {
       throw new Error("Jesteś właścicielem lub pracownikiem.");
@@ -49,32 +44,30 @@ const registerBusiness = async (req, res) => {
     } else {
       listOfTags = [];
     }
-    await User.findByIdAndUpdate(req.user._id, { role: "Owner" }, { session }).exec();
+    await User.findByIdAndUpdate(req.user._id, { role: "Owner" }).exec();
     const newBusiness = new Business({
       name: correctName,
       description: correctDesc,
       phone: req.body.phone,
       address: req.body.address,
-      ownerId: req.user,
+      ownerId: req.user._id,
       tags: listOfTags
     });
-    newBusiness.save();
-    const business = await Business.findOne({ ownerId: req.user._id }).populate(["ownerId", "workerks", "opinions", "services"]).exec();
-    const opinions = await Opinion.find({ "_id": { $in: business.opinions } }).populate("ownerId").exec();
-    await session.commitTransaction();
-    return res.render("business", {
-      currentUser: req.user,
-      user: req.user,
-      business,
-      message: "",
-      opinions: opinions
-    });
+    newBusiness.save(function(err, business){
+      return res.render("home", {
+        user: req.user,
+        business: business,
+        message: "Stworzono firme!",
+      });
+    }, {session});
   } catch (err) {
     await session.abortTransaction();
+    console.log(err);
     return res.render("businessRegister", {
       message: "Nie udało się stworzyć firmy."
     });
   } finally {
+    session.commitTransaction(); // musi byc tutaj, poniewaz nie moze sie znajdowac w callbacku newBusiness.save()
     await session.endSession();
   }
 };
@@ -133,7 +126,7 @@ const getAllBusiness = async (req, res) => {
         businesses.docs.forEach(bussines => {
           filteredBusinessesIds.push(bussines._id);
         })
-        Business.find({_id: { $in: filteredBusinessesIds }}).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
+        Business.find({ _id: { $in: filteredBusinessesIds } }).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
           console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
