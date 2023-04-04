@@ -44,7 +44,9 @@ const registerBusiness = async (req, res) => {
     } else {
       listOfTags = [];
     }
-    await User.findByIdAndUpdate(req.user._id, { role: "Owner" }).exec();
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, { role: "Owner" }).exec();
+    if (!updatedUser) throw new Error("Updating user role failed!")
+    
     const newBusiness = new Business({
       name: correctName,
       description: correctDesc,
@@ -53,21 +55,24 @@ const registerBusiness = async (req, res) => {
       ownerId: req.user._id,
       tags: listOfTags
     });
-    newBusiness.save(function(err, business){
-      return res.render("home", {
+    newBusiness.save(async function(err, business){
+      if (err) throw new Error(err)
+      await session.commitTransaction(); // musi byc tutaj, poniewaz nie moze sie znajdowac w callbacku newBusiness.save()
+
+      return res.status(200).render("home", {
         user: req.user,
         business: business,
         message: "Stworzono firme!",
       });
     }, {session});
+    
   } catch (err) {
     await session.abortTransaction();
     console.log(err);
-    return res.render("businessRegister", {
+    return res.status(401).render("businessRegister", {
       message: "Nie udało się stworzyć firmy."
     });
   } finally {
-    session.commitTransaction(); // musi byc tutaj, poniewaz nie moze sie znajdowac w callbacku newBusiness.save()
     await session.endSession();
   }
 };
