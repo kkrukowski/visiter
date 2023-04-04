@@ -220,10 +220,12 @@
           </button>
           <div class="dropdown" id="dropdown">
             <div class="dropdown--content" id="dropdown--content">
-              <% tags = ["Kurs", "Pomoc", "ALEJAJA", "JAKIES INNE GOWNO", "cos w tym styul"] %>
+              <% tags = ['Fryzjerstwo', 'Sprzątanie', 'Kurs', 'Nauka', 'Turystyka', 'Pomoc'].sort() %>
               <% tags.forEach(function(tag){ %>
-              <input type="checkbox" class="tag" value="<%= tag %>">
-                <label for="tag"> <%= tag %></label>
+                <div class="dropdown--content--tag">
+                  <input type="checkbox" class="tag" id="<%= tag %>"value="<%= tag %>">
+                  <label for="<%= tag %>"><%= tag%></label>
+                </div>
               <% }); %>
             </div>
           </div>
@@ -472,13 +474,15 @@
       var dropdownContent = document.getElementById("dropdown--content");
       var category = document.getElementById("category");
       var categoryText = document.getElementsByClassName("category--text")[0];
+      var tags = document.getElementsByClassName("tag")[0];
       category.addEventListener("click", showOptions);
       function showOptions(){
-          console.log("xdd")
-          dropdownContent.style.display = "block";
+          dropdownContent.style.display = "flex";
       }
       window.onclick = function(event) {
-          if (event.target != category && event.target != dropdownContent && event.target != categoryText) {
+        console.log(event.target);
+        console.log(event.target != tags);
+          if (event.target != category && event.target != dropdownContent && event.target != categoryText && event.target != tags) {
               dropdownContent.style.display = "none";
           }
         }
