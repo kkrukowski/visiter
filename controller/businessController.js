@@ -108,7 +108,7 @@ const getPagination = (page, size) => {
 
 const getAllBusiness = async (req, res) => {
   const { limit, offset } = getPagination(req.query.page - 1, 3);
-  console.log(req.query);
+  //console.log(req.query);
   const searchName = req.query.name;
   const searchLocation = req.query.location;
   if (searchName != null || searchLocation != null) {

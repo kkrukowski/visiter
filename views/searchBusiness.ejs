@@ -218,12 +218,14 @@
               />
             </svg>
           </button>
-          <div class="dropdown--content" id="dropdown">
-            <% tags = ["Kurs", "Pomoc", "ALEJAJA", "JAKIES INNE GOWNO", "cos w tym styul"] %>
-            <% tags.forEach(function(tag){ %>
-            <input type="checkbox" class="tag" value="<%= tag %>">
-              <label for="tag"> <%= tag %></label>
-            <% }); %>
+          <div class="dropdown" id="dropdown">
+            <div class="dropdown--content" id="dropdown--content">
+              <% tags = ["Kurs", "Pomoc", "ALEJAJA", "JAKIES INNE GOWNO", "cos w tym styul"] %>
+              <% tags.forEach(function(tag){ %>
+              <input type="checkbox" class="tag" value="<%= tag %>">
+                <label for="tag"> <%= tag %></label>
+              <% }); %>
+            </div>
           </div>
         </form>
         <% if (businesses != undefined) { %>
@@ -464,24 +466,23 @@
         </div>
       </div>
     </main>
+    <script src="../js/script.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script>
-      var dropdownContent = document.getElementById("dropdown");
+      var dropdownContent = document.getElementById("dropdown--content");
       var category = document.getElementById("category");
       var categoryText = document.getElementsByClassName("category--text")[0];
-      var tags = document.getElementsByClassName("tag");
       category.addEventListener("click", showOptions);
-      
       function showOptions(){
-        dropdownContent.style.display = "block";
+          console.log("xdd")
+          dropdownContent.style.display = "block";
       }
       window.onclick = function(event) {
-        console.log(event.target);
-        if (event.target )
-        if (event.target != dropdownContent && event.target != category && event.target != categoryText && event.target != tags) {
-          console.log("ROZNE");
-          dropdownContent.style.display = "none";
+          if (event.target != category && event.target != dropdownContent && event.target != categoryText) {
+              dropdownContent.style.display = "none";
+          }
         }
-      }
+
     </script>
   </body>
 </html>
