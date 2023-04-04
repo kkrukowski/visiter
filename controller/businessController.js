@@ -46,7 +46,7 @@ const registerBusiness = async (req, res) => {
     }
     const updatedUser = await User.findByIdAndUpdate(req.user._id, { role: "Owner" }).exec();
     if (!updatedUser) throw new Error("Updating user role failed!")
-    
+
     const newBusiness = new Business({
       name: correctName,
       description: correctDesc,
@@ -55,7 +55,7 @@ const registerBusiness = async (req, res) => {
       ownerId: req.user._id,
       tags: listOfTags
     });
-    newBusiness.save(async function(err, business){
+    newBusiness.save(async function (err, business) {
       if (err) throw new Error(err)
       await session.commitTransaction(); // musi byc tutaj, poniewaz nie moze sie znajdowac w callbacku newBusiness.save()
 
@@ -64,8 +64,8 @@ const registerBusiness = async (req, res) => {
         business: business,
         message: "Stworzono firme!",
       });
-    }, {session});
-    
+    }, { session });
+
   } catch (err) {
     await session.abortTransaction();
     console.log(err);
@@ -108,10 +108,11 @@ const getPagination = (page, size) => {
 
 const getAllBusiness = async (req, res) => {
   const { limit, offset } = getPagination(req.query.page - 1, 3);
-  //console.log(req.query);
+  console.log(req.query);
   const searchName = req.query.name;
   const searchLocation = req.query.location;
-  if (searchName != null || searchLocation != null) {
+  const searchTags = req.query.tags;
+  if (searchName != null || searchLocation != null || searchTags != null) {
     Business.paginate(
       {
         $and: [
@@ -121,6 +122,7 @@ const getAllBusiness = async (req, res) => {
               { description: { $regex: searchName } },
             ],
           },
+          { tags: { $in: searchTags } },
           { address: { $regex: searchLocation } },
         ],
       },
@@ -132,7 +134,7 @@ const getAllBusiness = async (req, res) => {
           filteredBusinessesIds.push(bussines._id);
         })
         Business.find({ _id: { $in: filteredBusinessesIds } }).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
-          console.log(businessesWithServices);
+          //console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,
