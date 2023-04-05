@@ -150,8 +150,7 @@
                 />
               </svg>
             </div>
-            <%= searchData.searchName == null %>
-            <% if (searchData.searchName != null) { %>
+            <% if (searchData.searchName != null && searchData.searchLocation != '') { %>
             <input
               type="text"
               name="name"
@@ -194,7 +193,7 @@
                 clip-rule="evenodd"
               />
             </svg>
-            <% if (searchData.searchLocation != null) { %>
+            <% if (searchData.searchLocation != null && searchData.searchLocation != '') { %>
             <input
               type="text"
               name="location"

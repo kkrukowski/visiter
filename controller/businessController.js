@@ -112,17 +112,17 @@ const getAllBusiness = async (req, res) => {
   const searchName = req.query.name;
   const searchLocation = req.query.location;
   const searchTags = req.query.tags;
-  if (searchName != null || searchLocation != null || searchTags != null) {
+  if ((searchName != null && searchName != '') || (searchLocation != null && searchName != '') || searchTags != null) {
     Business.paginate(
       {
         $and: [
           {
-            $or: [
+            $or: [  
               { name: { $regex: searchName } },
               { description: { $regex: searchName } },
+              { tags: { $in: searchTags } },
             ],
           },
-          { tags: { $in: searchTags } },
           { address: { $regex: searchLocation } },
         ],
       },
@@ -132,7 +132,7 @@ const getAllBusiness = async (req, res) => {
         const filteredBusinessesIds = [];
         businesses.docs.forEach(bussines => {
           filteredBusinessesIds.push(bussines._id);
-        })
+        });
         Business.find({ _id: { $in: filteredBusinessesIds } }).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
           //console.log(businessesWithServices);
           return res.render("searchBusiness", {
@@ -150,6 +150,7 @@ const getAllBusiness = async (req, res) => {
         });
       })
       .catch((err) => {
+        console.log(err);
         return res.render("searchBusiness");
       });
   } else {
@@ -160,7 +161,7 @@ const getAllBusiness = async (req, res) => {
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,
-            searchData: { searchName: null, searchLocation: null },
+            searchData: { searchName, searchLocation },
             paginationData: {
               totalPages: businesses.totalPages,
               totalDocs: businesses.totalDocs,
@@ -172,7 +173,8 @@ const getAllBusiness = async (req, res) => {
         });
       })
       .catch((err) => {
-        return res.render("searchBusiness");
+        console.log("halo55");
+        return res.render("home");
       });
   }
 };
