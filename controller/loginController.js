@@ -39,36 +39,38 @@ const registerView = (req, res) => {
 };
 
 const forgetPasswordView = (req, res) => {
-  return res.render("forgetPassword");
+  return res.status(200).render("forgetPassword");
 };
 
 const loginUser = (req, res, next) => {
-  passport.authenticate("local", function (err, user, info) {
-    // Password error
-    if (err)
-      return res
-        .status(401)
-        .render("login", { message: "Nieprawidłowe hasło." });
-    // Mail error
-    if (!user)
-      return res
-        .status(401)
-        .render("login", { message: "Nieprawidłowe dane logowania." });
-    req.logIn(user, async (err) => {
-      if (err)
-        return res
-          .status(401)
-          .render("login", { message: "Błąd podczas logowania." });
-      return res.status(200).render("home", {
-        user: req.user,
-        business:
-          req.user.role == "Owner"
-            ? await Business.findOne({ ownerId: req.user._id }).exec()
-            : await Business.findOne({ workers: req.user._id }).exec(),
-        message: "",
+  try {
+    passport.authenticate("local", function (err, user, info) {
+      if (!user || err) {
+        return res.status(401).render("login", {
+          message: "Nieprawidłowe dane logowania.",
+        });
+      }
+      req.logIn(user, async (err) => {
+        if (err) {
+          return res.status(401).render("login", {
+            message: "Błąd podczas logowania.",
+          });
+        }
+        return res.status(200).render("home", {
+          user: req.user,
+          business:
+            req.user.role == "Owner"
+              ? await Business.findOne({ ownerId: req.user._id }).exec()
+              : await Business.findOne({ workers: req.user._id }).exec(),
+          message: "",
+        });
       });
+    })(req, res, next);
+  } catch (err) {
+    return res.status(401).render("login", {
+      message: err.message,
     });
-  })(req, res, next);
+  }
 };
 
 const logOutUser = (req, res) => {

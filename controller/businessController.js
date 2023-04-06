@@ -44,7 +44,9 @@ const registerBusiness = async (req, res) => {
     } else {
       listOfTags = [];
     }
-    await User.findByIdAndUpdate(req.user._id, { role: "Owner" }).exec();
+    const updatedUser = await User.findByIdAndUpdate(req.user._id, { role: "Owner" }).exec();
+    if (!updatedUser) throw new Error("Updating user role failed!")
+
     const newBusiness = new Business({
       name: correctName,
       description: correctDesc,
@@ -53,21 +55,24 @@ const registerBusiness = async (req, res) => {
       ownerId: req.user._id,
       tags: listOfTags
     });
-    newBusiness.save(function(err, business){
-      return res.render("home", {
+    newBusiness.save(async function (err, business) {
+      if (err) throw new Error(err)
+      await session.commitTransaction(); // musi byc tutaj, poniewaz nie moze sie znajdowac w callbacku newBusiness.save()
+
+      return res.status(200).render("home", {
         user: req.user,
         business: business,
         message: "Stworzono firme!",
       });
-    }, {session});
+    }, { session });
+
   } catch (err) {
     await session.abortTransaction();
     console.log(err);
-    return res.render("businessRegister", {
+    return res.status(401).render("businessRegister", {
       message: "Nie udało się stworzyć firmy."
     });
   } finally {
-    session.commitTransaction(); // musi byc tutaj, poniewaz nie moze sie znajdowac w callbacku newBusiness.save()
     await session.endSession();
   }
 };
@@ -106,14 +111,16 @@ const getAllBusiness = async (req, res) => {
   console.log(req.query);
   const searchName = req.query.name;
   const searchLocation = req.query.location;
-  if (searchName != null || searchLocation != null) {
+  const searchTags = req.query.tags;
+  if ((searchName != null && searchName != '') || (searchLocation != null && searchName != '') || searchTags != null) {
     Business.paginate(
       {
         $and: [
           {
-            $or: [
+            $or: [  
               { name: { $regex: searchName } },
               { description: { $regex: searchName } },
+              { tags: { $in: searchTags } },
             ],
           },
           { address: { $regex: searchLocation } },
@@ -125,9 +132,9 @@ const getAllBusiness = async (req, res) => {
         const filteredBusinessesIds = [];
         businesses.docs.forEach(bussines => {
           filteredBusinessesIds.push(bussines._id);
-        })
+        });
         Business.find({ _id: { $in: filteredBusinessesIds } }).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
-          console.log(businessesWithServices);
+          //console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,
@@ -143,6 +150,7 @@ const getAllBusiness = async (req, res) => {
         });
       })
       .catch((err) => {
+        console.log(err);
         return res.render("searchBusiness");
       });
   } else {
@@ -153,7 +161,7 @@ const getAllBusiness = async (req, res) => {
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,
-            searchData: { searchName: null, searchLocation: null },
+            searchData: { searchName, searchLocation },
             paginationData: {
               totalPages: businesses.totalPages,
               totalDocs: businesses.totalDocs,
@@ -165,7 +173,8 @@ const getAllBusiness = async (req, res) => {
         });
       })
       .catch((err) => {
-        return res.render("searchBusiness");
+        console.log("halo55");
+        return res.render("home");
       });
   }
 };

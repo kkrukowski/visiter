@@ -16,11 +16,13 @@
 
 /* Search form */
 .search--form{
+    position: relative;
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     height: 60px;
-    width: fit-content;
+    width: 100%;
     padding: 0 5px 0 10px;
     margin: 40px 0 20px 0;
     border-radius: 50px;
@@ -41,10 +43,14 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    min-width: 300px;
-    width: auto
+    width: 30%;
 }
-
+.search__input--wrapper input{
+    width: 100%;
+}
+.location__input--wrapper input{
+    width: 80%;
+}
 .search--separator{
     height: 100%;
     width: 3px;
@@ -53,9 +59,12 @@
 }
 
 .search--btn{
+    position: absolute;
+    right:0;
     height: calc(100% - 10px);
     margin-left: 10px;
     border-radius: 100px;
+    margin-right: 10px;
 }
 
 .search__btn--icon{
@@ -285,4 +294,39 @@
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
     background: #2e3155;
+}
+
+/* DROPDOWN */
+.category{
+    color:grey;
+    min-width: 100%;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+}
+.category--text{
+    padding-left: 17px;
+}
+.dropdown{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+.dropdown--content{
+    display: none;
+    background-color: #ffffff;
+
+    width: 70%;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-radius: 0px 0px 25px 25px;
+    border: 3px solid #33365E;
+}
+.dropdown--content--tag{
+    margin: 15px;
+    width: 40%
+}
+.dropdown--content--tag input{
+    width: 14px;
+    height: 14px;
 }
