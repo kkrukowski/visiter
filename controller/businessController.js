@@ -28,6 +28,10 @@ const registerBusiness = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
+    const isUserOwner = await Business.find({"ownerId": req.user._id}).exec();
+
+    if(isUserOwner) throw new Error("Użytkownik jest właścicielem.");
+
     const correctName =
       req.body.name.charAt(0).toUpperCase() +
       req.body.name.slice(1).toLowerCase();
