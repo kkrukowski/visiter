@@ -30,24 +30,26 @@ app.use("/business/visits", () => {});
 app.use("/", routes);
 
 // MongoDB connection
-createDbConnection();
+// createDbConnection();
 
 // Socket server
 createSocketServer(server);
 
+// console.log("Database Connecting..");
 const mongoString = process.env.DATABASE_URL;
 mongoose
   .connect(mongoString)
   .then(() => {
-    console.log("Database Connected");
+    // console.log("Database Connected");
 
     if (process.env.NODE_ENV !== "test") {
       server.listen(port, () => {
-        console.log(`Server started on port ${port}!`);
+        // console.log(`Server started on port ${port}!`);
       });
     }
   })
   .catch((err) => {
+    console.warn("Database Connecting Error!");
     console.log(err);
   });
 

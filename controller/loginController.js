@@ -39,32 +39,36 @@ const registerView = (req, res) => {
 };
 
 const forgetPasswordView = (req, res) => {
-  return res.render("forgetPassword");
+  return res.status(200).render("forgetPassword");
 };
 
 const loginUser = (req, res, next) => {
   try {
     passport.authenticate("local", function (err, user, info) {
-      if (err) {
-        throw new Error("Nieprawidłowe dane logowania.");
-      }
-      if (!user) {
-        throw new Error("Nieprawidłowe dane logowania.");
+      if (!user || err) {
+        return res.status(401).render("login", {
+          message: "Nieprawidłowe dane logowania.",
+        });
       }
       req.logIn(user, async (err) => {
         if (err) {
-          throw new Error("Błąd podczas logowania.");
+          return res.status(401).render("login", {
+            message: "Błąd podczas logowania.",
+          });
         }
         return res.status(200).render("home", {
           user: req.user,
-          business: req.user.role == "Owner" ? await Business.findOne({ ownerId: req.user._id }).exec() : await Business.findOne({ workers: req.user._id }).exec(),
-          message: ""
+          business:
+            req.user.role == "Owner"
+              ? await Business.findOne({ ownerId: req.user._id }).exec()
+              : await Business.findOne({ workers: req.user._id }).exec(),
+          message: "",
         });
       });
     })(req, res, next);
   } catch (err) {
     return res.status(401).render("login", {
-      message: err.message
+      message: err.message,
     });
   }
 };
