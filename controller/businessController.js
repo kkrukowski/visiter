@@ -28,9 +28,9 @@ const registerBusiness = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const isUserOwner = await Business.find({"ownerId": req.user._id}).exec();
+    const isUserOwner = await Business.find({ "ownerId": req.user._id }).exec();
 
-    if(isUserOwner) throw new Error("Użytkownik jest właścicielem.");
+    if (isUserOwner) throw new Error("Użytkownik jest właścicielem.");
 
     const correctName =
       req.body.name.charAt(0).toUpperCase() +
@@ -121,7 +121,7 @@ const getAllBusiness = async (req, res) => {
       {
         $and: [
           {
-            $or: [  
+            $or: [
               { name: { $regex: searchName } },
               { description: { $regex: searchName } },
               { tags: { $in: searchTags } },
