@@ -103,7 +103,7 @@ const homeView = async (req, res) => {
 };
 
 
-const getPagination = (page, size) => {
+const getPagination = async (page, size) => {
   const limit = size ? +size : 3;
   const offset = page ? page * limit : 0;
 
@@ -111,23 +111,24 @@ const getPagination = (page, size) => {
 };
 
 const getAllBusiness = async (req, res) => {
-  const { limit, offset } = getPagination(req.query.page - 1, 3);
+  const { limit, offset } = await getPagination(req.query.page - 1, 3);
   console.log(req.query);
   const searchName = req.query.name;
   const searchLocation = req.query.location;
   const searchTags = req.query.tags;
-  if ((searchName != null && searchName != '') || (searchLocation != null && searchName != '') || searchTags != null) {
+  if ((searchName != null && searchName != '') || (searchLocation != null && searchLocation != '') || searchTags != null) {
+    console.log(limit, offset)
     Business.paginate(
       {
         $and: [
           {
             $or: [
-              { name: { $regex: searchName } },
-              { description: { $regex: searchName } },
+              { name: { $regex: searchName, $options: 'i' } },
+              { description: { $regex: searchName, $options: 'i' } },
               { tags: { $in: searchTags } },
             ],
+            address: { $regex: searchLocation, $options: 'i'  },
           },
-          { address: { $regex: searchLocation } },
         ],
       },
       { offset, limit }
@@ -138,7 +139,6 @@ const getAllBusiness = async (req, res) => {
           filteredBusinessesIds.push(bussines._id);
         });
         Business.find({ _id: { $in: filteredBusinessesIds } }).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
-          //console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,
@@ -155,13 +155,12 @@ const getAllBusiness = async (req, res) => {
       })
       .catch((err) => {
         console.log(err);
-        return res.render("searchBusiness");
+        return res.render("searchBusiness", {user: req.user});
       });
   } else {
     Business.paginate({}, { offset, limit })
       .then((businesses) => {
         Business.find({}).populate("services").exec((err, businessesWithServices) => {
-          //console.log(businessesWithServices);
           return res.render("searchBusiness", {
             user: req.user,
             businesses: businessesWithServices,
@@ -177,7 +176,6 @@ const getAllBusiness = async (req, res) => {
         });
       })
       .catch((err) => {
-        console.log("halo55");
         return res.render("home");
       });
   }
