@@ -136,22 +136,18 @@
     <!-- Main block -->
     <main class="main">
       <div>
-        <% if(selectedWorker == null) { %>
+        <% workers.forEach((worker) => { %> <% if (worker.id === selectedWorker)
+        { %>
         <a
-          href="/visits/book/<%= service.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
-          >Dowolny pracownik</a
+          href="/visits/book/<%= service.id %>/worker/<%= worker.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
+          >*<%= worker.name %></a
         >
         <% } else { %>
-        <a
-          href="/visits/book/<%= service.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
-          >Dowolny pracownik</a
-        >
-        <% } %> <% workers.forEach((worker) => { %>
         <a
           href="/visits/book/<%= service.id %>/worker/<%= worker.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
           ><%= worker.name %></a
         >
-        <% }) %>
+        <% } %> <% }) %>
       </div>
       <div>
         <h3>Dni</h3>

@@ -1,8 +1,5 @@
 const server = require("../index");
 const request = require("supertest");
-const axios = require("axios");
-
-jest.mock("axios");
 
 describe("POST /login", () => {
   it("should login with correct login data", async () => {
