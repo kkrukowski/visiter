@@ -55,11 +55,11 @@ const updateAvailability = async (
     }
 
     await session.commitTransaction();
-    res.send("Success");
+    console.log("Updated!");
+    return true;
   } catch (err) {
     await session.abortTransaction();
-    console.log(err);
-    res.send(err);
+    return err;
   } finally {
     session.endSession();
   }
@@ -206,7 +206,7 @@ const getAvailableHoursForWorkers = async (
     workersBusyHours = workersBusyHours.concat(busyHours);
   }
 
-  console.log(workersBusyHours);
+  console.log("Workers busy hours", workersBusyHours);
 
   const workersAvailableHours = await getAvailableHours(
     serviceDuration,
@@ -215,7 +215,7 @@ const getAvailableHoursForWorkers = async (
     endHour
   );
 
-  console.log(workersAvailableHours);
+  console.log("Workers availability hours", workersAvailableHours);
 
   return workersAvailableHours;
 };

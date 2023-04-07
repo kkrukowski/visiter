@@ -2,7 +2,7 @@ const Business = require("../models/Business");
 const User = require("../models/User");
 const Visit = require("../models/Visit");
 const Service = require("../models/Service");
-const ObjectId = require("mongoose").Types.ObjectId;
+const { getBusinessData } = require("../middlewares/authHandler");
 
 const moment = require("moment");
 const mongoose = require("mongoose");
@@ -78,6 +78,7 @@ const createVisit = async (req, res) => {
   const workerId = req.params.workerId;
   const clientId = req.user.id;
   const serviceId = req.params.serviceId;
+  const currentUser = req.user;
   const { year, hour, minute } = req.params;
   const day = req.params.day;
   const month = parseInt(req.params.month) - 1;
@@ -151,14 +152,20 @@ const createVisit = async (req, res) => {
         time,
         serviceDuration
       );
+      if (!updatedAvailability)
+        throw new Error("Updating availability failed!");
     } else {
       throw new Error("Date is not available!");
     }
 
     await session.commitTransaction();
+    return res.render("home", {
+      user: currentUser,
+      business: getBusinessData(currentUser),
+      message: "Pomyślnie zapisano na wizytę!",
+    });
   } catch (err) {
     await session.abortTransaction();
-    console.error(err);
   } finally {
     session.endSession();
   }
@@ -230,7 +237,7 @@ const getAvailableHoursForWorker = async (req, res) => {
     // Get workers
     const workers = await User.find({ _id: workersIds });
 
-    return res.render("visit", {
+    return res.status(200).render("visit", {
       user: currentUser,
       business,
       workers,
@@ -307,7 +314,7 @@ const getAllServiceDates = async (req, res) => {
       user: currentUser,
       business,
       workers,
-      selectedWorker: null,
+      selectedWorker: workersIds[0],
       service,
       date: { year, month, day },
       availableHours: workersAvailableHours,
