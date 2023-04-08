@@ -55,7 +55,6 @@ const updateAvailability = async (
     }
 
     await session.commitTransaction();
-    console.log("Updated!");
     return true;
   } catch (err) {
     await session.abortTransaction();
@@ -156,6 +155,7 @@ const getServicesDatesForWorkers = async (
     if (searchingDate == null) {
       searchingDate = moment();
     }
+
     const workerDatesAvailabilityInfo = await getWorkerBusyAvailabilityDates(
       worker,
       searchingDate,
@@ -191,6 +191,38 @@ const getServicesDatesForWorkers = async (
   return allDatesAvailabilityInfo;
 };
 
+const areWorkersAvailableInGivenDay = async (
+  workers,
+  serviceDuration,
+  searchingDate
+) => {
+  // Get workers availability info
+  let workersDayAvailabilityInfo = [];
+  for (const worker of workers) {
+    if (searchingDate == null) {
+      searchingDate = moment();
+    }
+
+    const workerDatesAvailabilityInfo = await getWorkerBusyAvailabilityDates(
+      worker,
+      searchingDate,
+      serviceDuration
+    );
+
+    const isWorkerAvailable =
+      workerDatesAvailabilityInfo[searchingDate.date() - 1].isAvailable;
+
+    const workerDayAvailabilityObject = {
+      worker: worker,
+      isAvailable: isWorkerAvailable,
+    };
+
+    workersDayAvailabilityInfo.push(workerDayAvailabilityObject);
+  }
+
+  return workersDayAvailabilityInfo;
+};
+
 const getAvailableHoursForWorkers = async (
   workers,
   serviceDuration,
@@ -198,24 +230,28 @@ const getAvailableHoursForWorkers = async (
   endHour,
   searchingDate
 ) => {
+  const workersCount = workers.length;
   // Create array of available hours
-  let workersBusyHours = [];
+  let concatedWorkersBusyHours = [];
   for (const worker of workers) {
     let busyHours = await getWorkerBusyAvailabilityHours(worker, searchingDate);
-    console.log(busyHours);
-    workersBusyHours = workersBusyHours.concat(busyHours);
+    concatedWorkersBusyHours = concatedWorkersBusyHours.concat(busyHours);
   }
 
-  console.log("Workers busy hours", workersBusyHours);
+  const workersBusyHours = await createBusyHoursForMultipleWorkers(
+    concatedWorkersBusyHours,
+    startHour,
+    endHour,
+    workersCount
+  );
 
   const workersAvailableHours = await getAvailableHours(
     serviceDuration,
     workersBusyHours,
     startHour,
-    endHour
+    endHour,
+    workersCount
   );
-
-  console.log("Workers availability hours", workersAvailableHours);
 
   return workersAvailableHours;
 };
@@ -235,6 +271,32 @@ const isAbleToBook = async (busyHours, serviceDuration, time) => {
     return false;
   }
   return true;
+};
+
+const createBusyHoursForMultipleWorkers = async (
+  busyHours,
+  startHour,
+  endHour,
+  workersCount = 1
+) => {
+  let workersBusyHours = [];
+  for (let hour = startHour; hour < endHour; hour++) {
+    for (let minute = 0; minute < 60; minute += 20) {
+      const checkedTime =
+        (hour < 10 ? "0" : "") + hour + ":" + (minute < 10 ? "0" : "") + minute;
+
+      const countOfTimes = busyHours.filter(
+        (time) => time == checkedTime
+      ).length;
+
+      if (countOfTimes == workersCount) {
+        const time = [hour, (minute < 10 ? "0" : "") + minute];
+        workersBusyHours.push(time);
+      }
+    }
+  }
+
+  return workersBusyHours;
 };
 
 const getAvailableHours = async (
@@ -268,6 +330,7 @@ module.exports = {
   getWorkerBusyAvailabilityDates,
   getAvailableHoursForWorkers,
   getServicesDatesForWorkers,
+  areWorkersAvailableInGivenDay,
   isAbleToBook,
   getTimesToUpdate,
 };

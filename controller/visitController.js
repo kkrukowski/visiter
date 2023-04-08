@@ -15,6 +15,7 @@ const {
   getWorkerBusyAvailabilityDates,
   getServicesDatesForWorkers,
   getAvailableHoursForWorkers,
+  areWorkersAvailableInGivenDay,
 } = require("../middlewares/visitHandler");
 
 // CLIENT VISITS
@@ -178,6 +179,8 @@ const getAvailableHoursForWorker = async (req, res) => {
   let year = req.params.year;
   const day = req.params.day;
   const month = parseInt(req.params.month) - 1;
+  const hour = req.params.hour;
+  const minute = req.params.minute;
   // If date not provided set today's date as default
   if (year == null && month == null && day == null) {
     year = moment().utc().year();
@@ -237,15 +240,22 @@ const getAvailableHoursForWorker = async (req, res) => {
     // Get workers
     const workers = await User.find({ _id: workersIds });
 
+    const workersDayAvailabilityInfo = await areWorkersAvailableInGivenDay(
+      workers,
+      serviceDuration,
+      searchingDate
+    );
+
     return res.status(200).render("visit", {
       user: currentUser,
       business,
       workers,
       selectedWorker: workerId,
       service,
-      date: { year, month: req.params.month, day },
+      date: { year, month: req.params.month, day, hour, minute },
       availableHours,
       workerDatesAvailabilityInfo,
+      workersDayAvailabilityInfo,
       allDatesAvailabilityInfo: null,
     });
   } catch (err) {
@@ -259,6 +269,8 @@ const getAllServiceDates = async (req, res) => {
   let year = req.params.year;
   let day = req.params.day;
   let month = req.params.month;
+  const hour = 0;
+  const minute = 0;
   // If date not provided set todays date as default
   if (year == null || month == null || day == null) {
     year = moment().utc().year();
@@ -272,60 +284,56 @@ const getAllServiceDates = async (req, res) => {
       year: year,
       month: month - 1,
       date: day,
-      hour: 0,
-      minute: 0,
+      hour: hour,
+      minute: minute,
       second: 0,
       millisecond: 0,
     });
 
-  // Start new transaction's session
-  const session = await mongoose.startSession();
-  session.startTransaction();
+  const service = await Service.findById(serviceId);
+  if (!service) throw new Error("Service not found");
 
-  try {
-    const service = await Service.findById(serviceId).session(session);
-    if (!service) throw new Error("Service not found");
+  const serviceDuration = service.duration;
+  const businessId = service.businessId;
 
-    const serviceDuration = service.duration;
-    const businessId = service.businessId;
+  const business = await Business.findById(businessId);
+  if (!business) throw new Error("Business not found");
+  const workersIds = business.workers;
 
-    const business = await Business.findById(businessId).session(session);
-    if (!business) throw new Error("Business not found");
-    const workersIds = business.workers;
+  const workers = await User.find({ _id: workersIds });
+  if (!workers) throw new Error("Workers not found");
 
-    const workers = await User.find({ _id: workersIds }).session(session);
-    if (!workers) throw new Error("Workers not found");
+  const allDatesAvailabilityInfo = await getServicesDatesForWorkers(
+    workers,
+    serviceDuration
+  );
 
-    const allDatesAvailabilityInfo = await getServicesDatesForWorkers(
-      workers,
-      serviceDuration
-    );
+  const workersAvailableHours = await getAvailableHoursForWorkers(
+    workers,
+    serviceDuration,
+    9,
+    17,
+    visitDate
+  );
 
-    const workersAvailableHours = await getAvailableHoursForWorkers(
-      workers,
-      serviceDuration,
-      9,
-      17,
-      visitDate
-    );
+  const workersDayAvailabilityInfo = await areWorkersAvailableInGivenDay(
+    workers,
+    serviceDuration,
+    visitDate
+  );
 
-    await session.commitTransaction();
-    return res.render("visit", {
-      user: currentUser,
-      business,
-      workers,
-      selectedWorker: workersIds[0],
-      service,
-      date: { year, month, day },
-      availableHours: workersAvailableHours,
-      workerDatesAvailabilityInfo: null,
-      allDatesAvailabilityInfo,
-    });
-  } catch (err) {
-    session.abortTransaction();
-  } finally {
-    session.endSession();
-  }
+  return res.render("visit", {
+    user: currentUser,
+    business,
+    workers,
+    selectedWorker: workersIds[0],
+    service,
+    date: { year, month, day, hour, minute },
+    availableHours: workersAvailableHours,
+    workerDatesAvailabilityInfo: null,
+    workersDayAvailabilityInfo,
+    allDatesAvailabilityInfo,
+  });
 };
 
 module.exports = {
