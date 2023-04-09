@@ -115,8 +115,13 @@ const getWorkerBusyAvailabilityDates = async (
   while (currentDate <= endMonth) {
     let availabilityObject = {
       day: currentDate.date(),
-      isAvailable: null,
+      isAvailable: false,
     };
+    if (currentDate.isBefore(moment().utc(moment()), "day")) {
+      workerDatesAvailabilityInfo.push(availabilityObject);
+      currentDate = currentDate.add(1, "day");
+      continue;
+    }
     if (
       workerAvailabilityInfo.some((e) =>
         moment(e.date).utc().isSame(currentDate)
@@ -133,7 +138,6 @@ const getWorkerBusyAvailabilityDates = async (
         17
       );
       if (availableHours.length > 0) availabilityObject.isAvailable = true;
-      else availabilityObject.isAvailable = false;
     } else {
       availabilityObject.isAvailable = true;
     }
@@ -168,6 +172,7 @@ const getServicesDatesForWorkers = async (
   // Create array of day availability info object
   const startMonth = moment(searchingDate).startOf("month");
   const endMonth = moment(searchingDate).endOf("month");
+  const currentDay = moment(searchingDate).date();
 
   let allDatesAvailabilityInfo = [];
 
@@ -179,7 +184,10 @@ const getServicesDatesForWorkers = async (
     let dayObject = { day: dayIndex, isAvailable: false };
     for (let workerIndex = 0; workerIndex < workers.length; workerIndex++) {
       // Check availability for a day
-      if (workersDatesAvailabilityInfo[workerIndex][dayIndex - 1].isAvailable) {
+      if (
+        workersDatesAvailabilityInfo[workerIndex][dayIndex - 1].isAvailable &&
+        dayIndex >= currentDay
+      ) {
         dayObject.isAvailable = true;
         break;
       }
@@ -234,7 +242,11 @@ const getAvailableHoursForWorkers = async (
   // Create array of available hours
   let concatedWorkersBusyHours = [];
   for (const worker of workers) {
-    let busyHours = await getWorkerBusyAvailabilityHours(worker, searchingDate);
+    let busyHours = await getWorkerBusyAvailabilityHours(
+      worker,
+      searchingDate,
+      startHour
+    );
     concatedWorkersBusyHours = concatedWorkersBusyHours.concat(busyHours);
   }
 
@@ -244,6 +256,19 @@ const getAvailableHoursForWorkers = async (
     endHour,
     workersCount
   );
+
+  // Add past hours as busy hours
+  if (
+    searchingDate.startOf("day").isSame(moment().utc().startOf("day")) ||
+    searchingDate.startOf("day").isBefore(moment().utc().startOf("day"))
+  ) {
+    const currentDate = new Date(moment().utc(new Date()));
+    let checkingTime = moment.utc(startHour, "HH:mm");
+    while (checkingTime <= new Date(currentDate)) {
+      workersBusyHours.push([checkingTime.hours(), checkingTime.minutes()]);
+      checkingTime.add(20, "minutes").utc();
+    }
+  }
 
   const workersAvailableHours = await getAvailableHours(
     serviceDuration,
@@ -290,7 +315,7 @@ const createBusyHoursForMultipleWorkers = async (
       ).length;
 
       if (countOfTimes == workersCount) {
-        const time = [hour, (minute < 10 ? "0" : "") + minute];
+        const time = [hour.toString(), (minute < 10 ? "0" : "") + minute];
         workersBusyHours.push(time);
       }
     }

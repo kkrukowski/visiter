@@ -196,7 +196,23 @@ const getAvailableHoursForWorker = async (req, res) => {
     second: 0,
     millisecond: 0,
   });
+
+  const currentDate = moment();
   const currentUser = req.user;
+
+  if (
+    searchingDate.isBefore(currentDate) &&
+    !searchingDate.isSame(moment().utc(moment()).startOf("day"))
+  ) {
+    return res.render("home", {
+      user: currentUser,
+      business:
+        req.user.role == "Owner"
+          ? await Business.findOne({ ownerId: req.user._id }).exec()
+          : await Business.findOne({ workers: req.user._id }).exec(),
+      message: "Błędna data!",
+    });
+  }
   try {
     // Search worker
     const worker = await User.findById(workerId);
@@ -207,6 +223,36 @@ const getAvailableHoursForWorker = async (req, res) => {
       worker,
       searchingDate
     );
+
+    // Add past hours as busy hours
+    if (
+      searchingDate
+        .startOf("day")
+        .isSame(moment().utc(moment()).startOf("day")) ||
+      searchingDate
+        .startOf("day")
+        .isBefore(moment().utc(moment()).startOf("day"))
+    ) {
+      const currentDate = new Date(moment().utc(moment()));
+      let checkingTime = moment.utc("9:00", "HH:mm");
+      while (checkingTime <= new Date(currentDate)) {
+        busyHours.push(`${checkingTime.hours()}:${checkingTime.minutes()}`);
+        checkingTime.add(20, "minutes").utc();
+      }
+    }
+
+    if ((hour != null) & (minute != null)) {
+      if (busyHours.includes(`${hour}:${minute}`)) {
+        return res.render("home", {
+          user: currentUser,
+          business:
+            req.user.role == "Owner"
+              ? await Business.findOne({ ownerId: req.user._id }).exec()
+              : await Business.findOne({ workers: req.user._id }).exec(),
+          message: "Błędna data!",
+        });
+      }
+    }
 
     // Get service
     const service = await Service.findById(serviceId);
@@ -289,6 +335,24 @@ const getAllServiceDates = async (req, res) => {
       second: 0,
       millisecond: 0,
     });
+
+  const currentDate = moment().utc().set({
+    hour: 0,
+    minute: 0,
+    second: 0,
+    millisecond: 0,
+  });
+
+  if (visitDate.isBefore(currentDate)) {
+    return res.render("home", {
+      user: currentUser,
+      business:
+        req.user.role == "Owner"
+          ? await Business.findOne({ ownerId: req.user._id }).exec()
+          : await Business.findOne({ workers: req.user._id }).exec(),
+      message: "Błędna data!",
+    });
+  }
 
   const service = await Service.findById(serviceId);
   if (!service) throw new Error("Service not found");
