@@ -117,7 +117,12 @@ const getWorkerBusyAvailabilityDates = async (
       day: currentDate.date(),
       isAvailable: false,
     };
-    if (currentDate.isBefore(moment().utc(moment()), "day")) {
+    const currentDayOfWeek = currentDate.day();
+    if (
+      currentDate.isBefore(moment().utc(moment()), "day") ||
+      currentDayOfWeek == 0 ||
+      currentDayOfWeek == 6
+    ) {
       workerDatesAvailabilityInfo.push(availabilityObject);
       currentDate = currentDate.add(1, "day");
       continue;
@@ -183,10 +188,13 @@ const getServicesDatesForWorkers = async (
   ) {
     let dayObject = { day: dayIndex, isAvailable: false };
     for (let workerIndex = 0; workerIndex < workers.length; workerIndex++) {
+      const currentDayOfWeek = startMonth.set({ day: dayIndex - 2 }).day();
       // Check availability for a day
       if (
         workersDatesAvailabilityInfo[workerIndex][dayIndex - 1].isAvailable &&
-        dayIndex >= currentDay
+        dayIndex >= currentDay &&
+        currentDayOfWeek != 0 &&
+        currentDayOfWeek != 6
       ) {
         dayObject.isAvailable = true;
         break;
@@ -331,21 +339,59 @@ const getAvailableHours = async (
   endHour
 ) => {
   let availableHours = [];
-  for (let hour = startHour; hour < endHour; hour++) {
-    for (let minute = 0; minute < 60; minute += 20) {
+  // Calculate end time based on service duration
+  const endTime = moment()
+    .utc()
+    .set({ hours: endHour })
+    .subtract(serviceDuration, "minutes");
+  for (let hour = startHour; hour < endTime.hour(); hour++) {
+    let endMinute = 60;
+    if (hour == endTime.hour()) {
+      endMinute = endTime.minutes();
+    }
+    for (let minute = 0; minute < endMinute; minute += 20) {
       const checkedTime =
         (hour < 10 ? "0" : "") + hour + ":" + (minute < 10 ? "0" : "") + minute;
       if (
         !busyHours.includes(checkedTime) &&
         (await isAbleToBook(busyHours, serviceDuration, checkedTime)) === true
       ) {
-        const time = [hour, (minute < 10 ? "0" : "") + minute];
+        const time = [
+          (hour < 10 ? "0" : "") + hour,
+          (minute < 10 ? "0" : "") + minute,
+        ];
         availableHours.push(time);
       }
     }
   }
 
   return availableHours;
+};
+
+// VALIDATION
+// Is provided date valid
+const isProvidedDateValid = async (day, month, year, hour, minute) => {
+  console.log(day, month, year, hour, minute);
+  const inputDate = `${day}-${month}-${year}`;
+  console.log(inputDate);
+  // if (hour != null && minute != null) {
+  //   const inputTime = `${hour}:${minute}:00`;
+  //   const parsedDate = moment(
+  //     `${inputDate} ${inputTime}`,
+  //     "YYYY-MM-DD HH:mm:ss"
+  //   );
+  //   console.log(parsedDate);
+  //   if (parsedDate.isValid()) return true;
+  // } else {
+  //   const parsedDate = moment(inputDate, "YYYY-MM-DD");
+  //   console.log(parsedDate);
+  //   if (parsedDate.isValid()) return true;
+  // }
+  const inputTime = `${hour}:${minute}:00`;
+  console.log(inputTime);
+  const parsedDate = moment(`${inputDate} ${inputTime}`, "YYYY-MM-DD HH:mm:ss");
+  console.log(parsedDate);
+  return parsedDate.isValid();
 };
 
 module.exports = {
@@ -358,4 +404,5 @@ module.exports = {
   areWorkersAvailableInGivenDay,
   isAbleToBook,
   getTimesToUpdate,
+  isProvidedDateValid,
 };

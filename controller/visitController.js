@@ -16,6 +16,7 @@ const {
   getServicesDatesForWorkers,
   getAvailableHoursForWorkers,
   areWorkersAvailableInGivenDay,
+  isProvidedDateValid,
 } = require("../middlewares/visitHandler");
 
 // CLIENT VISITS
@@ -200,6 +201,7 @@ const getAvailableHoursForWorker = async (req, res) => {
   const currentDate = moment();
   const currentUser = req.user;
 
+  // Avoid same or before date
   if (
     searchingDate.isBefore(currentDate) &&
     !searchingDate.isSame(moment().utc(moment()).startOf("day"))
@@ -275,6 +277,25 @@ const getAvailableHoursForWorker = async (req, res) => {
       17
     );
 
+    // Avoid loading url in unavailable hour
+    if ((hour != null) & (minute != null)) {
+      const searchingTime = [hour, minute];
+      const isHourAvailable = availableHours.some(
+        (time) => time[0] === searchingTime[0] && time[1] === searchingTime[1]
+      );
+
+      if (!isHourAvailable) {
+        return res.render("home", {
+          user: currentUser,
+          business:
+            req.user.role == "Owner"
+              ? await Business.findOne({ ownerId: req.user._id }).exec()
+              : await Business.findOne({ workers: req.user._id }).exec(),
+          message: "Data jest niedostępna!",
+        });
+      }
+    }
+
     const businessId = service.businessId;
 
     // Get business
@@ -324,6 +345,18 @@ const getAllServiceDates = async (req, res) => {
     day = moment().utc().date();
   }
 
+  // If provided date data are invalid
+  if ((await isProvidedDateValid(year, day, month, hour, minute)) === false) {
+    return res.render("home", {
+      user: currentUser,
+      business:
+        req.user.role == "Owner"
+          ? await Business.findOne({ ownerId: req.user._id }).exec()
+          : await Business.findOne({ workers: req.user._id }).exec(),
+      message: "Wprowadzona data jest błędna!",
+    });
+  }
+
   const visitDate = moment()
     .utc()
     .set({
@@ -335,6 +368,21 @@ const getAllServiceDates = async (req, res) => {
       second: 0,
       millisecond: 0,
     });
+
+  // If searching date is weekend set it to future monday
+  // if (visitDate.day() === 6 || visitDate.day() === 0) {
+  //   const newDate = visitDate.add(1, "week").startOf("isoWeek");
+  //   const url = `/book/${serviceId}/day/${newDate.date()}/month/${newDate.month()}/year/${newDate.year()}`;
+  //   return res.redirect(url, async () => {
+  //     res.render("visit", {
+  //       user: currentUser,
+  //       business:
+  //         req.user.role == "Owner"
+  //           ? await Business.findOne({ ownerId: req.user._id }).exec()
+  //           : await Business.findOne({ workers: req.user._id }).exec(),
+  //     });
+  //   });
+  // }
 
   const currentDate = moment().utc().set({
     hour: 0,
