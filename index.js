@@ -35,6 +35,9 @@ app.use("/", routes);
 // Socket server
 createSocketServer(server);
 
+// Global variables
+global.tagsGlobal = ['Fryzjerstwo', 'Sprzątanie', 'Kurs', 'Nauka', 'Turystyka', 'Pomoc'].sort();
+
 // console.log("Database Connecting..");
 const mongoString = process.env.DATABASE_URL;
 mongoose

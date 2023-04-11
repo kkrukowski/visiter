@@ -220,11 +220,10 @@
           </button>
           <div class="dropdown" id="dropdown">
             <div class="dropdown--content" id="dropdown--content">
-              <% tags = ['Fryzjerstwo', 'Sprzątanie', 'Kurs', 'Nauka', 'Turystyka', 'Pomoc'].sort() %>
               <% tags.forEach(function(tag){ %>
                 <div class="dropdown--content--tag">
                   <input type="checkbox" class="tag" name="tags" id="<%= tag %>" value="<%= tag %>">
-                  <label for="<%= tag %>"><%= tag%></label>
+                  <label for="<%= tag %>"><%= tag %></label>
                 </div>
               <% }); %>
             </div>

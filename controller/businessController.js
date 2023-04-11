@@ -10,6 +10,7 @@ const registerView = async (req, res) => {
     if (req.user.role == "User") {
       return res.render("businessRegister", {
         message: "",
+        tags: tagsGlobal
       });
     } else {
       throw new Error("Jesteś właścicielem lub pracownikiem.");
@@ -79,6 +80,7 @@ const registerBusiness = async (req, res) => {
     await session.abortTransaction();
     return res.status(401).render("businessRegister", {
       message: "Nie udało się stworzyć firmy.",
+      tags: tagsGlobal
     });
   } finally {
     await session.endSession();
@@ -138,7 +140,7 @@ const getAllBusiness = async (req, res) => {
               { description: { $regex: searchName, $options: 'i' } },
               { tags: { $in: searchTags } },
             ],
-            address: { $regex: searchLocation, $options: 'i'  },
+            address: { $regex: searchLocation, $options: 'i' },
           },
         ],
       },
@@ -152,6 +154,7 @@ const getAllBusiness = async (req, res) => {
         Business.find({ _id: { $in: filteredBusinessesIds } }).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
           return res.render("searchBusiness", {
             user: req.user,
+            tags: tagsGlobal,
             businesses: businessesWithServices,
             searchData: { searchName, searchLocation },
             paginationData: {
@@ -164,16 +167,45 @@ const getAllBusiness = async (req, res) => {
           });
         });
       })
-      .catch((err) => {
+      .catch(async (err) => {
         console.log(err);
-        return res.render("searchBusiness", {user: req.user});
+        return res.render("home", {
+          user: req.user,
+          business:
+            req.user.role == "Owner"
+              ? await Business.findOne({ ownerId: req.user._id }).exec()
+              : await Business.findOne({ workers: req.user._id }).exec(),
+          message: err
+        });
       });
   } else {
+    console.log(offset, limit);
+    Business.paginate({}, { offset: offset, limit: limit, populate: 'services' }, (err, businesses) => {
+      console.log(businesses)
+      return res.render("searchBusiness", {
+        user: req.user,
+        tags: tagsGlobal,
+        businesses: businesses.docs,
+        searchData: { searchName, searchLocation },
+        paginationData: {
+          totalPages: businesses.totalPages,
+          totalDocs: businesses.totalDocs,
+          currentPage: businesses.page,
+          hasPrevPage: businesses.hasPrevPage,
+          hasNextPage: businesses.hasNextPage,
+        },
+      });
+    })
+
+
+/*
     Business.paginate({}, { offset, limit })
       .then((businesses) => {
         Business.find({}).populate("services").exec((err, businessesWithServices) => {
+          console.log(businesses.page);
           return res.render("searchBusiness", {
             user: req.user,
+            tags: tagsGlobal,
             businesses: businessesWithServices,
             searchData: { searchName, searchLocation },
             paginationData: {
@@ -186,9 +218,18 @@ const getAllBusiness = async (req, res) => {
           });
         });
       })
-      .catch((err) => {
-        return res.render("home");
+      .catch(async (err) => {
+        console.log(err);
+        return res.render("home", {
+          user: req.user,
+          business:
+            req.user.role == "Owner"
+              ? await Business.findOne({ ownerId: req.user._id }).exec()
+              : await Business.findOne({ workers: req.user._id }).exec(),
+          message: err
+        });
       });
+      */
   }
 };
 
