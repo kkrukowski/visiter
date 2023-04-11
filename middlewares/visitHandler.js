@@ -371,26 +371,9 @@ const getAvailableHours = async (
 // VALIDATION
 // Is provided date valid
 const isProvidedDateValid = async (day, month, year, hour, minute) => {
-  console.log(day, month, year, hour, minute);
-  const inputDate = `${day}-${month}-${year}`;
-  console.log(inputDate);
-  // if (hour != null && minute != null) {
-  //   const inputTime = `${hour}:${minute}:00`;
-  //   const parsedDate = moment(
-  //     `${inputDate} ${inputTime}`,
-  //     "YYYY-MM-DD HH:mm:ss"
-  //   );
-  //   console.log(parsedDate);
-  //   if (parsedDate.isValid()) return true;
-  // } else {
-  //   const parsedDate = moment(inputDate, "YYYY-MM-DD");
-  //   console.log(parsedDate);
-  //   if (parsedDate.isValid()) return true;
-  // }
+  const inputDate = `${year}-${month}-${day}`;
   const inputTime = `${hour}:${minute}:00`;
-  console.log(inputTime);
   const parsedDate = moment(`${inputDate} ${inputTime}`, "YYYY-MM-DD HH:mm:ss");
-  console.log(parsedDate);
   return parsedDate.isValid();
 };
 

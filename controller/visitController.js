@@ -100,6 +100,16 @@ const createVisit = async (req, res) => {
   session.startTransaction();
 
   try {
+    // If provided date data are invalid
+    if ((await isProvidedDateValid(day, month, year, hour, minute)) === false) {
+      await session.abortTransaction();
+      return res.render("home", {
+        user: currentUser,
+        business: getBusinessData(currentUser),
+        message: "Pomyślnie zapisano na wizytę!",
+      });
+    }
+
     const serviceInfo = await Service.findById(serviceId).session(session);
     if (!serviceInfo) throw new Error("Service not found!");
     // Create new Visit
@@ -213,6 +223,18 @@ const getAvailableHoursForWorker = async (req, res) => {
           ? await Business.findOne({ ownerId: req.user._id }).exec()
           : await Business.findOne({ workers: req.user._id }).exec(),
       message: "Błędna data!",
+    });
+  }
+
+  // If provided date data are invalid
+  if ((await isProvidedDateValid(day, month, year, hour, minute)) === false) {
+    return res.render("home", {
+      user: currentUser,
+      business:
+        req.user.role == "Owner"
+          ? await Business.findOne({ ownerId: req.user._id }).exec()
+          : await Business.findOne({ workers: req.user._id }).exec(),
+      message: "Wprowadzona data jest błędna!",
     });
   }
   try {
@@ -346,7 +368,7 @@ const getAllServiceDates = async (req, res) => {
   }
 
   // If provided date data are invalid
-  if ((await isProvidedDateValid(year, day, month, hour, minute)) === false) {
+  if ((await isProvidedDateValid(day, month, year, hour, minute)) === false) {
     return res.render("home", {
       user: currentUser,
       business:

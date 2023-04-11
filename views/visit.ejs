@@ -11,6 +11,7 @@
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="stylesheet" href="/styles/styles.css" />
     <link rel="stylesheet" href="/styles/main.css" />
+    <link rel="stylesheet" href="/styles/visit.css" />
     <link rel="stylesheet" href="/styles/normalize.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -135,39 +136,51 @@
     </nav>
     <!-- Main block -->
     <main class="main">
-      <div>
+      <h3>Pracownicy</h3>
+      <div class="main--employees">
         <% workersDayAvailabilityInfo.forEach((info) => { %> <% if
         (info.worker.id === selectedWorker) { %>
         <a
           href="/visits/book/<%= service.id %>/worker/<%= info.worker.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
-          >*<%= info.worker.name %></a
+          class="employeer--btn selected"
         >
+          <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
+          <span class="employeer--name"><%= info.worker.name %></span>
+        </a>
         <% } else { %> <% if (info.isAvailable == true) { %>
         <a
           href="/visits/book/<%= service.id %>/worker/<%= info.worker.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
-          ><%= info.worker.name %></a
+          class="employeer--btn"
         >
+          <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
+          <span class="employeer--name"><%= info.worker.name %></span>
+        </a>
         <% } else { %>
-        <span><%= info.worker.name %></span>
+        <div class="employeer--btn unavailable">
+          <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
+          <span class="employeer--name"><%= info.worker.name %></span>
+        </div>
         <% } %> <% } %> <% }) %>
       </div>
-      <div>
-        <h3>Dni</h3>
+      <h3>Dni</h3>
+      <div class="main--days">
         <!-- Available dates for whole workers -->
         <% if(allDatesAvailabilityInfo) { %> <%
         allDatesAvailabilityInfo.forEach((dateInfo) => { %> <% if
         (dateInfo.isAvailable) { %> <% if(dateInfo.day == date.day) { %>
         <a
           href="/visits/book/<%= service.id %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
-          ><%= dateInfo.day %>*</a
+          class="day--btn selected"
+          ><%= dateInfo.day %></a
         >
         <% } else { %>
         <a
           href="/visits/book/<%= service.id %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
+          class="day--btn"
           ><%= dateInfo.day %></a
         >
         <% } %> <% } else { %>
-        <span><%= dateInfo.day %></span>
+        <span class="day--btn unavailable"><%= dateInfo.day %></span>
         <% } %> <% }) %> <% } %>
 
         <!-- Available dates for specific worker -->
@@ -176,29 +189,33 @@
         (dateInfo.isAvailable) { %> <% if(dateInfo.day == date.day) { %>
         <a
           href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
-          ><%= dateInfo.day %>*</a
+          class="day--btn selected"
+          ><%= dateInfo.day %></a
         >
         <% } else { %>
         <a
           href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
+          class="day--btn"
           ><%= dateInfo.day %></a
         >
         <% } %> <% } else { %>
-        <span><%= dateInfo.day %></span>
+        <span class="day--btn unavailable"><%= dateInfo.day %></span>
         <% } %> <% }) %> <% } %>
       </div>
-      <div>
+      <div class="main--hours">
         <h3>Dostępne godziny</h3>
         <% if(availableHours) { %> <% availableHours.forEach((availableHour) =>
         { %> <% if(availableHour[0] == date.hour && availableHour[1] ==
         date.minute) { %>
         <a
           href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
-          ><%= availableHour[0] %>:<%= availableHour[1] %>*</a
+          class="hour--btn selected"
+          ><%= availableHour[0] %>:<%= availableHour[1] %></a
         >
         <% } else { %>
         <a
           href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
+          class="hour--btn"
           ><%= availableHour[0] %>:<%= availableHour[1] %></a
         >
         <% } %> <% }) %> <% } %>
