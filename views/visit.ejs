@@ -57,25 +57,7 @@
             </a>
           </li>
           <li class="menu__list--item">
-            <a href="/profile/<%= user.id %>" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="item--icon"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-
-              <p class="list__item--name">Mój profil</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/business/search" class="item--link"
+            <a href="/profile/<%= user._id %>" class="item--link"
               ><svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -87,9 +69,30 @@
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
                 />
               </svg>
+              <p class="list__item--name">Mój profil</p>
+            </a>
+          </li>
+          <li class="menu__list--item">
+            <a href="/business/search" class="item--link"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="item--icon"
+              >
+                <path
+                  d="M8.25 10.875a2.625 2.625 0 115.25 0 2.625 2.625 0 01-5.25 0z"
+                />
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.125 4.5a4.125 4.125 0 102.338 7.524l2.007 2.006a.75.75 0 101.06-1.06l-2.006-2.007a4.125 4.125 0 00-3.399-6.463z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+
               <p class="list__item--name">Szukaj</p>
             </a>
           </li>
@@ -136,94 +139,108 @@
     </nav>
     <!-- Main block -->
     <main class="main">
-      <h3>Pracownicy</h3>
-      <div class="main--employees">
-        <% workersDayAvailabilityInfo.forEach((info) => { %> <% if
-        (info.worker.id === selectedWorker) { %>
-        <a
-          href="/visits/book/<%= service.id %>/worker/<%= info.worker.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
-          class="employeer--btn selected"
-        >
-          <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
-          <span class="employeer--name"><%= info.worker.name %></span>
-        </a>
-        <% } else { %> <% if (info.isAvailable == true) { %>
-        <a
-          href="/visits/book/<%= service.id %>/worker/<%= info.worker.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
-          class="employeer--btn"
-        >
-          <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
-          <span class="employeer--name"><%= info.worker.name %></span>
-        </a>
-        <% } else { %>
-        <div class="employeer--btn unavailable">
-          <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
-          <span class="employeer--name"><%= info.worker.name %></span>
-        </div>
-        <% } %> <% } %> <% }) %>
-      </div>
-      <h3>Dni</h3>
-      <div class="main--days">
-        <!-- Available dates for whole workers -->
-        <% if(allDatesAvailabilityInfo) { %> <%
-        allDatesAvailabilityInfo.forEach((dateInfo) => { %> <% if
-        (dateInfo.isAvailable) { %> <% if(dateInfo.day == date.day) { %>
-        <a
-          href="/visits/book/<%= service.id %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
-          class="day--btn selected"
-          ><%= dateInfo.day %></a
-        >
-        <% } else { %>
-        <a
-          href="/visits/book/<%= service.id %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
-          class="day--btn"
-          ><%= dateInfo.day %></a
-        >
-        <% } %> <% } else { %>
-        <span class="day--btn unavailable"><%= dateInfo.day %></span>
-        <% } %> <% }) %> <% } %>
+      <form method="POST" class="visit__booking--form">
+        <section class="employees--section">
+          <h3>Pracownicy</h3>
+          <div class="employees--list">
+            <% workersDayAvailabilityInfo.forEach((info) => { %> <% if
+            (info.worker.id === selectedWorker) { %>
+            <a
+              href="/visits/book/<%= service.id %>/worker/<%= info.worker.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
+              class="employeer--btn selected"
+            >
+              <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
+              <span class="employeer--name"><%= info.worker.name %></span>
+            </a>
+            <% } else { %> <% if (info.isAvailable == true) { %>
+            <a
+              href="/visits/book/<%= service.id %>/worker/<%= info.worker.id %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>"
+              class="employeer--btn"
+            >
+              <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
+              <span class="employeer--name"><%= info.worker.name %></span>
+            </a>
+            <% } else { %>
+            <div class="employeer--btn unavailable">
+              <img src="/assets/imgs/profile.webp" class="employeer--avatar" />
+              <span class="employeer--name"><%= info.worker.name %></span>
+            </div>
+            <% } %> <% } %> <% }) %>
+          </div>
+        </section>
+        <section class="main--days">
+          <div class="calendar--container">
+            <% const daysArray = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"]
+            %>
+            <table>
+              <tr>
+                <% daysArray.forEach(function (day){ %>
+                <th><%= day %></th>
+                <% }) %>
+              </tr>
+            </table>
+          </div>
+          <h3>Dni</h3>
+          <!-- Available dates for whole workers -->
+          <% if(allDatesAvailabilityInfo) { %> <%
+          allDatesAvailabilityInfo.forEach((dateInfo) => { %> <% if
+          (dateInfo.isAvailable) { %> <% if(dateInfo.day == date.day) { %>
+          <a
+            href="/visits/book/<%= service.id %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
+            class="day--btn selected"
+            ><%= dateInfo.day %></a
+          >
+          <% } else { %>
+          <a
+            href="/visits/book/<%= service.id %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
+            class="day--btn"
+            ><%= dateInfo.day %></a
+          >
+          <% } %> <% } else { %>
+          <span class="day--btn unavailable"><%= dateInfo.day %></span>
+          <% } %> <% }) %> <% } %>
 
-        <!-- Available dates for specific worker -->
-        <% if(workerDatesAvailabilityInfo) { %> <%
-        workerDatesAvailabilityInfo.forEach((dateInfo) => { %> <% if
-        (dateInfo.isAvailable) { %> <% if(dateInfo.day == date.day) { %>
-        <a
-          href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
-          class="day--btn selected"
-          ><%= dateInfo.day %></a
-        >
-        <% } else { %>
-        <a
-          href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
-          class="day--btn"
-          ><%= dateInfo.day %></a
-        >
-        <% } %> <% } else { %>
-        <span class="day--btn unavailable"><%= dateInfo.day %></span>
-        <% } %> <% }) %> <% } %>
-      </div>
-      <div class="main--hours">
-        <h3>Dostępne godziny</h3>
-        <% if(availableHours) { %> <% availableHours.forEach((availableHour) =>
-        { %> <% if(availableHour[0] == date.hour && availableHour[1] ==
-        date.minute) { %>
-        <a
-          href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
-          class="hour--btn selected"
-          ><%= availableHour[0] %>:<%= availableHour[1] %></a
-        >
-        <% } else { %>
-        <a
-          href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
-          class="hour--btn"
-          ><%= availableHour[0] %>:<%= availableHour[1] %></a
-        >
-        <% } %> <% }) %> <% } %>
-      </div>
-      <form method="POST">
+          <!-- Available dates for specific worker -->
+          <% if(workerDatesAvailabilityInfo) { %> <%
+          workerDatesAvailabilityInfo.forEach((dateInfo) => { %> <% if
+          (dateInfo.isAvailable) { %> <% if(dateInfo.day == date.day) { %>
+          <a
+            href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
+            class="day--btn selected"
+            ><%= dateInfo.day %></a
+          >
+          <% } else { %>
+          <a
+            href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= dateInfo.day %>/month/<%= date.month %>/year/<%= date.year %>/"
+            class="day--btn"
+            ><%= dateInfo.day %></a
+          >
+          <% } %> <% } else { %>
+          <span class="day--btn unavailable"><%= dateInfo.day %></span>
+          <% } %> <% }) %> <% } %>
+        </section>
+        <section class="main--hours">
+          <h3>Dostępne godziny</h3>
+          <% if(availableHours) { %> <% availableHours.forEach(function
+          (availableHour) { %> <% if(availableHour[0] == date.hour &&
+          availableHour[1] == date.minute) { %>
+          <a
+            href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
+            class="hour--btn selected"
+            ><%= availableHour[0] %>:<%= availableHour[1] %></a
+          >
+          <% } else { %>
+          <a
+            href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
+            class="hour--btn"
+            ><%= availableHour[0] %>:<%= availableHour[1] %></a
+          >
+          <% } %> <% }) %> <% } %>
+        </section>
         <button class="submit--btn">Potwierdź</button>
       </form>
     </main>
   </body>
   <script src="/js/script.js"></script>
+  <script src="/js/visitBooking.js"></script>
 </html>
