@@ -130,8 +130,34 @@ const getAllBusiness = async (req, res) => {
   const searchLocation = req.query.location;
   const searchTags = req.query.tags;
   if ((searchName != null && searchName != '') || (searchLocation != null && searchLocation != '') || searchTags != null) {
+    Business.paginate({
+      $and: [
+        {
+          $or: [
+            { name: { $regex: searchName, $options: 'i' } },
+            { description: { $regex: searchName, $options: 'i' } }
+          ],
+          tags: { $in: searchTags },
+          address: { $regex: searchLocation, $options: 'i' },
+        },
+      ],
+    }, { offset, limit, populate: 'services' }, (err, businesses) => {
+      return res.render("searchBusiness", {
+        user: req.user,
+        tags: tagsGlobal,
+        businesses: businesses.docs,
+        searchData: { searchName, searchLocation },
+        paginationData: {
+          totalPages: businesses.totalPages,
+          totalDocs: businesses.totalDocs,
+          currentPage: businesses.page,
+          hasPrevPage: businesses.hasPrevPage,
+          hasNextPage: businesses.hasNextPage,
+        },
+      });
+    })
     console.log(limit, offset)
-    Business.paginate(
+    /*Business.paginate(
       {
         $and: [
           {
@@ -177,7 +203,7 @@ const getAllBusiness = async (req, res) => {
               : await Business.findOne({ workers: req.user._id }).exec(),
           message: err
         });
-      });
+      }); */
   } else {
     console.log(offset, limit);
     Business.paginate({}, { offset: offset, limit: limit, populate: 'services' }, (err, businesses) => {
@@ -198,38 +224,38 @@ const getAllBusiness = async (req, res) => {
     })
 
 
-/*
-    Business.paginate({}, { offset, limit })
-      .then((businesses) => {
-        Business.find({}).populate("services").exec((err, businessesWithServices) => {
-          console.log(businesses.page);
-          return res.render("searchBusiness", {
-            user: req.user,
-            tags: tagsGlobal,
-            businesses: businessesWithServices,
-            searchData: { searchName, searchLocation },
-            paginationData: {
-              totalPages: businesses.totalPages,
-              totalDocs: businesses.totalDocs,
-              currentPage: businesses.page,
-              hasPrevPage: businesses.hasPrevPage,
-              hasNextPage: businesses.hasNextPage,
-            },
+    /*
+        Business.paginate({}, { offset, limit })
+          .then((businesses) => {
+            Business.find({}).populate("services").exec((err, businessesWithServices) => {
+              console.log(businesses.page);
+              return res.render("searchBusiness", {
+                user: req.user,
+                tags: tagsGlobal,
+                businesses: businessesWithServices,
+                searchData: { searchName, searchLocation },
+                paginationData: {
+                  totalPages: businesses.totalPages,
+                  totalDocs: businesses.totalDocs,
+                  currentPage: businesses.page,
+                  hasPrevPage: businesses.hasPrevPage,
+                  hasNextPage: businesses.hasNextPage,
+                },
+              });
+            });
+          })
+          .catch(async (err) => {
+            console.log(err);
+            return res.render("home", {
+              user: req.user,
+              business:
+                req.user.role == "Owner"
+                  ? await Business.findOne({ ownerId: req.user._id }).exec()
+                  : await Business.findOne({ workers: req.user._id }).exec(),
+              message: err
+            });
           });
-        });
-      })
-      .catch(async (err) => {
-        console.log(err);
-        return res.render("home", {
-          user: req.user,
-          business:
-            req.user.role == "Owner"
-              ? await Business.findOne({ ownerId: req.user._id }).exec()
-              : await Business.findOne({ workers: req.user._id }).exec(),
-          message: err
-        });
-      });
-      */
+          */
   }
 };
 
