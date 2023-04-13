@@ -150,6 +150,9 @@
                 />
               </svg>
             </div>
+            <%= searchData.searchName %>
+            <%= searchData.searchLocation %>
+            <%= searchData.searchTags %>
             <% if (searchData.searchName != null) { %>
             <input
               type="text"
@@ -219,7 +222,14 @@
             </svg>
           </button>
           <div class="dropdown" id="dropdown">
-            <div class="dropdown--content" id="dropdown--content">
+            <div class="dropdown--content" id="dropdown--content"> <!-- split na searchData.searchTags i rozwiklac blad czcemu location i tags sie nie przerzucaja miedzy stronami -->
+              <%= searchData.searchTags %>
+              <% lastTags = searchData.searchTags %> 
+              <% if (searchData.searchTags != null ) { %>
+                <% lastTags.forEach( tag => { %>
+                  <input type="checkbox" style="display: none;" name="tags" value="<%= lastTags %>" checked />
+                <% }) %>
+              <% } %>
               <% tags.forEach(function(tag){ %>
                 <div class="dropdown--content--tag">
                   <input type="checkbox" class="tag" name="tags" id="<%= tag %>" value="<%= tag %>">
@@ -474,13 +484,14 @@
       var category = document.getElementById("category");
       var categoryText = document.getElementsByClassName("category--text")[0];
       var tags = document.getElementsByClassName("tag")[0];
-      category.addEventListener("click", showOptions);
-      function showOptions(){
-          dropdownContent.style.display = "flex";
-      }
-      window.onclick = function(event) {
+      category.addEventListener("click", () => { 
+        dropdownContent.style.display = "flex";
+      });
+      dropdownContent.addEventListener("click", (event) => {
+        event.stopPropagation();
+      })
+      window.onclick = (event) => {
         console.log(event.target);
-        console.log(event.target != tags);
           if (event.target != category && event.target != dropdownContent && event.target != categoryText && event.target != tags) {
               dropdownContent.style.display = "none";
           }

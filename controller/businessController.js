@@ -129,24 +129,26 @@ const getAllBusiness = async (req, res) => {
   const searchName = req.query.name;
   const searchLocation = req.query.location;
   const searchTags = req.query.tags;
+
   if ((searchName != null && searchName != '') || (searchLocation != null && searchLocation != '') || searchTags != null) {
     Business.paginate({
       $and: [
         {
           $or: [
             { name: { $regex: searchName, $options: 'i' } },
-            { description: { $regex: searchName, $options: 'i' } }
+            { description: { $regex: searchName, $options: 'i' } },
+            { tags: { $in: searchTags } },
           ],
-          tags: { $in: searchTags },
           address: { $regex: searchLocation, $options: 'i' },
         },
       ],
     }, { offset, limit, populate: 'services' }, (err, businesses) => {
+      console.log(searchLocation)
       return res.render("searchBusiness", {
         user: req.user,
         tags: tagsGlobal,
         businesses: businesses.docs,
-        searchData: { searchName, searchLocation },
+        searchData: { searchName, searchLocation, searchTags },
         paginationData: {
           totalPages: businesses.totalPages,
           totalDocs: businesses.totalDocs,
@@ -207,12 +209,11 @@ const getAllBusiness = async (req, res) => {
   } else {
     console.log(offset, limit);
     Business.paginate({}, { offset: offset, limit: limit, populate: 'services' }, (err, businesses) => {
-      console.log(businesses)
       return res.render("searchBusiness", {
         user: req.user,
         tags: tagsGlobal,
         businesses: businesses.docs,
-        searchData: { searchName, searchLocation },
+        searchData: { searchName, searchLocation, searchTags },
         paginationData: {
           totalPages: businesses.totalPages,
           totalDocs: businesses.totalDocs,
