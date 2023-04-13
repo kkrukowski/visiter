@@ -17,6 +17,7 @@ const {
   getAvailableHoursForWorkers,
   areWorkersAvailableInGivenDay,
   isProvidedDateValid,
+  createCalendarArray,
 } = require("../middlewares/visitHandler");
 
 // CLIENT VISITS
@@ -335,6 +336,12 @@ const getAvailableHoursForWorker = async (req, res) => {
       searchingDate
     );
 
+    const calendarInfo = await createCalendarArray(
+      workerDatesAvailabilityInfo,
+      searchingDate
+    );
+    if (!calendarInfo) throw new Error("Creating calendar info failed!");
+
     return res.status(200).render("visit", {
       user: currentUser,
       business,
@@ -346,6 +353,7 @@ const getAvailableHoursForWorker = async (req, res) => {
       workerDatesAvailabilityInfo,
       workersDayAvailabilityInfo,
       allDatesAvailabilityInfo: null,
+      calendarInfo,
     });
   } catch (err) {
     return res.send(err);
@@ -456,6 +464,11 @@ const getAllServiceDates = async (req, res) => {
     visitDate
   );
 
+  const calendarInfo = await createCalendarArray(
+    allDatesAvailabilityInfo,
+    visitDate
+  );
+
   return res.render("visit", {
     user: currentUser,
     business,
@@ -467,6 +480,7 @@ const getAllServiceDates = async (req, res) => {
     workerDatesAvailabilityInfo: null,
     workersDayAvailabilityInfo,
     allDatesAvailabilityInfo,
+    calendarInfo,
   });
 };
 
