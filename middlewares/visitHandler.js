@@ -78,6 +78,42 @@ const getTimesToUpdate = (time, serviceDuration) => {
 };
 
 // GETTING VISITS AVAILABILITY INFO
+const createCalendarArray = async (monthAvailabilityInfo, searchingDate) => {
+  let calendarInfo = [];
+
+  const startDate = moment(searchingDate)
+    .clone()
+    .startOf("month")
+    .startOf("isoWeek");
+
+  const endDate = moment(searchingDate).clone().endOf("month").endOf("isoWeek");
+
+  let currentDay = startDate.clone().subtract(1, "day");
+
+  while (currentDay.isBefore(endDate, "day")) {
+    calendarInfo.push(
+      Array(7)
+        .fill(0)
+        .map(() => {
+          const dayObject = {
+            day: currentDay.add(1, "day").format("DD"),
+            isAvailable:
+              currentDay.month() == searchingDate.month()
+                ? isDayAvailableCalendar(monthAvailabilityInfo, currentDay)
+                : false,
+          };
+          return dayObject;
+        })
+    );
+  }
+  return calendarInfo;
+};
+
+const isDayAvailableCalendar = (monthAvailabilityInfo, day) => {
+  return monthAvailabilityInfo.find((dayInfo) => dayInfo.day == day.format("D"))
+    .isAvailable;
+};
+
 const getWorkerBusyAvailabilityHours = async (worker, searchingDate) => {
   let workerBusyAvailabilityDates = [];
   if (worker.workerBusyAvailability) {
@@ -380,6 +416,7 @@ const isProvidedDateValid = async (day, month, year, hour, minute) => {
 module.exports = {
   updateAvailability,
   getAvailableHours,
+  createCalendarArray,
   getWorkerBusyAvailabilityHours,
   getWorkerBusyAvailabilityDates,
   getAvailableHoursForWorkers,
