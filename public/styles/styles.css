@@ -56,6 +56,7 @@ h1,
 h2,
 h3 {
   color: #33365e;
+  margin: 10px 0;
 }
 
 .link {
@@ -188,4 +189,35 @@ h3 {
 .main {
   height: 100vh;
   width: calc(100% - 300px);
+}
+
+/* SCROLLBAR - DARK */
+/* Scrollbar - Firefox */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #33365e #cbcef1;
+}
+/* Scrollbar - Chrome, Edge, Safari */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #cbcef1;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #33365e;
+  border-radius: 20px;
+  border: solid 2px #cbcef1;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #2e3155;
 }

@@ -229,21 +229,25 @@
         </section>
         <section class="main--hours">
           <h3>Dostępne godziny</h3>
-          <% if(availableHours) { %> <% availableHours.forEach(function
-          (availableHour) { %> <% if(availableHour[0] == date.hour &&
-          availableHour[1] == date.minute) { %>
-          <a
-            href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
-            class="hour--btn selected"
-            ><%= availableHour[0] %>:<%= availableHour[1] %></a
-          >
-          <% } else { %>
-          <a
-            href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
-            class="hour--btn"
-            ><%= availableHour[0] %>:<%= availableHour[1] %></a
-          >
-          <% } %> <% }) %> <% } %>
+          <div class="hours--container">
+            <div class="hours--list">
+              <% if(availableHours) { %> <% availableHours.forEach(function
+              (availableHour) { %> <% if(availableHour[0] == date.hour &&
+              availableHour[1] == date.minute) { %>
+              <a
+                href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
+                class="hour--btn selected"
+                ><%= availableHour[0] %>:<%= availableHour[1] %></a
+              >
+              <% } else { %>
+              <a
+                href="/visits/book/<%= service.id %>/worker/<%= selectedWorker %>/day/<%= date.day %>/month/<%= date.month %>/year/<%= date.year %>/hour/<%= availableHour[0] %>/minute/<%= availableHour[1] %>"
+                class="hour--btn"
+                ><%= availableHour[0] %>:<%= availableHour[1] %></a
+              >
+              <% } %> <% }) %> <% } %>
+            </div>
+          </div>
         </section>
         <button class="submit--btn">Potwierdź</button>
       </form>

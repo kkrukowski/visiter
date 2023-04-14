@@ -6,12 +6,19 @@
 }
 
 .visit__booking--form {
-  width: 40%;
+  width: 435px;
+}
+
+.employees--section,
+.main--days,
+.main--hours {
+  margin-bottom: 25px;
 }
 
 /* Employees */
 .employees--list {
   display: flex;
+  width: 100%;
 }
 
 .employeer--btn {
@@ -62,15 +69,20 @@
 }
 
 /* Days & hours */
+.main--hours {
+  width: 100%;
+}
+
 .day--btn,
 .hour--btn {
-  padding: 5px;
-  font-size: 16px;
+  padding: 10px;
+  font-size: 18px;
   text-decoration: none;
   color: #33365e;
   border: 2px solid transparent;
-  border-radius: 5px;
+  border-radius: 20px;
   transition: border-color 0.1s ease-in-out;
+  display: inline-block;
 }
 
 .day--btn {
@@ -85,7 +97,7 @@
 .day--btn.selected,
 .hour--btn.selected {
   border: 2px solid #f1511b;
-  border-radius: 5px;
+  border-radius: 20px;
   font-weight: 700;
 }
 
@@ -100,24 +112,47 @@
 /* Calendar */
 .calendar--table {
   background-color: #33365e;
-  padding: 10px;
+  padding: 15px;
   border-radius: 20px;
-}
-
-.calendar--table tr {
-  border-collapse: collapse;
-  border-bottom: 2px solid #efedff;
 }
 
 .calendar--table th > span {
   color: #efedff;
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .calendar--table td {
-  padding: 10px;
+  padding: 5px;
 }
 
-.submit--btn {
-  margin-top: 20px;
+/* Hours */
+.hours--container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 5px 10px;
+  background-color: #33365e;
+  border-radius: 20px;
+}
+
+.hours--list {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 5px 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  background-color: #33365e;
+  border-radius: 20px;
+}
+
+.hour--btn {
+  padding: 5px 8px;
+  color: #efedff;
+}
+
+.hour--btn:not(:last-of-type) {
+  margin-right: 10px;
 }
