@@ -1,491 +1,328 @@
 <!DOCTYPE html>
 <html lang="pl">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Wyszukiwanie | Visiter</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="manifest" href="site.webmanifest" />
-    <link rel="stylesheet" href="/styles/styles.css" />
-    <link rel="stylesheet" href="/styles/search.css" />
-    <link rel="stylesheet" href="/styles/normalize.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <!-- Nav -->
-    <nav class="nav">
-      <div class="nav__wrapper">
-        <a href="/" class="nav__img--link"
-          ><img
-            src="/assets/imgs/visiter-inline.png"
-            alt="Visiter"
-            title="Visiter"
-            class="nav--img"
-        /></a>
-        <section class="menu__list">
-          <li class="menu__list--item">
-            <a href="/" class="item--link">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="item--icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-                />
-              </svg>
-              <p class="list__item--name">Strona Główna</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/profile/<%= user._id %>" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="item--icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
-                />
-              </svg>
-              <p class="list__item--name">Mój profil</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/business/search" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                class="item--icon"
-              >
-                <path
-                  d="M8.25 10.875a2.625 2.625 0 115.25 0 2.625 2.625 0 01-5.25 0z"
-                />
-                <path
-                  fill-rule="evenodd"
-                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.125 4.5a4.125 4.125 0 102.338 7.524l2.007 2.006a.75.75 0 101.06-1.06l-2.006-2.007a4.125 4.125 0 00-3.399-6.463z"
-                  clip-rule="evenodd"
-                />
-              </svg>
 
-              <p class="list__item--name">Szukaj</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/visits" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="item--icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
-                />
-              </svg>
-              <p class="list__item--name">Moje wizyty</p>
-            </a>
-          </li>
-          <li class="menu__list--item">
-            <a href="/chat" class="item--link"
-              ><svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="item--icon"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
-                />
-              </svg>
-              <p class="list__item--name">Wiadomości</p>
-            </a>
-          </li>
-        </section>
-      </div>
-    </nav>
-    <!-- Main block -->
-    <main class="main">
-      <div class="search--wrapper">
-        <form class="search--form" action="/business/search" method="GET">
-          <div class="search__input--wrapper">
-            <div class="search__icon--wrapper">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24" 
-                fill="currentColor"
-                class="search--icon"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-            </div>
-            <% if (searchData.searchName != null) { %>
-            <input
-              type="text"
-              name="name"
-              placeholder="Czego szukasz?"
-              value="<%= searchData.searchName %>"
-            />
-            <% } else { %>
-            <input type="text" name="name" placeholder="Czego szukasz?" />
-            <% } %>
-          </div>
-          <div class="search--separator"></div>
-          <div class="search__input--wrapper">
-            <div class="search__icon--wrapper">
-              <svg xmlns="http://www.w3.org/2000/svg" 
-              fill="none" 
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              class="search--icon"
-              >
-                <path
-                d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122"
-                 />
-              </svg>
-            </div>
-            <div class="category" id="category">
-              <p class="category--text">Kategoria</p>
-            </div>
-          </div>
-          <div class="search--separator"></div>
-          <div class="location__input--wrapper">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="#33365E"
-              class="search--icon"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
-                clip-rule="evenodd"
-              />
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wyszukiwanie | Visiter</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="stylesheet" href="/styles/styles.css" />
+  <link rel="stylesheet" href="/styles/search.css" />
+  <link rel="stylesheet" href="/styles/normalize.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+
+<body>
+  <!-- Nav -->
+  <nav class="nav">
+    <div class="nav__wrapper">
+      <a href="/" class="nav__img--link"><img src="/assets/imgs/visiter-inline.png" alt="Visiter" title="Visiter"
+          class="nav--img" /></a>
+      <section class="menu__list">
+        <li class="menu__list--item">
+          <a href="/" class="item--link">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="item--icon">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
             </svg>
-            <% if (searchData.searchLocation != null) { %>
-            <input
-              type="text"
-              name="location"
-              placeholder="Lokalizacja"
-              value="<%= searchData.searchLocation %>"
-            />
-            <% } else { %>
-            <input type="text" name="location" placeholder="Lokalizacja" />
-            <% } %>
-          </div>
-          <button class="search--btn">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="#33365E"
-              class="search__btn--icon"
-            >
-              <path
-                fill-rule="evenodd"
+            <p class="list__item--name">Strona Główna</p>
+          </a>
+        </li>
+        <li class="menu__list--item">
+          <a href="/profile/<%= user._id %>" class="item--link"><svg xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="item--icon">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+            <p class="list__item--name">Mój profil</p>
+          </a>
+        </li>
+        <li class="menu__list--item">
+          <a href="/business/search" class="item--link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+              fill="currentColor" class="item--icon">
+              <path d="M8.25 10.875a2.625 2.625 0 115.25 0 2.625 2.625 0 01-5.25 0z" />
+              <path fill-rule="evenodd"
+                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm-1.125 4.5a4.125 4.125 0 102.338 7.524l2.007 2.006a.75.75 0 101.06-1.06l-2.006-2.007a4.125 4.125 0 00-3.399-6.463z"
+                clip-rule="evenodd" />
+            </svg>
+
+            <p class="list__item--name">Szukaj</p>
+          </a>
+        </li>
+        <li class="menu__list--item">
+          <a href="/visits" class="item--link"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke-width="1.5" stroke="currentColor" class="item--icon">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+            </svg>
+            <p class="list__item--name">Moje wizyty</p>
+          </a>
+        </li>
+        <li class="menu__list--item">
+          <a href="/chat" class="item--link"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              stroke-width="1.5" stroke="currentColor" class="item--icon">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M8.625 9.75a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 01.778-.332 48.294 48.294 0 005.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+            </svg>
+            <p class="list__item--name">Wiadomości</p>
+          </a>
+        </li>
+      </section>
+    </div>
+  </nav>
+  <!-- Main block -->
+  <main class="main">
+    <div class="search--wrapper">
+      <form class="search--form" action="/business/search" method="GET">
+        <div class="search__input--wrapper">
+          <div class="search__icon--wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="search--icon">
+              <path fill-rule="evenodd"
                 d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z"
-                clip-rule="evenodd"
-              />
+                clip-rule="evenodd" />
             </svg>
-          </button>
-          <div class="dropdown" id="dropdown">
-            <div class="dropdown--content" id="dropdown--content">
-              <% tags.forEach(function(tag){ %>
-                <div class="dropdown--content--tag">
-                  <input type="checkbox" class="tag" name="tags" id="<%= tag %>" value="<%= tag %>">
-                  <label for="<%= tag %>"><%= tag %></label>
-                </div>
-              <% }); %>
-            </div>
           </div>
-        </form>
-        <% if (businesses != undefined) { %>
+                <% if (searchData.searchName !=null) { %>
+                  <input type="text" name="name" placeholder="Czego szukasz?" value="<%= searchData.searchName %>" />
+                  <% } else { %>
+                    <input type="text" name="name" placeholder="Czego szukasz?" />
+                    <% } %>
+        </div>
+        <div class="search--separator"></div>
+        <div class="search__input--wrapper">
+          <div class="search__icon--wrapper">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+              class="search--icon">
+              <path
+                d="M6 6.878V6a2.25 2.25 0 012.25-2.25h7.5A2.25 2.25 0 0118 6v.878m-12 0c.235-.083.487-.128.75-.128h10.5c.263 0 .515.045.75.128m-12 0A2.25 2.25 0 004.5 9v.878m13.5-3A2.25 2.25 0 0119.5 9v.878m0 0a2.246 2.246 0 00-.75-.128H5.25c-.263 0-.515.045-.75.128m15 0A2.25 2.25 0 0121 12v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6c0-.98.626-1.813 1.5-2.122" />
+            </svg>
+          </div>
+          <div class="category" id="category">
+            <p class="category--text">Kategoria</p>
+          </div>
+        </div>
+        <div class="search--separator"></div>
+        <div class="location__input--wrapper">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#33365E" class="search--icon">
+            <path fill-rule="evenodd"
+              d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z"
+              clip-rule="evenodd" />
+          </svg>
+          <% if (searchData.searchLocation !=null) { %>
+            <input type="text" name="location" placeholder="Lokalizacja" value="<%= searchData.searchLocation %>" />
+            <% } else { %>
+              <input type="text" name="location" placeholder="Lokalizacja" />
+              <% } %>
+        </div>
+        <button class="search--btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#33365E" class="search__btn--icon">
+            <path fill-rule="evenodd"
+              d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z"
+              clip-rule="evenodd" />
+          </svg>
+        </button>
+        <div class="dropdown" id="dropdown">
+          <div class="dropdown--content" id="dropdown--content">
+            <% if (searchData.searchTags !=null ) { %>
+              <% arrOfTags=searchData.searchTags.toString().split(",") %>
+                <% tags.forEach( tag=> { %>
+                  <div class="dropdown--content--tag">
+                  <% if(arrOfTags.includes(tag)) { %>
+                    <input type="checkbox" class="tag" name="tags" id="<%= tag %>" value="<%= tag %>" checked>
+                    <label for="<%= tag %>">
+                      <%= tag %>
+                    </label>
+                    <% } else { %>
+                      <input type="checkbox" class="tag" name="tags" id="<%= tag %>" value="<%= tag %>">
+                      <label for="<%= tag %>">
+                        <%= tag %>
+                      </label>
+                    <% } %>
+                  </div>
+                <% }) %>
+            <% } else { %>
+              <% tags.forEach(function(tag){ %>
+                  <div class="dropdown--content--tag">
+                    <input type="checkbox" class="tag" name="tags" id="<%= tag %>" value="<%= tag %>">
+                    <label for="<%= tag %>">
+                      <%= tag %>
+                    </label>
+                    </div>
+              <% }); %>
+            <% } %>
+          </div>
+        </div>
+      </form>
+      <% if (businesses !=undefined) { %>
         <p class="results--info">
-          Wyniki - <% if (searchData.searchName != null) %><span
-            class="results--input"
-            ><%= searchData.searchName %> </span
-          >(<span class="results--count"><%= paginationData.totalDocs %></span>)
+          Wyniki - <% if (searchData.searchName !=null) %><span class="results--input">
+              <%= searchData.searchName %>
+            </span>(<span class="results--count">
+              <%= paginationData.totalDocs %>
+            </span>)
         </p>
         <div class="results--wrapper">
           <ul class="results__businesses--list">
             <% businesses.forEach(function(business) { %>
-            <li class="business--item">
-              <div class="business--thumbnail">
-                <img
-                  class="business__thumbnail--img"
-                  src="../assets/imgs/barber.jpeg"
-                />
-              </div>
-              <div class="business--info">
-                <h2 class="business__name--text"><a href="/business/<%= business._id %>"><%= business.name %></a></h2>
-                <p class="business--address"><%= business.address %></p>
-                <a href="/chat/<%= business.ownerId.id %>" class="message--btn">
-                  Wyślij wiadomość
-                </a>
-                <h3 class="business__services--heading">Usługi</h3>
-                <ul class="business__services--list">
-                  <% business.services.forEach((service) => { %> <%= service %>
-                  <li class="service--item">
-                    <div class="service--wrapper">
-                      <div class="service--info">
-                        <p class="service--name"><%= service.name %></p>
-                        <p class="service--desc"><%= service.description %></p>
-                      </div>
-                      <div class="service__order--info">
-                        <p class="service--price"><%= service.price %>zł</p>
-                        <a
-                          href="/visits/book/<%= service.id %>"
-                          class="service__select--btn"
-                          >Umów</a
-                        >
-                      </div>
-                    </div>
-                  </li>
-                  <% }) %>
-                </ul>
-              </div>
-            </li>
-            <% }); %>
+              <li class="business--item">
+                <div class="business--thumbnail">
+                  <img class="business__thumbnail--img" src="../assets/imgs/barber.jpeg" />
+                </div>
+                <div class="business--info">
+                  <h2 class="business__name--text"><a href="/business/<%= business._id %>">
+                      <%= business.name %>
+                    </a></h2>
+                  <p class="business--address">
+                    <%= business.address %>
+                  </p>
+                  <a href="/chat/<%= business.ownerId.id %>" class="message--btn">
+                    Wyślij wiadomość
+                  </a>
+                  <h3 class="business__services--heading">Usługi</h3>
+                  <ul class="business__services--list">
+                    <% business.services.forEach((service)=> { %>
+                        <li class="service--item">
+                          <div class="service--wrapper">
+                            <div class="service--info">
+                              <p class="service--name">
+                                <%= service.name %>
+                              </p>
+                              <p class="service--desc">
+                                <%= service.description %>
+                              </p>
+                            </div>
+                            <div class="service__order--info">
+                              <p class="service--price">
+                                <%= service.price %>zł
+                              </p>
+                              <a href="/visits/book/<%= service.id %>" class="service__select--btn"><button class="btn--visit">Umów</button></a>
+                            </div>
+                          </div>
+                        </li>
+                        <% }) %>
+                  </ul>
+                </div>
+              </li>
+              <% }); %>
           </ul>
         </div>
         <% } %>
-        <div class="search__pagination--wrapper">
-          <% if (searchData.searchName != null) { %> <% if
-          (paginationData.hasPrevPage) { %>
-          <a
-            href="/business/search?name=<%= searchData.searchName %>&location=&page=<%= paginationData.currentPage - 1 %>"
-            class="pagination__page--btn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#ffffff"
-              class="pagination__btn--icon"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </a>
-          <% } else { %>
-          <a class="pagination__page--btn disabled">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#ffffff"
-              class="pagination__btn--icon"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </a>
-          <% } %> <% } else { %> <% if (paginationData.hasPrevPage) { %>
-          <a
-            href="/business/search?page=<%= paginationData.currentPage - 1 %>"
-            class="pagination__page--btn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#ffffff"
-              class="pagination__btn--icon"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </a>
-          <% } else { %>
-          <a class="pagination__page--btn disabled">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#ffffff"
-              class="pagination__btn--icon"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </a>
-          <% } %> <% } %>
-          <div class="pagination__numbers--wrapper">
-            <% for(let i = 1; i <= paginationData.totalPages; i++) { %> <% if
-            (paginationData.currentPage === i) { %> <% if (searchData.searchName
-            != null) { %>
-            <a
-              href="/business/search?name=<%= searchData.searchName %>&location=&page=<%= i %>"
-              class="pagination__number--btn current__page"
-              ><%= i %></a
-            >
-            <% } else { %>
-            <a
-              href="/business/search?page=<%= i %>"
-              class="pagination__number--btn current__page"
-            >
-              <%= i %>
-            </a>
-            <% } %> <% } else { %> <% if (searchData.searchName != null) { %>
-            <a
-              href="/business/search?name=<%= searchData.searchName %>&location=&page=<%= i %>"
-              class="pagination__number--btn"
-            >
-              <%= i %></a
-            >
-            <% } else { %>
-            <a
-              href="/business/search?page=<%= i %>"
-              class="pagination__number--btn"
-            >
-              <%= i %>
-            </a>
-            <% } %> <% } %> <% } %>
+          <div class="search__pagination--wrapper">
+            <% if (searchData.searchName !=null) { %>
+              <% if (paginationData.hasPrevPage) { %>
+                <a href="/business/search?name=<%= searchData.searchName %>&location=<%= searchData.searchLocation %>&tags=<%= searchData.searchTags %>&page=<%= paginationData.currentPage - 1 %>"
+                  class="pagination__page--btn">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                    stroke="#ffffff" class="pagination__btn--icon">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  </svg>
+                </a>
+                <% } else { %>
+                  <a class="pagination__page--btn disabled">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                      stroke="#ffffff" class="pagination__btn--icon">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                  </a>
+                  <% } %>
+                    <% } else { %>
+                      <% if (paginationData.hasPrevPage) { %>
+                        <a href="/business/search?page=<%= paginationData.currentPage - 1 %>"
+                          class="pagination__page--btn">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                            stroke="#ffffff" class="pagination__btn--icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                          </svg>
+                        </a>
+                        <% } else { %>
+                          <a class="pagination__page--btn disabled">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                              stroke="#ffffff" class="pagination__btn--icon">
+                              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                            </svg>
+                          </a>
+                          <% } %>
+                            <% } %>
+                              <div class="pagination__numbers--wrapper">
+                                <% for(let i=1; i <=paginationData.totalPages; i++) { %>
+                                  <% if (paginationData.currentPage===i) { %>
+                                    <% if (searchData.searchName !=null) { %>
+                                      <a href="/business/search?name=<%= searchData.searchName %>&location=<%= searchData.searchLocation %>&tags=<%= searchData.searchTags %>&page=<%= i %>"
+                                        class="pagination__number--btn current__page">
+                                        <%= i %>
+                                      </a>
+                                      <% } else { %>
+                                        <a href="/business/search?page=<%= i %>"
+                                          class="pagination__number--btn current__page">
+                                          <%= i %>
+                                        </a>
+                                        <% } %>
+                                          <% } else { %>
+                                            <% if (searchData.searchName !=null) { %>
+                                              <a href="/business/search?name=<%= searchData.searchName %>&location=<%= searchData.searchLocation %>&tags=<%= searchData.searchTags %>&page=<%= i %>"
+                                                class="pagination__number--btn">
+                                                <%= i %>
+                                              </a>
+                                              <% } else { %>
+                                                <a href="/business/search?page=<%= i %>"
+                                                  class="pagination__number--btn">
+                                                  <%= i %>
+                                                </a>
+                                                <% } %>
+                                                  <% } %>
+                                                    <% } %>
+                              </div>
+                              <% if (searchData.searchName !=null) { %>
+                                <% if (paginationData.hasNextPage) { %>
+                                  <a href="/business/search?name=<%= searchData.searchName %>&location=<%= searchData.searchLocation %>&tags=<%= searchData.searchTags %>&page=<%= paginationData.currentPage + 1 %>"
+                                    class="pagination__page--btn">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                      stroke-width="3" stroke="#ffffff" class="pagination__btn--icon">
+                                      <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                  </a>
+                                  <% } else { %>
+                                    <a class="pagination__page--btn disabled">
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="3" stroke="#ffffff" class="pagination__btn--icon">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                          d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                      </svg>
+                                    </a>
+                                    <% } %>
+                                      <% } else { %>
+                                        <% if (paginationData.hasNextPage) { %>
+                                          <a href="/business/search?page=<%= paginationData.currentPage + 1 %>"
+                                            class="pagination__page--btn">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                              stroke-width="3" stroke="#ffffff" class="pagination__btn--icon">
+                                              <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                            </svg>
+                                          </a>
+                                          <% } else { %>
+                                            <a class="pagination__page--btn disabled">
+                                              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                stroke-width="3" stroke="#ffffff" class="pagination__btn--icon">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                  d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                                              </svg>
+                                            </a>
+                                            <% } %>
+                                              <% } %>
           </div>
-          <% if (searchData.searchName != null) { %> <% if
-          (paginationData.hasNextPage) { %>
-          <a
-            href="/business/search?name=<%= searchData.searchName %>&location=&page=<%= paginationData.currentPage + 1 %>"
-            class="pagination__page--btn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#ffffff"
-              class="pagination__btn--icon"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </a>
-          <% } else { %>
-          <a class="pagination__page--btn disabled">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#ffffff"
-              class="pagination__btn--icon"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </a>
-          <% } %> <% } else { %> <% if (paginationData.hasNextPage) { %>
-          <a
-            href="/business/search?page=<%= paginationData.currentPage + 1 %>"
-            class="pagination__page--btn"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#ffffff"
-              class="pagination__btn--icon"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </a>
-          <% } else { %>
-          <a class="pagination__page--btn disabled">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="3"
-              stroke="#ffffff"
-              class="pagination__btn--icon"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </a>
-          <% } %> <% } %>
-        </div>
-      </div>
-    </main>
-    <script src="../js/script.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-    <script>
-      var dropdownContent = document.getElementById("dropdown--content");
-      var category = document.getElementById("category");
-      var categoryText = document.getElementsByClassName("category--text")[0];
-      var tags = document.getElementsByClassName("tag")[0];
-      category.addEventListener("click", showOptions);
-      function showOptions(){
-          dropdownContent.style.display = "flex";
-      }
-      window.onclick = function(event) {
-        console.log(event.target);
-        console.log(event.target != tags);
-          if (event.target != category && event.target != dropdownContent && event.target != categoryText && event.target != tags) {
-              dropdownContent.style.display = "none";
-          }
-        }
+    </div>
+  </main>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="../js/businessSearchScript.js"></script>
+</body>
 
-    </script>
-  </body>
 </html>
