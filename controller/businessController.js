@@ -124,43 +124,18 @@ const getPagination = async (page, size) => {
 };
 
 const getAllBusiness = async (req, res) => {
-  const { limit, offset } = await getPagination(req.query.page - 1, 3);
-  console.log(req.query);
-  const searchName = req.query.name;
-  const searchLocation = req.query.location;
-  const searchTags = req.query.tags;
+  try {
+    const { limit, offset } = await getPagination(req.query.page - 1, 3);
+    console.log(req.query);
+    const searchName = req.query.name;
+    const searchLocation = req.query.location;
+    let searchTags = req.query.tags;
 
-  if ((searchName != null && searchName != '') || (searchLocation != null && searchLocation != '') || searchTags != null) {
-    Business.paginate({
-      $and: [
-        {
-          $or: [
-            { name: { $regex: searchName, $options: 'i' } },
-            { description: { $regex: searchName, $options: 'i' } },
-            { tags: { $in: searchTags } },
-          ],
-          address: { $regex: searchLocation, $options: 'i' },
-        },
-      ],
-    }, { offset, limit, populate: 'services' }, (err, businesses) => {
-      console.log(searchLocation)
-      return res.render("searchBusiness", {
-        user: req.user,
-        tags: tagsGlobal,
-        businesses: businesses.docs,
-        searchData: { searchName, searchLocation, searchTags },
-        paginationData: {
-          totalPages: businesses.totalPages,
-          totalDocs: businesses.totalDocs,
-          currentPage: businesses.page,
-          hasPrevPage: businesses.hasPrevPage,
-          hasNextPage: businesses.hasNextPage,
-        },
-      });
-    })
-    console.log(limit, offset)
-    /*Business.paginate(
-      {
+    if (typeof searchTags === "string" || searchTags instanceof String) searchTags = searchTags.split(","); // validation after switching pages, 
+    console.log(searchTags);
+
+    if ((searchName != null && searchName != '') || (searchLocation != null && searchLocation != '') || searchTags != null) {
+      Business.paginate({
         $and: [
           {
             $or: [
@@ -171,109 +146,54 @@ const getAllBusiness = async (req, res) => {
             address: { $regex: searchLocation, $options: 'i' },
           },
         ],
-      },
-      { offset, limit }
-    )
-      .then((businesses) => {
-        const filteredBusinessesIds = [];
-        businesses.docs.forEach((bussines) => {
-          filteredBusinessesIds.push(bussines._id);
-        });
-        Business.find({ _id: { $in: filteredBusinessesIds } }).populate(["services", "ownerId"]).exec((err, businessesWithServices) => {
-          return res.render("searchBusiness", {
-            user: req.user,
-            tags: tagsGlobal,
-            businesses: businessesWithServices,
-            searchData: { searchName, searchLocation },
-            paginationData: {
-              totalPages: businesses.totalPages,
-              totalDocs: businesses.totalDocs,
-              currentPage: businesses.page,
-              hasPrevPage: businesses.hasPrevPage,
-              hasNextPage: businesses.hasNextPage,
-            },
-          });
+      }, { offset, limit, populate: 'services' }, (err, businesses) => {
+        console.log(searchLocation)
+        return res.render("searchBusiness", {
+          user: req.user,
+          tags: tagsGlobal,
+          businesses: businesses.docs,
+          searchData: { searchName, searchLocation, searchTags },
+          paginationData: {
+            totalPages: businesses.totalPages,
+            totalDocs: businesses.totalDocs,
+            currentPage: businesses.page,
+            hasPrevPage: businesses.hasPrevPage,
+            hasNextPage: businesses.hasNextPage,
+          },
         });
       })
-      .catch(async (err) => {
-        console.log(err);
-        return res.render("home", {
+      console.log(limit, offset)
+
+    } else {
+      console.log(offset, limit);
+      Business.paginate({}, { offset: offset, limit: limit, populate: 'services' }, (err, businesses) => {
+        return res.render("searchBusiness", {
           user: req.user,
-          business:
-            req.user.role == "Owner"
-              ? await Business.findOne({ ownerId: req.user._id }).exec()
-              : await Business.findOne({ workers: req.user._id }).exec(),
-          message: err
+          tags: tagsGlobal,
+          businesses: businesses.docs,
+          searchData: { searchName, searchLocation, searchTags },
+          paginationData: {
+            totalPages: businesses.totalPages,
+            totalDocs: businesses.totalDocs,
+            currentPage: businesses.page,
+            hasPrevPage: businesses.hasPrevPage,
+            hasNextPage: businesses.hasNextPage,
+          },
         });
-      }); */
-  } else {
-    console.log(offset, limit);
-    Business.paginate({}, { offset: offset, limit: limit, populate: 'services' }, (err, businesses) => {
-      return res.render("searchBusiness", {
-        user: req.user,
-        tags: tagsGlobal,
-        businesses: businesses.docs,
-        searchData: { searchName, searchLocation, searchTags },
-        paginationData: {
-          totalPages: businesses.totalPages,
-          totalDocs: businesses.totalDocs,
-          currentPage: businesses.page,
-          hasPrevPage: businesses.hasPrevPage,
-          hasNextPage: businesses.hasNextPage,
-        },
-      });
-    })
-
-
-    /*
-        Business.paginate({}, { offset, limit })
-          .then((businesses) => {
-            Business.find({}).populate("services").exec((err, businessesWithServices) => {
-              console.log(businesses.page);
-              return res.render("searchBusiness", {
-                user: req.user,
-                tags: tagsGlobal,
-                businesses: businessesWithServices,
-                searchData: { searchName, searchLocation },
-                paginationData: {
-                  totalPages: businesses.totalPages,
-                  totalDocs: businesses.totalDocs,
-                  currentPage: businesses.page,
-                  hasPrevPage: businesses.hasPrevPage,
-                  hasNextPage: businesses.hasNextPage,
-                },
-              });
-            });
-          })
-          .catch(async (err) => {
-            console.log(err);
-            return res.render("home", {
-              user: req.user,
-              business:
-                req.user.role == "Owner"
-                  ? await Business.findOne({ ownerId: req.user._id }).exec()
-                  : await Business.findOne({ workers: req.user._id }).exec(),
-              message: err
-            });
-          });
-          */
-  }
-};
-
-const getServicesFromBusiness = (businessesDocs) => {
-  let businessesServices = [];
-  for (let i = 0; i < businessesDocs.length; i++) {
-    const servicesIds = businessesDocs[i].services;
-    Service.find({ _id: servicesIds }, (err, servicesData) => {
-      if (err) return res.send(err);
-      businessesServices.push(servicesData);
-      console.log(businessesServices);
+      })
+    }
+  } catch (err) {
+    console.log(err);
+    return res.render("home", {
+      user: req.user,
+      business:
+        req.user.role == "Owner"
+          ? await Business.findOne({ ownerId: req.user._id }).exec()
+          : await Business.findOne({ workers: req.user._id }).exec(),
+      message: "Błąd podczas wyszukiwania firmy.",
     });
   }
-  console.log(businessesServices);
-  return businessesServices;
 };
-
 const getBusiness = async (req, res) => {
   try {
     const business = await Business.findById(req.params.id)
