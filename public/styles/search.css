@@ -153,8 +153,15 @@
 }
 
 .business--address {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 600;
+  color: #33365e;
+  margin: 0;
+}
+
+.business--tag {
+  font-size: 18px;
+  font-weight: 800;
   color: #33365e;
   margin: 0;
   margin-bottom: 20px;

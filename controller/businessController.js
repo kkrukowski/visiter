@@ -146,7 +146,7 @@ const getAllBusiness = async (req, res) => {
             address: { $regex: searchLocation, $options: 'i' },
           },
         ],
-      }, { offset, limit, populate: 'services' }, (err, businesses) => {
+      }, { offset, limit, populate: ['services', 'tags'] }, (err, businesses) => {
         console.log(searchLocation)
         return res.render("searchBusiness", {
           user: req.user,
@@ -166,7 +166,7 @@ const getAllBusiness = async (req, res) => {
 
     } else {
       console.log(offset, limit);
-      Business.paginate({}, { offset: offset, limit: limit, populate: 'services' }, (err, businesses) => {
+      Business.paginate({}, { offset: offset, limit: limit, populate: ['services', 'tags'] }, (err, businesses) => {
         return res.render("searchBusiness", {
           user: req.user,
           tags: tagsGlobal,

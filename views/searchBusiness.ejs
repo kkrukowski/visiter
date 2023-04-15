@@ -182,6 +182,11 @@
                   <p class="business--address">
                     <%= business.address %>
                   </p>
+                  <p class="business--tag">
+                    <% business.tags.forEach((tag) => { %>
+                        <%= tag %>
+                    <% }) %>
+                  </p>
                   <a href="/chat/<%= business.ownerId.id %>" class="message--btn">
                     Wyślij wiadomość
                   </a>
