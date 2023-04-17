@@ -167,15 +167,6 @@
   margin-bottom: 20px;
 }
 
-.message--btn {
-  padding: 5px 10px;
-  background-color: #f1511b;
-  border-radius: 20px;
-  color: white;
-  text-decoration: none;
-  font-weight: 700;
-}
-
 .business__services--heading {
   font-size: 22px;
   font-weight: 700;
@@ -223,11 +214,7 @@
   font-size: 28px;
   font-weight: 700;
   color: #33365e;
-  margin: 0;
-}
-
-.service__select--btn {
-  margin-left: 20px;
+  margin: 0 15px 0 0;
 }
 
 /* Pagination */
@@ -316,7 +303,6 @@
   width: 14px;
   height: 14px;
 }
-.btn--visit{
-    background-color:#2e3155;
-    
+.btn--visit {
+  background-color: #2e3155;
 }

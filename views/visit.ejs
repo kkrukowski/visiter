@@ -245,7 +245,11 @@
                 class="hour--btn"
                 ><%= availableHour[0] %>:<%= availableHour[1] %></a
               >
-              <% } %> <% }) %> <% } %>
+              <% } %> <% }) %> <% } %> <% if(availableHours.length == 0) { %>
+              <p class="hours__null--text">
+                Brak dostepnych godzin w wybranym terminie
+              </p>
+              <% } %>
             </div>
           </div>
         </section>

@@ -11,6 +11,14 @@ body {
   background-color: #efedff;
 }
 
+/* Text */
+h1,
+h2,
+h3 {
+  color: #33365e;
+  margin: 10px 0;
+}
+
 /* Form */
 input {
   width: 300px;
@@ -52,11 +60,26 @@ button:active {
   background-color: #ff7e54;
 }
 
-h1,
-h2,
-h3 {
-  color: #33365e;
-  margin: 10px 0;
+a.btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: fit-content;
+  padding: 5px 10px;
+  background-color: #f1511b;
+  border-radius: 20px;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  transition: background-color 0.1s ease-in-out;
+}
+
+a.btn:hover {
+  background-color: #bf370a;
+}
+
+a.btn:active {
+  color: #ff7e54;
 }
 
 .link {

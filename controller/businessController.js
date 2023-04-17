@@ -10,7 +10,7 @@ const registerView = async (req, res) => {
     if (req.user.role == "User") {
       return res.render("businessRegister", {
         message: "",
-        tags: tagsGlobal
+        tags: tagsGlobal,
       });
     } else {
       throw new Error("Jesteś właścicielem lub pracownikiem.");
@@ -31,9 +31,9 @@ const registerBusiness = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const isUserOwner = await Business.find({ "ownerId": req.user._id }).exec();
+    const isUserOwner = await Business.find({ ownerId: req.user._id }).exec();
 
-    console.log(isUserOwner)
+    console.log(isUserOwner);
 
     if (isUserOwner) throw new Error("Użytkownik jest właścicielem.");
 
@@ -79,11 +79,11 @@ const registerBusiness = async (req, res) => {
       message: "Stworzono firme!",
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     await session.abortTransaction();
     return res.status(401).render("businessRegister", {
       message: "Nie udało się stworzyć firmy.",
-      tags: tagsGlobal
+      tags: tagsGlobal,
     });
   } finally {
     await session.endSession();
@@ -118,7 +118,6 @@ const homeView = async (req, res) => {
   }
 };
 
-
 const getPagination = async (page, size) => {
   const limit = size ? +size : 3;
   const offset = page ? page * limit : 0;
@@ -129,61 +128,68 @@ const getPagination = async (page, size) => {
 const getAllBusiness = async (req, res) => {
   try {
     const { limit, offset } = await getPagination(req.query.page - 1, 3);
-    console.log(req.query);
     const searchName = req.query.name;
     const searchLocation = req.query.location;
     let searchTags = req.query.tags;
 
-    if (typeof searchTags === "string" || searchTags instanceof String) searchTags = searchTags.split(","); // validation after switching pages, 
-    console.log(searchTags);
+    if (typeof searchTags === "string" || searchTags instanceof String)
+      searchTags = searchTags.split(","); // validation after switching pages,
 
-    if ((searchName != null && searchName != '') || (searchLocation != null && searchLocation != '') || searchTags != null) {
-      Business.paginate({
-        $and: [
-          {
-            $or: [
-              { name: { $regex: searchName, $options: 'i' } },
-              { description: { $regex: searchName, $options: 'i' } },
-              { tags: { $in: searchTags } },
-            ],
-            address: { $regex: searchLocation, $options: 'i' },
-          },
-        ],
-      }, { offset, limit, populate: ['services', 'tags'] }, (err, businesses) => {
-        console.log(searchLocation)
-        return res.render("searchBusiness", {
-          user: req.user,
-          tags: tagsGlobal,
-          businesses: businesses.docs,
-          searchData: { searchName, searchLocation, searchTags },
-          paginationData: {
-            totalPages: businesses.totalPages,
-            totalDocs: businesses.totalDocs,
-            currentPage: businesses.page,
-            hasPrevPage: businesses.hasPrevPage,
-            hasNextPage: businesses.hasNextPage,
-          },
-        });
-      })
-      console.log(limit, offset)
-
+    if (
+      (searchName != null && searchName != "") ||
+      (searchLocation != null && searchLocation != "") ||
+      searchTags != null
+    ) {
+      Business.paginate(
+        {
+          $and: [
+            {
+              $or: [
+                { name: { $regex: searchName, $options: "i" } },
+                { description: { $regex: searchName, $options: "i" } },
+                { tags: { $in: searchTags } },
+              ],
+              address: { $regex: searchLocation, $options: "i" },
+            },
+          ],
+        },
+        { offset, limit, populate: ["services", "tags"] },
+        (err, businesses) => {
+          return res.render("searchBusiness", {
+            user: req.user,
+            tags: tagsGlobal,
+            businesses: businesses.docs,
+            searchData: { searchName, searchLocation, searchTags },
+            paginationData: {
+              totalPages: businesses.totalPages,
+              totalDocs: businesses.totalDocs,
+              currentPage: businesses.page,
+              hasPrevPage: businesses.hasPrevPage,
+              hasNextPage: businesses.hasNextPage,
+            },
+          });
+        }
+      );
     } else {
-      console.log(offset, limit);
-      Business.paginate({}, { offset: offset, limit: limit, populate: ['services', 'tags'] }, (err, businesses) => {
-        return res.render("searchBusiness", {
-          user: req.user,
-          tags: tagsGlobal,
-          businesses: businesses.docs,
-          searchData: { searchName, searchLocation, searchTags },
-          paginationData: {
-            totalPages: businesses.totalPages,
-            totalDocs: businesses.totalDocs,
-            currentPage: businesses.page,
-            hasPrevPage: businesses.hasPrevPage,
-            hasNextPage: businesses.hasNextPage,
-          },
-        });
-      })
+      Business.paginate(
+        {},
+        { offset: offset, limit: limit, populate: ["services", "tags"] },
+        (err, businesses) => {
+          return res.render("searchBusiness", {
+            user: req.user,
+            tags: tagsGlobal,
+            businesses: businesses.docs,
+            searchData: { searchName, searchLocation, searchTags },
+            paginationData: {
+              totalPages: businesses.totalPages,
+              totalDocs: businesses.totalDocs,
+              currentPage: businesses.page,
+              hasPrevPage: businesses.hasPrevPage,
+              hasNextPage: businesses.hasNextPage,
+            },
+          });
+        }
+      );
     }
   } catch (err) {
     console.log(err);
@@ -649,7 +655,6 @@ const removeBusiness = async (req, res) => {
     opinionsToPull.forEach((opinion) => {
       listOfIds.push(opinion._id);
     }); // id usunietych opinii
-    console.log(listOfIds);
     await User.updateMany(
       { opinions: { $in: listOfIds } },
       { $pull: { opinions: { $in: listOfIds } } },

@@ -23,18 +23,22 @@ const {
 // CLIENT VISITS
 const getAllClientVisits = (req, res) => {
   // Get array of visits ids
-  const clientId = req.params.id;
+  const clientId = req.user.id;
   User.findById(clientId, (err, user) => {
     if (err) return res.send(err);
     // Get visits data
     const visitsIds = user.clientVisits;
-    Visit.find({ id: visitsIds }, (err, visits) => {
-      if (err) return res.send(err);
-      return res.render("clientVisits", {
-        user: user,
-        visits: visits,
+    Visit.find({ id: visitsIds })
+      .populate("businessId")
+      .populate("serviceId")
+      .exec((err, visits) => {
+        if (err) return res.send(err);
+
+        return res.render("clientVisits", {
+          user: user,
+          visits: visits,
+        });
       });
-    });
   });
 };
 

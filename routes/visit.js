@@ -10,7 +10,7 @@ const {
   createVisit,
 } = require("../controller/visitController");
 
-router.get("/:id", getAllClientVisits);
+router.get("/", getAllClientVisits);
 router.get("/book/:serviceId", getAllServiceDates);
 router.get(
   "/book/:serviceId/day/:day/month/:month/year/:year",

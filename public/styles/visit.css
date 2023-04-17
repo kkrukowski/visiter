@@ -156,3 +156,11 @@
 .hour--btn:not(:last-of-type) {
   margin-right: 10px;
 }
+
+.hours__null--text {
+  color: #efedff;
+  font-weight: 700;
+  width: 100%;
+  text-align: center;
+  margin: 0;
+}
