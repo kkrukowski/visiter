@@ -31,9 +31,11 @@ const registerBusiness = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const isUserOwner = await Business.find({ "ownerId": req.user._id }).exec();
+    //const isUserOwner = await Business.find({ "ownerId": req.user._id }).exec();
 
-    if (isUserOwner) throw new Error("Użytkownik jest właścicielem.");
+    //console.log(isUserOwner)
+
+    //if (isUserOwner) throw new Error("Użytkownik jest właścicielem.");
 
     const correctName =
       req.body.name.charAt(0).toUpperCase() +
@@ -77,6 +79,7 @@ const registerBusiness = async (req, res) => {
       message: "Stworzono firme!",
     });
   } catch (err) {
+    console.log(err)
     await session.abortTransaction();
     return res.status(401).render("businessRegister", {
       message: "Nie udało się stworzyć firmy.",

@@ -4,12 +4,6 @@ var spans = document.getElementsByTagName("span");
 var listOfTags = ['Fryzjerstwo', 'Sprzątanie', 'Kurs', 'Nauka', 'Turystyka', 'Pomoc'].sort();
 var tagInput = document.getElementById("tagInput");
 
-for (var i = 0; i < listOfTags.length; i++) {
-    var element = document.createElement("option");
-    element.textContent = listOfTags[i];
-    element.setAttribute("value", listOfTags[i]);
-    listBox.appendChild(element);
-}
 
 $('div').on('click', 'span', function () { //usuwanie tagów
     var spanValue = $(this).attr("value");

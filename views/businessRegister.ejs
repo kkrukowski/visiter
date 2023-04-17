@@ -36,6 +36,9 @@
       <div style="color:grey;" contentEditable=false id="selectedOptions" class="tags" data-text="Tagi"
         onclick="showOptions()"></div>
       <select id="listbox" name="listbox" style="display: none;" size="4" multiple>
+      <% tags.forEach((tag) => { %>
+        <option value="<%= tag %>"><%= tag %></option>
+      <% }); %>
       </select>
       <button class="login--btn">Zarejestruj firmę</button>
     </form>
