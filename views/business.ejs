@@ -371,6 +371,23 @@
             <button type="submit">Zapisz zmiany</button>
           </form>
         </div>
+        <div class="toEdit" id="tags">
+          <div>
+            <label class="text--header">Kategoria</label>
+            <p>
+              <%= business.tags %>
+            </p>
+          </div>
+          <button onclick="editPanel(this)" value="tags">Edytuj</button>
+        </div>
+        <div class="editPanel" id="tags" style="display: none;">
+          <form action="/business/mybusiness/<%= business._id %>/edit" method="POST">
+            <div>
+              <input type="text" name="tags" placeholder="<%= business.tags %>" required>
+            </div>
+            <button type="submit">Zapisz zmiany</button>
+          </form>
+        </div>
 
         <div id="delAcc">
           <form onsubmit="return confirm('Czy na pewno chcesz to zrobić?')" action="/business/mybusiness/<%= business._id %>/removeBusiness" method="POST">

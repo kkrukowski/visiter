@@ -583,7 +583,16 @@ const editProfile = async (req, res) => {
         throw new Error("Nieprawidłowy numer telefonu.");
       }
       update = { phone: req.body.phone };
-    } else if (req.body.address) update = { address: req.body.address };
+    } else if (req.body.tags) {
+      console.log(req.body.tags);
+      req.body.tags.forEach(tag => {
+        if(!tagsGlobal.includes(tag)) throw new Error("Nieprawidłowe tagi. ")
+      });
+      update = { tags: req.body.tags };
+    }
+    else if (req.body.address) {
+      update = { address: req.body.address };
+    }
     else {
       throw new Error("Brak parametrów.");
     }
