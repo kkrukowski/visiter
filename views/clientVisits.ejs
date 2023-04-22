@@ -10,7 +10,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="stylesheet" href="/styles/styles.css" />
-    <link rel="stylesheet" href="/styles/profile.css" />
+    <link rel="stylesheet" href="/styles/clientVisits.css" />
     <link rel="stylesheet" href="/styles/normalize.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -134,7 +134,49 @@
       </div>
     </nav>
     <!-- Main block -->
-    <main class="main"><% if (visits) { %> <%= visits %> <% } %></main>
+    <main class="main">
+      <h1>Moje wizyty</h1>
+      <section class="visits--scrollable">
+        <div class="visits--list">
+          <% if (visits) { %> <% visits.forEach(function (visit) { %> <% const
+          months = ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec',
+          'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad',
+          'Grudzień']; %> <% let status = '' %><% switch (visit.status) { case
+          'waiting': status = 'Oczekująca'; break; default: status = 'nieznany';
+          break; } %>
+          <div class="visit--item">
+            <div class="visit--info">
+              <p class="info--status"><%= status %></p>
+              <p class="info__service--name"><%= visit.serviceId.name %></p>
+              <div class="info__employee--info">
+                <img class="employee--avatar" src="/assets/imgs/profile.webp" />
+                <p class="employee--name">
+                  <span><%= visit.workerId.name %></span> z
+                  <span><%= visit.businessId.name %></span>
+                </p>
+              </div>
+            </div>
+            <div class="visit--date">
+              <p class="date--month">
+                <%= months[new Date(visit.visitDate).getUTCMonth()] %>
+              </p>
+              <p class="date--day">
+                <%= new Date(visit.visitDate).getDate() %>
+              </p>
+              <p class="date--hour">
+                <span><%= new Date(visit.visitDate).getUTCHours() %></span
+                >:<span
+                  ><%= new Date(visit.visitDate).getUTCMinutes() < 10 ? '0' +
+                  new Date(visit.visitDate).getUTCMinutes() : new
+                  Date(visit.visitDate).getUTCMinutes() %>
+                </span>
+              </p>
+            </div>
+          </div>
+          <% }) %><% } %>
+        </div>
+      </section>
+    </main>
   </body>
   <script src="../js/script.js"></script>
 </html>
