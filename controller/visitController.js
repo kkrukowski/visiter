@@ -29,8 +29,10 @@ const getAllClientVisits = (req, res) => {
     // Get visits data
     const visitsIds = user.clientVisits;
     Visit.find({ id: visitsIds })
+      .sort({ visitDate: -1 })
       .populate("businessId")
       .populate("serviceId")
+      .populate("workerId")
       .exec((err, visits) => {
         if (err) return res.send(err);
 
