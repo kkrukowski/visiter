@@ -15,12 +15,14 @@ const {
 } = require("../controller/loginController");
 const { isLoggedIn, isLoggedOut } = require("../middlewares/authHandler");
 
-router.get("/", isLoggedIn, homeView);
+
 
 router.get("/login", isLoggedOut, loginView);
 router.get("/register", isLoggedOut, registerView);
 router.get("/reset-password", isLoggedOut, forgetPasswordView);
 router.get("/", isLoggedOut, loginView);
+
+router.get("/", isLoggedIn, homeView);
 
 router.post("/login", loginValidation, loginUser);
 router.post("/register", registerValidation, registerUser);

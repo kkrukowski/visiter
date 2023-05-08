@@ -1,0 +1,82 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.visits--scrollable {
+  height: 70%;
+  overflow: auto;
+  padding: 0 20px 0 20px;
+}
+
+.visit--item {
+  display: flex;
+  justify-content: space-between;
+  width: 400px;
+  border-radius: 20px;
+  background-color: #33365e;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.visit--item:last-of-type {
+  margin: 0;
+}
+
+p {
+  color: #efedff;
+  margin: 0;
+}
+
+.info--status {
+  padding: 5px 10px;
+  border-radius: 999px;
+  background-color: #d9d9d9;
+  font-size: 14px;
+  font-weight: 700;
+  width: fit-content;
+  color: #33365e;
+  margin-bottom: 10px;
+}
+
+.info__service--name {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.info__employee--info {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+}
+
+.employee--avatar {
+  height: 32px;
+  width: 32px;
+  object-fit: cover;
+  border-radius: 999px;
+  border: 2px solid #d9d9d9;
+  margin-right: 10px;
+}
+
+.visit--date {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-left: 20px;
+  border-left: 2px solid #d9d9d9;
+}
+
+.date--month,
+.date--hour {
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.date--day {
+  font-size: 38px;
+  font-weight: 700;
+}

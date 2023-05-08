@@ -254,7 +254,7 @@ const addOpinion = async (req, res) => {
       .exec();
     const message = "Dodano opinie.";
     await session.commitTransaction();
-    return res.render("specificBusiness", {
+    return res.status(200).render("specificBusiness", {
       user: req.user,
       business: business,
       opinions: opinions,
@@ -268,7 +268,7 @@ const addOpinion = async (req, res) => {
       .exec();
     const message = "Nie dodano opinii.";
     await session.abortTransaction();
-    return res.render("specificBusiness", {
+    return res.status(401).render("specificBusiness", {
       user: req.user,
       business: business,
       opinions: business.opinions,
